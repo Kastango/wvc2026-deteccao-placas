@@ -31,7 +31,6 @@ ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DATASET = "bvtsld"
 DEFAULT_FRACTION = 0.10
 DEFAULT_REPEAT = 1
-DEFAULT_EMBEDDING = "dinov2"
 DEFAULT_PROJECTION = "tsne"
 
 FIGURE_BG = "#FAFBFC"
@@ -50,6 +49,17 @@ class TechniqueSpec:
     title: str
     slug: str
     note: str
+    space: str
+
+
+@dataclass(frozen=True)
+class PanelData:
+    xy: np.ndarray
+    selected_points: np.ndarray
+    selected_images: int
+    pool_items: int
+    space_label: str
+    draw_pool_density: bool = True
 
 
 TECHNIQUES: tuple[TechniqueSpec, ...] = (
@@ -58,60 +68,70 @@ TECHNIQUES: tuple[TechniqueSpec, ...] = (
         "Random sampling",
         "method_01_random",
         "control: samples without using the pool geometry",
+        "none · arbitrary index grid",
     ),
     TechniqueSpec(
         "kmeans_dinov2",
         "k-means + medoid",
         "method_02_kmeans",
-        "one real sample per cluster in the embedding space",
+        "one real sample per cluster in the DINOv2 embedding",
+        "DINOv2 · whole-image embedding",
     ),
     TechniqueSpec(
         "kmeans_clip",
         "k-means · CLIP",
         "method_02b_kmeans_clip",
         "same k-means selection using CLIP embeddings",
+        "CLIP · whole-image embedding",
     ),
     TechniqueSpec(
         "kmeans_shallow",
         "k-means · shallow features",
         "method_02c_kmeans_shallow",
         "same k-means selection using color and texture features",
+        "shallow · color, texture and edges",
     ),
     TechniqueSpec(
         "opf_dinov2",
         "OPF root + quota",
         "method_03_opf",
         "OPF roots and clusters completed by quota to a fixed budget",
+        "DINOv2 · whole-image embedding",
     ),
     TechniqueSpec(
         "typiclust_dinov2",
         "TypiClust",
         "method_04_typiclust",
         "typical samples in budget-defined clusters",
+        "DINOv2 · whole-image embedding",
     ),
     TechniqueSpec(
         "kcenter_dinov2",
         "k-center greedy",
         "method_05_kcenter",
         "coverage by samples far from the current selection",
+        "DINOv2 · whole-image embedding",
     ),
     TechniqueSpec(
         "probcover_dinov2",
         "ProbCover",
         "method_06_probcover",
         "coverage of neighbors not yet covered",
+        "DINOv2 · whole-image embedding",
     ),
     TechniqueSpec(
         "facility_dinov2",
         "Facility location",
         "method_07_facility",
         "maximizes global similarity to the nearest prototype",
+        "DINOv2 · whole-image embedding",
     ),
     TechniqueSpec(
         "freesel_dino",
         "FreeSel",
         "method_08_freesel",
         "selects diverse local patterns instead of only whole scenes",
+        "DINO · local-pattern embedding",
     ),
 )
 
@@ -125,7 +145,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--dataset", default=DEFAULT_DATASET)
     parser.add_argument("--fraction", type=float, default=DEFAULT_FRACTION)
     parser.add_argument("--repeat", type=int, default=DEFAULT_REPEAT)
-    parser.add_argument("--embedding", default=DEFAULT_EMBEDDING)
     parser.add_argument(
         "--projection",
         choices=("pca", "tsne"),
@@ -174,7 +193,11 @@ def load_pool_ids(output: Path) -> list[str]:
 def load_embeddings(output: Path, dataset: str, embedding: str) -> np.ndarray:
     path = output / f"embeddings_{dataset}_{embedding}_full.npy"
     if not path.exists():
-        raise FileNotFoundError(f"Embedding file not found: {path}")
+        path = output / f"embeddings_{dataset}_{embedding}.npy"
+    if not path.exists():
+        raise FileNotFoundError(
+            f"Embedding file not found for '{embedding}' in {output}"
+        )
     emb = np.load(path)
     if emb.ndim != 2:
         raise ValueError(f"Expected a 2D embedding matrix, got shape {emb.shape}")
@@ -203,6 +226,19 @@ def normalize_xy(xy: np.ndarray) -> np.ndarray:
     span = np.maximum(hi - lo, 1e-9)
     out = (xy - lo) / span
     return np.clip(out, -0.05, 1.05)
+
+
+def normalize_rows(values: np.ndarray) -> np.ndarray:
+    values = np.asarray(values, dtype=np.float32)
+    return values / (np.linalg.norm(values, axis=1, keepdims=True) + 1e-9)
+
+
+def index_grid(n_items: int) -> np.ndarray:
+    """Arbitrary layout for methods that do not use a representation space."""
+    columns = math.ceil(math.sqrt(n_items))
+    index = np.arange(n_items)
+    xy = np.column_stack((index % columns, index // columns)).astype(np.float32)
+    return normalize_xy(xy)
 
 
 def selection_path(output: Path, technique: str, fraction: float, repeat: int) -> Path:
@@ -242,7 +278,12 @@ def available_specs(techniques: Iterable[str]) -> list[TechniqueSpec]:
 
         title = re.sub(r"[_-]+", " ", key).strip()
         slug = re.sub(r"[^a-z0-9]+", "_", key.lower()).strip("_")
-        specs.append(TechniqueSpec(key, title, slug, "selection saved by the pipeline"))
+        specs.append(
+            TechniqueSpec(
+                key, title, slug, "selection saved by the pipeline",
+                "unknown representation",
+            )
+        )
     return specs
 
 
@@ -295,26 +336,29 @@ def draw_density(ax: plt.Axes, xy: np.ndarray) -> None:
 
 def draw_selection(
     ax: plt.Axes,
-    xy: np.ndarray,
-    selected: np.ndarray,
+    panel: PanelData,
     title: str,
     note: str,
     compact: bool = False,
 ) -> None:
-    draw_density(ax, xy)
+    xy = panel.xy
+    selected = panel.selected_points
+    if panel.draw_pool_density:
+        draw_density(ax, xy)
+    dense_pattern_space = len(xy) > 1_500
     ax.scatter(
         xy[:, 0],
         xy[:, 1],
-        s=14 if compact else 19,
+        s=(5 if dense_pattern_space else 14) if compact else (8 if dense_pattern_space else 19),
         c=POOL_COLOR,
         edgecolors="none",
-        alpha=0.34,
+        alpha=0.26 if dense_pattern_space else 0.34,
         zorder=1,
     )
     ax.scatter(
         xy[selected, 0],
         xy[selected, 1],
-        s=92 if compact else 124,
+        s=(42 if dense_pattern_space else 92) if compact else (58 if dense_pattern_space else 124),
         facecolors="none",
         edgecolors=SELECTED_COLOR,
         linewidths=1.15,
@@ -324,7 +368,7 @@ def draw_selection(
     ax.scatter(
         xy[selected, 0],
         xy[selected, 1],
-        s=48 if compact else 66,
+        s=(20 if dense_pattern_space else 48) if compact else (28 if dense_pattern_space else 66),
         c=SELECTED_COLOR,
         edgecolors="white",
         linewidths=1.15,
@@ -341,11 +385,11 @@ def draw_selection(
             ha="left", va="bottom", fontsize=9.5, color=MUTED_COLOR,
         )
         ax.text(
-            0.965, 0.96, f"{len(selected)} selected", transform=ax.transAxes,
-            ha="right", va="top", fontsize=8.5, fontweight="bold",
-            color=SELECTED_COLOR,
-            bbox={"boxstyle": "round,pad=0.28", "facecolor": "white",
-                  "edgecolor": GRID_COLOR, "alpha": 0.92},
+            0.035, 0.04, panel.space_label, transform=ax.transAxes,
+            ha="left", va="bottom", fontsize=7.8, fontweight="bold",
+            color=MUTED_COLOR,
+            bbox={"boxstyle": "round,pad=0.3", "facecolor": "#F4F7FA",
+                  "edgecolor": GRID_COLOR, "alpha": 0.94},
         )
         ax.set_xticks([])
         ax.set_yticks([])
@@ -358,7 +402,78 @@ def draw_selection(
             spine.set_color(GRID_COLOR)
             spine.set_linewidth(0.9)
     else:
-        setup_axis(ax, title, note, len(selected), len(xy))
+        setup_axis(ax, title, note, panel.selected_images, panel.pool_items)
+
+
+def build_panels(
+    output: Path,
+    dataset: str,
+    pool_ids: list[str],
+    selections: dict[str, np.ndarray],
+    specs: list[TechniqueSpec],
+    projection: str,
+    seed: int,
+) -> dict[str, PanelData]:
+    """Project each method in the representation space it actually uses."""
+    image_spaces = {
+        "dinov2": load_embeddings(output, dataset, "dinov2"),
+        "clip": load_embeddings(output, dataset, "clip"),
+        "shallow": load_embeddings(output, dataset, "shallow"),
+    }
+    for name, values in image_spaces.items():
+        if len(values) != len(pool_ids):
+            raise ValueError(f"{name} rows ({len(values)}) != pool size ({len(pool_ids)})")
+
+    projected = {
+        name: normalize_xy(project_embeddings(normalize_rows(values), projection, seed))
+        for name, values in image_spaces.items()
+    }
+
+    freesel_path = output / f"patterns_{dataset}_freesel.npz"
+    if not freesel_path.exists():
+        raise FileNotFoundError(f"FreeSel local-pattern artifact not found: {freesel_path}")
+    freesel = np.load(freesel_path)
+    patterns = normalize_rows(freesel["patterns"])
+    pattern_ids = np.asarray(freesel["ids"], dtype=int)
+    if pattern_ids.min() != 0 or pattern_ids.max() != len(pool_ids) - 1:
+        raise ValueError("FreeSel pattern IDs do not span the image pool")
+    projected_patterns = normalize_xy(project_embeddings(patterns, projection, seed))
+
+    image_space_by_method = {
+        "kmeans_clip": "clip",
+        "kmeans_shallow": "shallow",
+    }
+    panels: dict[str, PanelData] = {}
+    for spec in specs:
+        selected_images = selections[spec.key]
+        if spec.key == "random":
+            panels[spec.key] = PanelData(
+                xy=index_grid(len(pool_ids)),
+                selected_points=selected_images,
+                selected_images=len(selected_images),
+                pool_items=len(pool_ids),
+                space_label=spec.space,
+                draw_pool_density=False,
+            )
+        elif spec.key == "freesel_dino":
+            selected_patterns = np.flatnonzero(np.isin(pattern_ids, selected_images))
+            panels[spec.key] = PanelData(
+                xy=projected_patterns,
+                selected_points=selected_patterns,
+                selected_images=len(selected_images),
+                pool_items=len(pool_ids),
+                space_label=spec.space,
+            )
+        else:
+            space_name = image_space_by_method.get(spec.key, "dinov2")
+            panels[spec.key] = PanelData(
+                xy=projected[space_name],
+                selected_points=selected_images,
+                selected_images=len(selected_images),
+                pool_items=len(pool_ids),
+                space_label=spec.space,
+            )
+    return panels
 
 
 def save_figure(fig: plt.Figure, output_dir: Path, stem: str) -> None:
@@ -373,17 +488,16 @@ def save_figure(fig: plt.Figure, output_dir: Path, stem: str) -> None:
 
 
 def render_individual(
-    xy: np.ndarray,
-    selections: dict[str, np.ndarray],
+    panels: dict[str, PanelData],
     specs: list[TechniqueSpec],
     args: argparse.Namespace,
 ) -> None:
     for spec in specs:
         fig, ax = plt.subplots(figsize=(8.6, 6.0), constrained_layout=True)
         fig.patch.set_facecolor(FIGURE_BG)
-        draw_selection(ax, xy, selections[spec.key], spec.title, spec.note)
+        draw_selection(ax, panels[spec.key], spec.title, spec.note)
         fig.suptitle(
-            f"{args.dataset.upper()} - {args.embedding.upper()} - {args.projection.upper()} "
+            f"{args.dataset.upper()} - {spec.space} - {args.projection.upper()} "
             f"- fraction {args.fraction:.0%}, repeat {args.repeat}",
             x=0.0,
             ha="left",
@@ -393,14 +507,13 @@ def render_individual(
         save_figure(
             fig,
             args.output_dir,
-            f"{spec.slug}_empirical_{args.dataset}_{args.embedding}_{args.projection}_{fraction_tag(args.fraction)}_rep{args.repeat}",
+            f"{spec.slug}_selection_space_{args.dataset}_{args.projection}_{fraction_tag(args.fraction)}_rep{args.repeat}",
         )
         plt.close(fig)
 
 
 def render_grid(
-    xy: np.ndarray,
-    selections: dict[str, np.ndarray],
+    panels: dict[str, PanelData],
     specs: list[TechniqueSpec],
     args: argparse.Namespace,
 ) -> None:
@@ -412,18 +525,19 @@ def render_grid(
     axes_arr = np.array(axes, dtype=object).reshape(rows, cols)
 
     for ax, spec in zip(axes_arr.flat, specs):
-        draw_selection(ax, xy, selections[spec.key], spec.title, spec.note, compact=True)
+        draw_selection(ax, panels[spec.key], spec.title, spec.note, compact=True)
 
     for ax in axes_arr.flat[len(specs):]:
         ax.axis("off")
 
-    title = "How each method samples the same unlabeled pool"
+    title = "How each method represents and samples the unlabeled pool"
     fig.suptitle(title, fontsize=22, fontweight="bold", color=TEXT_COLOR, y=0.985)
     fig.text(
         0.5,
         0.965,
-        f"{args.dataset.upper()} · shared {args.embedding.upper()} {args.projection.upper()} projection · "
-        f"label fraction {args.fraction:.0%} · repeat {args.repeat}",
+        f"{args.dataset.upper()} · method-specific {args.projection.upper()} projections · "
+        f"{next(iter(panels.values())).selected_images} "
+        f"images selected per method · repeat {args.repeat}",
         ha="center",
         va="top",
         fontsize=11,
@@ -432,10 +546,10 @@ def render_grid(
 
     handles = [
         Line2D([0], [0], marker="o", color="none", markerfacecolor=POOL_COLOR,
-               markeredgewidth=0, markersize=7, alpha=0.42, label="unlabeled pool"),
+               markeredgewidth=0, markersize=7, alpha=0.42, label="pool item in the method's space"),
         Line2D([0], [0], marker="o", color="none", markerfacecolor=SELECTED_COLOR,
                markeredgecolor="white", markeredgewidth=1.0, markersize=9,
-               label="selected image"),
+               label="selected image (or its local patterns)"),
     ]
     fig.legend(
         handles=handles,
@@ -447,13 +561,13 @@ def render_grid(
     )
     fig.text(
         0.5, 0.014,
-        "The 2D projection is for visualization only; selection runs in the full embedding space.",
+        "Each panel projects the representation actually used by that method; selection runs in the full space.",
         ha="center", va="bottom", fontsize=9.5, color=MUTED_COLOR,
     )
     save_figure(
         fig,
         args.output_dir,
-        f"methods_empirical_grid_{args.dataset}_{args.embedding}_{args.projection}_{fraction_tag(args.fraction)}_rep{args.repeat}",
+        f"methods_selection_spaces_{args.dataset}_{args.projection}_{fraction_tag(args.fraction)}_rep{args.repeat}",
     )
     plt.close(fig)
 
@@ -462,18 +576,14 @@ def main() -> None:
     args = parse_args()
     output = ROOT / "outputs" / args.dataset
     pool_ids = load_pool_ids(output)
-    emb = load_embeddings(output, args.dataset, args.embedding)
-    if len(pool_ids) != len(emb):
-        raise ValueError(
-            f"Pool size ({len(pool_ids)}) and embedding rows ({len(emb)}) do not match."
-        )
-
     specs = available_specs(args.techniques)
-    xy = normalize_xy(project_embeddings(emb, args.projection, args.seed))
     selections = {
         spec.key: load_selection_indices(output, spec.key, args.fraction, args.repeat, pool_ids)
         for spec in specs
     }
+    panels = build_panels(
+        output, args.dataset, pool_ids, selections, specs, args.projection, args.seed
+    )
 
     plt.rcParams.update(
         {
@@ -486,9 +596,9 @@ def main() -> None:
     )
 
     if args.individual:
-        render_individual(xy, selections, specs, args)
+        render_individual(panels, specs, args)
     if args.grid:
-        render_grid(xy, selections, specs, args)
+        render_grid(panels, specs, args)
 
     if args.individual:
         print(f"Generated {len(specs)} individual figures in {args.output_dir}")

@@ -66,12 +66,15 @@ negativos são melhores. `Δ worst-case` usa a maior cosine distance encontrada;
 valores negativos também são melhores. `Jaccard` mede a stability entre
 selection instances.
 
-![Comparison of the ten saved sample-selection methods](figs/methods_empirical_grid_bvtsld_dinov2_tsne_frac10_rep1.png)
+![Comparison of the representation spaces used by the ten sample-selection methods](figs/methods_selection_spaces_bvtsld_tsne_frac10_rep1.png)
 
 *Uma selection instance real de cada method, com label fraction de 10%. Os
-pontos cinza são o unlabeled pool e os pontos azuis são as selected images. A
-t-SNE projection é apenas uma visualização; os methods operam no full embedding
-space.*
+pontos cinza são os pool items no representation space efetivamente usado pelo
+method; os pontos azuis representam as 69 selected images. Em `FreeSel`, cada
+imagem possui cinco local patterns, portanto os patterns pertencentes às 69
+selected images são destacados. `Random sampling` não usa embedding e aparece
+em um arbitrary index grid. Cada t-SNE é independente e serve apenas para
+visualização; a selection opera no respectivo full-dimensional space.*
 
 #### Label fraction 5% — 35 imagens por selection
 
