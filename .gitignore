@@ -1,0 +1,67 @@
+# Operating systems and editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Python environments and caches
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*.so
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.ipynb_checkpoints/
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Raw datasets are obtained separately
+datasets/
+
+# Model checkpoints and exported models
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.engine
+*.torchscript
+
+# Large generated arrays and caches
+*.npy
+*.npz
+*.cache
+
+# Logs and temporary files
+*.log
+tmp/
+temp/
+
+# Generated experiment artifacts. Keep only compact, publication-facing data.
+outputs/*
+!outputs/bvtsld/
+outputs/bvtsld/*
+!outputs/bvtsld/oracle_results.json
+!outputs/bvtsld/project_status.json
+!outputs/bvtsld/quarantine.json
+!outputs/bvtsld/records.json
+!outputs/bvtsld/selections_summary.csv
+!outputs/bvtsld/split.json
+!outputs/bvtsld/taxonomy_report.json
+!outputs/bvtsld/triage_results.csv
+!outputs/bvtsld/triage_analysis.csv
+!outputs/bvtsld/selections/
+outputs/bvtsld/selections/*
+!outputs/bvtsld/selections/*.json

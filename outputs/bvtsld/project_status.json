@@ -1,0 +1,79 @@
+{
+  "generated_at_utc": "2026-07-12T14:12:53.801407+00:00",
+  "ready": true,
+  "errors": [],
+  "dataset": {
+    "records": 990,
+    "split": {
+      "pool": 693,
+      "validation": 148,
+      "test": 149
+    }
+  },
+  "yolo_dataset": {
+    "train": {
+      "images": 693,
+      "labels": 693,
+      "expected": 693
+    },
+    "val": {
+      "images": 148,
+      "labels": 148,
+      "expected": 148
+    },
+    "test": {
+      "images": 149,
+      "labels": 149,
+      "expected": 149
+    }
+  },
+  "embeddings": {
+    "embeddings_bvtsld_clip_full.npy": [
+      693,
+      512
+    ],
+    "embeddings_bvtsld_dinov2_full.npy": [
+      693,
+      384
+    ],
+    "embeddings_bvtsld_shallow.npy": [
+      693,
+      2276
+    ],
+    "embeddings_bvtsld_signness.npy": [
+      693
+    ]
+  },
+  "selections": {
+    "files": 160,
+    "expected": 160,
+    "complete": true
+  },
+  "oracle": {
+    "checkpoint": "outputs/bvtsld/runs/oracle/weights/best.pt",
+    "validation": {
+      "map50": 0.9483,
+      "map50_95": 0.627,
+      "ap50_per_class": {
+        "regulatory": 0.9645,
+        "warning": 0.9721,
+        "information": 0.9082
+      }
+    },
+    "protocol_valid": true
+  },
+  "triage": {
+    "completed_runs": 0,
+    "expected_runs": 320
+  },
+  "training_configs": {
+    "ready": true,
+    "lists": 160,
+    "yamls": 160
+  },
+  "smoke_test": {
+    "passed": true,
+    "results": "outputs/bvtsld/triage_smoke.csv",
+    "checkpoint": "outputs/bvtsld/runs/smoke/random_frac05_rep1_seed41/weights/best.pt"
+  }
+}

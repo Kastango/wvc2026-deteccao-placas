@@ -1,0 +1,9 @@
+matplotlib==3.11.0
+numpy==1.26.4
+opfython==1.0.12
+pandas==3.0.3
+scikit-learn==1.9.0
+scipy==1.17.1
+torch==2.12.1
+torchvision==0.27.1
+ultralytics==8.3.0

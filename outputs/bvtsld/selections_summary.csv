@@ -1,0 +1,161 @@
+technique,fraction,repeat,selection_seed,size,coverage_mean,coverage_max,stability_jaccard,classes,implementation,selection_seconds_total,rss_before_mb,rss_peak_mb,knn_backend,opf_max_points
+random,0.05,1,42,35,0.2535,0.8774,0.028,"{'regulatory': 35, 'information': 5, 'warning': 1}",random sampling control,0.0016012080013751984,181.171875,181.296875,not_applicable,3000
+random,0.05,2,43,35,0.2431,0.7226,0.028,"{'regulatory': 40, 'warning': 3, 'information': 2}",random sampling control,0.0016012080013751984,181.171875,181.296875,not_applicable,3000
+random,0.05,3,44,35,0.2475,0.8829,0.028,"{'regulatory': 36, 'warning': 5, 'information': 3}",random sampling control,0.0016012080013751984,181.171875,181.296875,not_applicable,3000
+random,0.05,4,45,35,0.2407,0.7246,0.028,"{'regulatory': 32, 'warning': 7, 'information': 3}",random sampling control,0.0016012080013751984,181.171875,181.296875,not_applicable,3000
+random,0.05,5,46,35,0.2515,0.8949,0.028,"{'regulatory': 37, 'warning': 5, 'information': 3}",random sampling control,0.0016012080013751984,181.171875,181.296875,not_applicable,3000
+random,0.05,6,47,35,0.2345,0.7226,0.028,"{'regulatory': 34, 'warning': 8, 'information': 4}",random sampling control,0.0016012080013751984,181.171875,181.296875,not_applicable,3000
+random,0.05,7,48,35,0.2323,0.6238,0.028,"{'regulatory': 37, 'warning': 6, 'information': 1}",random sampling control,0.0016012080013751984,181.171875,181.296875,not_applicable,3000
+random,0.05,8,49,35,0.2459,0.9043,0.028,"{'regulatory': 41, 'information': 3, 'warning': 1}",random sampling control,0.0016012080013751984,181.171875,181.296875,not_applicable,3000
+kmeans_dinov2,0.05,1,42,35,0.1987,0.6169,0.305,"{'regulatory': 40, 'warning': 5, 'information': 4}",k-means + medoid on DINOv2 embeddings,3.919599207933061,183.015625,187.328125,not_applicable,3000
+kmeans_dinov2,0.05,2,43,35,0.1995,0.6716,0.305,"{'regulatory': 43, 'warning': 5, 'information': 2}",k-means + medoid on DINOv2 embeddings,3.919599207933061,183.015625,187.328125,not_applicable,3000
+kmeans_dinov2,0.05,3,44,35,0.2003,0.6716,0.305,"{'regulatory': 45, 'information': 4, 'warning': 4}",k-means + medoid on DINOv2 embeddings,3.919599207933061,183.015625,187.328125,not_applicable,3000
+kmeans_dinov2,0.05,4,45,35,0.2003,0.7,0.305,"{'regulatory': 35, 'warning': 3, 'information': 7}",k-means + medoid on DINOv2 embeddings,3.919599207933061,183.015625,187.328125,not_applicable,3000
+kmeans_dinov2,0.05,5,46,35,0.1978,0.632,0.305,"{'regulatory': 41, 'warning': 5, 'information': 3}",k-means + medoid on DINOv2 embeddings,3.919599207933061,183.015625,187.328125,not_applicable,3000
+kmeans_dinov2,0.05,6,47,35,0.2023,0.7,0.305,"{'regulatory': 38, 'warning': 5, 'information': 4}",k-means + medoid on DINOv2 embeddings,3.919599207933061,183.015625,187.328125,not_applicable,3000
+kmeans_dinov2,0.05,7,48,35,0.1988,0.6029,0.305,"{'warning': 5, 'regulatory': 39, 'information': 3}",k-means + medoid on DINOv2 embeddings,3.919599207933061,183.015625,187.328125,not_applicable,3000
+kmeans_dinov2,0.05,8,49,35,0.1993,0.6022,0.305,"{'regulatory': 39, 'warning': 4, 'information': 4}",k-means + medoid on DINOv2 embeddings,3.919599207933061,183.015625,187.328125,not_applicable,3000
+kmeans_clip,0.05,1,42,35,0.2248,0.6381,0.215,"{'regulatory': 38, 'information': 3, 'warning': 6}",k-means + medoid on CLIP embeddings,5.035551917040721,187.328125,187.328125,not_applicable,3000
+kmeans_clip,0.05,2,43,35,0.2214,0.6322,0.215,"{'regulatory': 39, 'information': 6, 'warning': 7}",k-means + medoid on CLIP embeddings,5.035551917040721,187.328125,187.328125,not_applicable,3000
+kmeans_clip,0.05,3,44,35,0.2201,0.6341,0.215,"{'regulatory': 32, 'warning': 7, 'information': 7}",k-means + medoid on CLIP embeddings,5.035551917040721,187.328125,187.328125,not_applicable,3000
+kmeans_clip,0.05,4,45,35,0.2212,0.6562,0.215,"{'warning': 7, 'information': 6, 'regulatory': 32}",k-means + medoid on CLIP embeddings,5.035551917040721,187.328125,187.328125,not_applicable,3000
+kmeans_clip,0.05,5,46,35,0.2188,0.6565,0.215,"{'regulatory': 32, 'warning': 7, 'information': 5}",k-means + medoid on CLIP embeddings,5.035551917040721,187.328125,187.328125,not_applicable,3000
+kmeans_clip,0.05,6,47,35,0.2226,0.6185,0.215,"{'regulatory': 33, 'warning': 6, 'information': 5}",k-means + medoid on CLIP embeddings,5.035551917040721,187.328125,187.328125,not_applicable,3000
+kmeans_clip,0.05,7,48,35,0.2232,0.6222,0.215,"{'regulatory': 34, 'information': 7, 'warning': 7}",k-means + medoid on CLIP embeddings,5.035551917040721,187.328125,187.328125,not_applicable,3000
+kmeans_clip,0.05,8,49,35,0.2235,0.6422,0.215,"{'regulatory': 31, 'warning': 5, 'information': 6}",k-means + medoid on CLIP embeddings,5.035551917040721,187.328125,187.328125,not_applicable,3000
+kmeans_shallow,0.05,1,42,35,0.2322,0.6469,0.25,"{'regulatory': 43, 'warning': 3, 'information': 1}",k-means + medoid on shallow features,18.318470041034743,187.328125,187.328125,not_applicable,3000
+kmeans_shallow,0.05,2,43,35,0.2295,0.6732,0.25,"{'regulatory': 29, 'information': 6, 'warning': 8}",k-means + medoid on shallow features,18.318470041034743,187.328125,187.328125,not_applicable,3000
+kmeans_shallow,0.05,3,44,35,0.2278,0.6732,0.25,"{'regulatory': 38, 'information': 5, 'warning': 6}",k-means + medoid on shallow features,18.318470041034743,187.328125,187.328125,not_applicable,3000
+kmeans_shallow,0.05,4,45,35,0.2248,0.6732,0.25,"{'regulatory': 33, 'information': 8, 'warning': 5}",k-means + medoid on shallow features,18.318470041034743,187.328125,187.328125,not_applicable,3000
+kmeans_shallow,0.05,5,46,35,0.2183,0.6629,0.25,"{'regulatory': 38, 'warning': 4, 'information': 3}",k-means + medoid on shallow features,18.318470041034743,187.328125,187.328125,not_applicable,3000
+kmeans_shallow,0.05,6,47,35,0.224,0.6732,0.25,"{'information': 4, 'warning': 8, 'regulatory': 36}",k-means + medoid on shallow features,18.318470041034743,187.328125,187.328125,not_applicable,3000
+kmeans_shallow,0.05,7,48,35,0.2263,0.6629,0.25,"{'regulatory': 43, 'warning': 5, 'information': 2}",k-means + medoid on shallow features,18.318470041034743,187.328125,187.328125,not_applicable,3000
+kmeans_shallow,0.05,8,49,35,0.2216,0.6629,0.25,"{'regulatory': 30, 'information': 8, 'warning': 6}",k-means + medoid on shallow features,18.318470041034743,187.328125,187.328125,not_applicable,3000
+opf_dinov2,0.05,1,42,35,0.2486,0.9083,1.0,"{'regulatory': 37, 'information': 11, 'warning': 2}",OPF root + quota; sketch when N > 3000,24.622078874963336,187.328125,254.453125,not_applicable,3000
+opf_dinov2,0.05,2,43,35,0.2486,0.9083,1.0,"{'regulatory': 37, 'information': 11, 'warning': 2}",OPF root + quota; sketch when N > 3000,24.622078874963336,187.328125,254.453125,not_applicable,3000
+opf_dinov2,0.05,3,44,35,0.2486,0.9083,1.0,"{'regulatory': 37, 'information': 11, 'warning': 2}",OPF root + quota; sketch when N > 3000,24.622078874963336,187.328125,254.453125,not_applicable,3000
+opf_dinov2,0.05,4,45,35,0.2486,0.9083,1.0,"{'regulatory': 37, 'information': 11, 'warning': 2}",OPF root + quota; sketch when N > 3000,24.622078874963336,187.328125,254.453125,not_applicable,3000
+opf_dinov2,0.05,5,46,35,0.2486,0.9083,1.0,"{'regulatory': 37, 'information': 11, 'warning': 2}",OPF root + quota; sketch when N > 3000,24.622078874963336,187.328125,254.453125,not_applicable,3000
+opf_dinov2,0.05,6,47,35,0.2486,0.9083,1.0,"{'regulatory': 37, 'information': 11, 'warning': 2}",OPF root + quota; sketch when N > 3000,24.622078874963336,187.328125,254.453125,not_applicable,3000
+opf_dinov2,0.05,7,48,35,0.2486,0.9083,1.0,"{'regulatory': 37, 'information': 11, 'warning': 2}",OPF root + quota; sketch when N > 3000,24.622078874963336,187.328125,254.453125,not_applicable,3000
+opf_dinov2,0.05,8,49,35,0.2486,0.9083,1.0,"{'regulatory': 37, 'information': 11, 'warning': 2}",OPF root + quota; sketch when N > 3000,24.622078874963336,187.328125,254.453125,not_applicable,3000
+typiclust_dinov2,0.05,1,42,35,0.2006,0.7,0.307,"{'regulatory': 41, 'warning': 6, 'information': 4}",TypiClust,6.2628545420011505,254.453125,254.453125,sklearn_cosine_knn,3000
+typiclust_dinov2,0.05,2,43,35,0.2002,0.6716,0.307,"{'regulatory': 43, 'warning': 5, 'information': 2}",TypiClust,6.2628545420011505,254.453125,254.453125,sklearn_cosine_knn,3000
+typiclust_dinov2,0.05,3,44,35,0.2012,0.7,0.307,"{'warning': 4, 'regulatory': 40, 'information': 5}",TypiClust,6.2628545420011505,254.453125,254.453125,sklearn_cosine_knn,3000
+typiclust_dinov2,0.05,4,45,35,0.201,0.6448,0.307,"{'regulatory': 40, 'information': 4, 'warning': 5}",TypiClust,6.2628545420011505,254.453125,254.453125,sklearn_cosine_knn,3000
+typiclust_dinov2,0.05,5,46,35,0.2024,0.7,0.307,"{'regulatory': 41, 'warning': 4, 'information': 5}",TypiClust,6.2628545420011505,254.453125,254.453125,sklearn_cosine_knn,3000
+typiclust_dinov2,0.05,6,47,35,0.1996,0.6302,0.307,"{'regulatory': 44, 'information': 6, 'warning': 3}",TypiClust,6.2628545420011505,254.453125,254.453125,sklearn_cosine_knn,3000
+typiclust_dinov2,0.05,7,48,35,0.2,0.6029,0.307,"{'warning': 5, 'regulatory': 37, 'information': 4}",TypiClust,6.2628545420011505,254.453125,254.453125,sklearn_cosine_knn,3000
+typiclust_dinov2,0.05,8,49,35,0.1999,0.6022,0.307,"{'regulatory': 41, 'warning': 4, 'information': 3}",TypiClust,6.2628545420011505,254.453125,254.453125,sklearn_cosine_knn,3000
+kcenter_dinov2,0.05,1,42,35,0.2703,0.4612,0.391,"{'information': 3, 'regulatory': 33, 'warning': 5}",k-center greedy,0.2046157920267433,254.453125,254.453125,not_applicable,3000
+kcenter_dinov2,0.05,2,43,35,0.2854,0.4544,0.391,"{'information': 3, 'regulatory': 35, 'warning': 5}",k-center greedy,0.2046157920267433,254.453125,254.453125,not_applicable,3000
+kcenter_dinov2,0.05,3,44,35,0.2804,0.4612,0.391,"{'regulatory': 37, 'information': 4, 'warning': 4}",k-center greedy,0.2046157920267433,254.453125,254.453125,not_applicable,3000
+kcenter_dinov2,0.05,4,45,35,0.2862,0.457,0.391,"{'regulatory': 38, 'information': 4, 'warning': 3}",k-center greedy,0.2046157920267433,254.453125,254.453125,not_applicable,3000
+kcenter_dinov2,0.05,5,46,35,0.2854,0.4647,0.391,"{'regulatory': 38, 'warning': 4, 'information': 2}",k-center greedy,0.2046157920267433,254.453125,254.453125,not_applicable,3000
+kcenter_dinov2,0.05,6,47,35,0.2879,0.4673,0.391,"{'regulatory': 35, 'warning': 7, 'information': 1}",k-center greedy,0.2046157920267433,254.453125,254.453125,not_applicable,3000
+kcenter_dinov2,0.05,7,48,35,0.2941,0.4646,0.391,"{'regulatory': 34, 'warning': 4, 'information': 2}",k-center greedy,0.2046157920267433,254.453125,254.453125,not_applicable,3000
+kcenter_dinov2,0.05,8,49,35,0.298,0.4661,0.391,"{'regulatory': 38, 'information': 3, 'warning': 3}",k-center greedy,0.2046157920267433,254.453125,254.453125,not_applicable,3000
+probcover_dinov2,0.05,1,42,35,0.2056,0.6543,0.49,"{'regulatory': 38, 'warning': 5, 'information': 5}",ProbCover; unlabeled delta at purity >= 0.95,3.097854792024009,254.453125,254.453125,not_applicable,3000
+probcover_dinov2,0.05,2,43,35,0.2052,0.6543,0.49,"{'regulatory': 37, 'warning': 6, 'information': 4}",ProbCover; unlabeled delta at purity >= 0.95,3.097854792024009,254.453125,254.453125,not_applicable,3000
+probcover_dinov2,0.05,3,44,35,0.206,0.6469,0.49,"{'regulatory': 36, 'warning': 5, 'information': 8}",ProbCover; unlabeled delta at purity >= 0.95,3.097854792024009,254.453125,254.453125,not_applicable,3000
+probcover_dinov2,0.05,4,45,35,0.2048,0.6543,0.49,"{'regulatory': 38, 'warning': 7, 'information': 4}",ProbCover; unlabeled delta at purity >= 0.95,3.097854792024009,254.453125,254.453125,not_applicable,3000
+probcover_dinov2,0.05,5,46,35,0.205,0.6543,0.49,"{'regulatory': 38, 'warning': 6, 'information': 5}",ProbCover; unlabeled delta at purity >= 0.95,3.097854792024009,254.453125,254.453125,not_applicable,3000
+probcover_dinov2,0.05,6,47,35,0.2061,0.6543,0.49,"{'regulatory': 37, 'warning': 6, 'information': 4}",ProbCover; unlabeled delta at purity >= 0.95,3.097854792024009,254.453125,254.453125,not_applicable,3000
+probcover_dinov2,0.05,7,48,35,0.2039,0.6543,0.49,"{'regulatory': 39, 'warning': 6, 'information': 6}",ProbCover; unlabeled delta at purity >= 0.95,3.097854792024009,254.453125,254.453125,not_applicable,3000
+probcover_dinov2,0.05,8,49,35,0.2043,0.6341,0.49,"{'regulatory': 38, 'information': 6, 'warning': 6}",ProbCover; unlabeled delta at purity >= 0.95,3.097854792024009,254.453125,254.453125,not_applicable,3000
+facility_dinov2,0.05,1,42,35,0.209,0.6246,0.151,"{'regulatory': 38, 'warning': 5, 'information': 4}",greedy facility location; bootstrap per repeat,0.19223262497689575,254.453125,254.453125,not_applicable,3000
+facility_dinov2,0.05,2,43,35,0.2085,0.7426,0.151,"{'regulatory': 37, 'warning': 6, 'information': 3}",greedy facility location; bootstrap per repeat,0.19223262497689575,254.453125,254.453125,not_applicable,3000
+facility_dinov2,0.05,3,44,35,0.2066,0.7246,0.151,"{'regulatory': 37, 'warning': 4, 'information': 5}",greedy facility location; bootstrap per repeat,0.19223262497689575,254.453125,254.453125,not_applicable,3000
+facility_dinov2,0.05,4,45,35,0.2037,0.7,0.151,"{'information': 5, 'regulatory': 43, 'warning': 2}",greedy facility location; bootstrap per repeat,0.19223262497689575,254.453125,254.453125,not_applicable,3000
+facility_dinov2,0.05,5,46,35,0.204,0.642,0.151,"{'regulatory': 44, 'warning': 5, 'information': 2}",greedy facility location; bootstrap per repeat,0.19223262497689575,254.453125,254.453125,not_applicable,3000
+facility_dinov2,0.05,6,47,35,0.2045,0.614,0.151,"{'regulatory': 41, 'warning': 3, 'information': 4}",greedy facility location; bootstrap per repeat,0.19223262497689575,254.453125,254.453125,not_applicable,3000
+facility_dinov2,0.05,7,48,35,0.206,0.6029,0.151,"{'regulatory': 42, 'warning': 6, 'information': 2}",greedy facility location; bootstrap per repeat,0.19223262497689575,254.453125,254.453125,not_applicable,3000
+facility_dinov2,0.05,8,49,35,0.2056,0.6144,0.151,"{'regulatory': 39, 'warning': 3, 'information': 4}",greedy facility location; bootstrap per repeat,0.19223262497689575,254.453125,254.453125,not_applicable,3000
+freesel_dino,0.05,1,42,35,0.2684,0.6566,0.33,"{'regulatory': 38, 'information': 2, 'warning': 2}",FreeSel; FDS on local DINO patterns,0.48991841706447303,254.453125,254.453125,not_applicable,3000
+freesel_dino,0.05,2,43,35,0.2599,0.6422,0.33,"{'regulatory': 39, 'information': 2, 'warning': 3}",FreeSel; FDS on local DINO patterns,0.48991841706447303,254.453125,254.453125,not_applicable,3000
+freesel_dino,0.05,3,44,35,0.2633,0.7566,0.33,"{'regulatory': 38, 'information': 3, 'warning': 3}",FreeSel; FDS on local DINO patterns,0.48991841706447303,254.453125,254.453125,not_applicable,3000
+freesel_dino,0.05,4,45,35,0.2574,0.6346,0.33,"{'regulatory': 42, 'information': 3, 'warning': 2}",FreeSel; FDS on local DINO patterns,0.48991841706447303,254.453125,254.453125,not_applicable,3000
+freesel_dino,0.05,5,46,35,0.2579,0.6422,0.33,"{'regulatory': 42, 'warning': 3, 'information': 1}",FreeSel; FDS on local DINO patterns,0.48991841706447303,254.453125,254.453125,not_applicable,3000
+freesel_dino,0.05,6,47,35,0.2457,0.6295,0.33,"{'regulatory': 42, 'information': 2, 'warning': 1}",FreeSel; FDS on local DINO patterns,0.48991841706447303,254.453125,254.453125,not_applicable,3000
+freesel_dino,0.05,7,48,35,0.2551,0.7413,0.33,"{'regulatory': 45, 'information': 2}",FreeSel; FDS on local DINO patterns,0.48991841706447303,254.453125,254.453125,not_applicable,3000
+freesel_dino,0.05,8,49,35,0.2526,0.6295,0.33,"{'regulatory': 35, 'information': 2, 'warning': 2}",FreeSel; FDS on local DINO patterns,0.48991841706447303,254.453125,254.453125,not_applicable,3000
+random,0.1,1,42,69,0.2084,0.8774,0.056,"{'regulatory': 67, 'warning': 7, 'information': 7}",random sampling control,0.0022996669868007302,254.453125,254.453125,not_applicable,3000
+random,0.1,2,43,69,0.2042,0.7226,0.056,"{'regulatory': 74, 'warning': 6, 'information': 11}",random sampling control,0.0022996669868007302,254.453125,254.453125,not_applicable,3000
+random,0.1,3,44,69,0.2071,0.8829,0.056,"{'information': 9, 'regulatory': 72, 'warning': 8}",random sampling control,0.0022996669868007302,254.453125,254.453125,not_applicable,3000
+random,0.1,4,45,69,0.2065,0.6253,0.056,"{'regulatory': 72, 'warning': 10, 'information': 6}",random sampling control,0.0022996669868007302,254.453125,254.453125,not_applicable,3000
+random,0.1,5,46,69,0.2074,0.8949,0.056,"{'regulatory': 78, 'warning': 5, 'information': 8}",random sampling control,0.0022996669868007302,254.453125,254.453125,not_applicable,3000
+random,0.1,6,47,69,0.1996,0.6473,0.056,"{'regulatory': 75, 'warning': 13, 'information': 4}",random sampling control,0.0022996669868007302,254.453125,254.453125,not_applicable,3000
+random,0.1,7,48,69,0.1997,0.6238,0.056,"{'regulatory': 72, 'warning': 10, 'information': 4}",random sampling control,0.0022996669868007302,254.453125,254.453125,not_applicable,3000
+random,0.1,8,49,69,0.2137,0.9014,0.056,"{'regulatory': 82, 'information': 4, 'warning': 3}",random sampling control,0.0022996669868007302,254.453125,254.453125,not_applicable,3000
+kmeans_dinov2,0.1,1,42,69,0.1663,0.5931,0.293,"{'regulatory': 76, 'information': 4, 'warning': 11}",k-means + medoid on DINOv2 embeddings,7.00385045807343,254.453125,254.453125,not_applicable,3000
+kmeans_dinov2,0.1,2,43,69,0.1656,0.5931,0.293,"{'regulatory': 78, 'information': 4, 'warning': 12}",k-means + medoid on DINOv2 embeddings,7.00385045807343,254.453125,254.453125,not_applicable,3000
+kmeans_dinov2,0.1,3,44,69,0.1648,0.4937,0.293,"{'regulatory': 79, 'warning': 10, 'information': 4}",k-means + medoid on DINOv2 embeddings,7.00385045807343,254.453125,254.453125,not_applicable,3000
+kmeans_dinov2,0.1,4,45,69,0.1654,0.6022,0.293,"{'regulatory': 75, 'warning': 9, 'information': 7}",k-means + medoid on DINOv2 embeddings,7.00385045807343,254.453125,254.453125,not_applicable,3000
+kmeans_dinov2,0.1,5,46,69,0.1655,0.5811,0.293,"{'regulatory': 77, 'information': 8, 'warning': 8}",k-means + medoid on DINOv2 embeddings,7.00385045807343,254.453125,254.453125,not_applicable,3000
+kmeans_dinov2,0.1,6,47,69,0.1658,0.6059,0.293,"{'regulatory': 77, 'warning': 8, 'information': 5}",k-means + medoid on DINOv2 embeddings,7.00385045807343,254.453125,254.453125,not_applicable,3000
+kmeans_dinov2,0.1,7,48,69,0.1634,0.6029,0.293,"{'regulatory': 71, 'information': 10, 'warning': 10}",k-means + medoid on DINOv2 embeddings,7.00385045807343,254.453125,254.453125,not_applicable,3000
+kmeans_dinov2,0.1,8,49,69,0.167,0.5295,0.293,"{'regulatory': 80, 'information': 5, 'warning': 11}",k-means + medoid on DINOv2 embeddings,7.00385045807343,254.453125,254.453125,not_applicable,3000
+kmeans_clip,0.1,1,42,69,0.1811,0.614,0.224,"{'regulatory': 72, 'warning': 9, 'information': 10}",k-means + medoid on CLIP embeddings,8.243493083049543,254.453125,254.453125,not_applicable,3000
+kmeans_clip,0.1,2,43,69,0.183,0.6147,0.224,"{'regulatory': 73, 'warning': 9, 'information': 8}",k-means + medoid on CLIP embeddings,8.243493083049543,254.453125,254.453125,not_applicable,3000
+kmeans_clip,0.1,3,44,69,0.1834,0.615,0.224,"{'regulatory': 68, 'warning': 11, 'information': 11}",k-means + medoid on CLIP embeddings,8.243493083049543,254.453125,254.453125,not_applicable,3000
+kmeans_clip,0.1,4,45,69,0.1821,0.6003,0.224,"{'regulatory': 72, 'warning': 10, 'information': 4}",k-means + medoid on CLIP embeddings,8.243493083049543,254.453125,254.453125,not_applicable,3000
+kmeans_clip,0.1,5,46,69,0.1849,0.5931,0.224,"{'regulatory': 65, 'warning': 11, 'information': 9}",k-means + medoid on CLIP embeddings,8.243493083049543,254.453125,254.453125,not_applicable,3000
+kmeans_clip,0.1,6,47,69,0.186,0.6144,0.224,"{'regulatory': 77, 'warning': 8, 'information': 7}",k-means + medoid on CLIP embeddings,8.243493083049543,254.453125,254.453125,not_applicable,3000
+kmeans_clip,0.1,7,48,69,0.1837,0.6144,0.224,"{'regulatory': 76, 'warning': 8, 'information': 12}",k-means + medoid on CLIP embeddings,8.243493083049543,254.453125,254.453125,not_applicable,3000
+kmeans_clip,0.1,8,49,69,0.1823,0.5967,0.224,"{'regulatory': 75, 'information': 8, 'warning': 8}",k-means + medoid on CLIP embeddings,8.243493083049543,254.453125,254.453125,not_applicable,3000
+kmeans_shallow,0.1,1,42,69,0.1825,0.6469,0.267,"{'regulatory': 71, 'information': 12, 'warning': 8}",k-means + medoid on shallow features,30.559229707927443,254.453125,254.453125,not_applicable,3000
+kmeans_shallow,0.1,2,43,69,0.1896,0.6469,0.267,"{'regulatory': 73, 'information': 8, 'warning': 9}",k-means + medoid on shallow features,30.559229707927443,254.453125,254.453125,not_applicable,3000
+kmeans_shallow,0.1,3,44,69,0.185,0.6331,0.267,"{'regulatory': 68, 'information': 9, 'warning': 9}",k-means + medoid on shallow features,30.559229707927443,254.453125,254.453125,not_applicable,3000
+kmeans_shallow,0.1,4,45,69,0.1896,0.6331,0.267,"{'regulatory': 69, 'information': 7, 'warning': 8}",k-means + medoid on shallow features,30.559229707927443,254.453125,254.453125,not_applicable,3000
+kmeans_shallow,0.1,5,46,69,0.1897,0.6196,0.267,"{'regulatory': 69, 'information': 9, 'warning': 6}",k-means + medoid on shallow features,30.559229707927443,254.453125,254.453125,not_applicable,3000
+kmeans_shallow,0.1,6,47,69,0.1829,0.6732,0.267,"{'regulatory': 75, 'information': 6, 'warning': 9}",k-means + medoid on shallow features,30.559229707927443,254.453125,254.453125,not_applicable,3000
+kmeans_shallow,0.1,7,48,69,0.1894,0.5932,0.267,"{'regulatory': 71, 'warning': 14, 'information': 6}",k-means + medoid on shallow features,30.559229707927443,254.453125,254.453125,not_applicable,3000
+kmeans_shallow,0.1,8,49,69,0.1868,0.6305,0.267,"{'regulatory': 67, 'warning': 12, 'information': 10}",k-means + medoid on shallow features,30.559229707927443,254.453125,254.453125,not_applicable,3000
+opf_dinov2,0.1,1,42,69,0.2211,0.8885,1.0,"{'regulatory': 77, 'information': 17, 'warning': 5}",OPF root + quota; sketch when N > 3000,23.792722833924927,254.453125,254.453125,not_applicable,3000
+opf_dinov2,0.1,2,43,69,0.2211,0.8885,1.0,"{'regulatory': 77, 'information': 17, 'warning': 5}",OPF root + quota; sketch when N > 3000,23.792722833924927,254.453125,254.453125,not_applicable,3000
+opf_dinov2,0.1,3,44,69,0.2211,0.8885,1.0,"{'regulatory': 77, 'information': 17, 'warning': 5}",OPF root + quota; sketch when N > 3000,23.792722833924927,254.453125,254.453125,not_applicable,3000
+opf_dinov2,0.1,4,45,69,0.2211,0.8885,1.0,"{'regulatory': 77, 'information': 17, 'warning': 5}",OPF root + quota; sketch when N > 3000,23.792722833924927,254.453125,254.453125,not_applicable,3000
+opf_dinov2,0.1,5,46,69,0.2211,0.8885,1.0,"{'regulatory': 77, 'information': 17, 'warning': 5}",OPF root + quota; sketch when N > 3000,23.792722833924927,254.453125,254.453125,not_applicable,3000
+opf_dinov2,0.1,6,47,69,0.2211,0.8885,1.0,"{'regulatory': 77, 'information': 17, 'warning': 5}",OPF root + quota; sketch when N > 3000,23.792722833924927,254.453125,254.453125,not_applicable,3000
+opf_dinov2,0.1,7,48,69,0.2211,0.8885,1.0,"{'regulatory': 77, 'information': 17, 'warning': 5}",OPF root + quota; sketch when N > 3000,23.792722833924927,254.453125,254.453125,not_applicable,3000
+opf_dinov2,0.1,8,49,69,0.2211,0.8885,1.0,"{'regulatory': 77, 'information': 17, 'warning': 5}",OPF root + quota; sketch when N > 3000,23.792722833924927,254.453125,254.453125,not_applicable,3000
+typiclust_dinov2,0.1,1,42,69,0.1663,0.5931,0.274,"{'regulatory': 79, 'information': 5, 'warning': 9}",TypiClust,12.395164499990642,254.453125,254.453125,sklearn_cosine_knn,3000
+typiclust_dinov2,0.1,2,43,69,0.1671,0.6143,0.274,"{'regulatory': 78, 'warning': 8, 'information': 4}",TypiClust,12.395164499990642,254.453125,254.453125,sklearn_cosine_knn,3000
+typiclust_dinov2,0.1,3,44,69,0.167,0.5931,0.274,"{'regulatory': 83, 'warning': 9, 'information': 4}",TypiClust,12.395164499990642,254.453125,254.453125,sklearn_cosine_knn,3000
+typiclust_dinov2,0.1,4,45,69,0.1661,0.5811,0.274,"{'regulatory': 72, 'information': 6, 'warning': 9}",TypiClust,12.395164499990642,254.453125,254.453125,sklearn_cosine_knn,3000
+typiclust_dinov2,0.1,5,46,69,0.1666,0.5931,0.274,"{'regulatory': 78, 'warning': 7, 'information': 7}",TypiClust,12.395164499990642,254.453125,254.453125,sklearn_cosine_knn,3000
+typiclust_dinov2,0.1,6,47,69,0.1663,0.5989,0.274,"{'regulatory': 82, 'warning': 7, 'information': 6}",TypiClust,12.395164499990642,254.453125,254.453125,sklearn_cosine_knn,3000
+typiclust_dinov2,0.1,7,48,69,0.1661,0.5989,0.274,"{'regulatory': 83, 'warning': 9, 'information': 4}",TypiClust,12.395164499990642,254.453125,254.453125,sklearn_cosine_knn,3000
+typiclust_dinov2,0.1,8,49,69,0.167,0.5295,0.274,"{'regulatory': 81, 'information': 5, 'warning': 11}",TypiClust,12.395164499990642,254.453125,254.453125,sklearn_cosine_knn,3000
+kcenter_dinov2,0.1,1,42,69,0.2212,0.3518,0.426,"{'regulatory': 78, 'information': 4, 'warning': 6}",k-center greedy,0.2679235420655459,254.453125,254.453125,not_applicable,3000
+kcenter_dinov2,0.1,2,43,69,0.2303,0.3538,0.426,"{'regulatory': 73, 'information': 4, 'warning': 7}",k-center greedy,0.2679235420655459,254.453125,254.453125,not_applicable,3000
+kcenter_dinov2,0.1,3,44,69,0.2193,0.3637,0.426,"{'regulatory': 81, 'information': 4, 'warning': 6}",k-center greedy,0.2679235420655459,254.453125,254.453125,not_applicable,3000
+kcenter_dinov2,0.1,4,45,69,0.2289,0.3659,0.426,"{'regulatory': 77, 'information': 4, 'warning': 5}",k-center greedy,0.2679235420655459,254.453125,254.453125,not_applicable,3000
+kcenter_dinov2,0.1,5,46,69,0.231,0.3657,0.426,"{'regulatory': 76, 'warning': 6, 'information': 4}",k-center greedy,0.2679235420655459,254.453125,254.453125,not_applicable,3000
+kcenter_dinov2,0.1,6,47,69,0.2313,0.3655,0.426,"{'regulatory': 76, 'information': 4, 'warning': 8}",k-center greedy,0.2679235420655459,254.453125,254.453125,not_applicable,3000
+kcenter_dinov2,0.1,7,48,69,0.2158,0.3546,0.426,"{'regulatory': 75, 'warning': 6, 'information': 3}",k-center greedy,0.2679235420655459,254.453125,254.453125,not_applicable,3000
+kcenter_dinov2,0.1,8,49,69,0.2279,0.3681,0.426,"{'regulatory': 77, 'information': 4, 'warning': 7}",k-center greedy,0.2679235420655459,254.453125,254.453125,not_applicable,3000
+probcover_dinov2,0.1,1,42,69,0.1712,0.6022,0.414,"{'regulatory': 75, 'warning': 8, 'information': 7}",ProbCover; unlabeled delta at purity >= 0.95,4.405807833070867,254.453125,254.453125,not_applicable,3000
+probcover_dinov2,0.1,2,43,69,0.1707,0.6286,0.414,"{'regulatory': 78, 'warning': 11, 'information': 6}",ProbCover; unlabeled delta at purity >= 0.95,4.405807833070867,254.453125,254.453125,not_applicable,3000
+probcover_dinov2,0.1,3,44,69,0.1714,0.6341,0.414,"{'regulatory': 77, 'information': 13, 'warning': 8}",ProbCover; unlabeled delta at purity >= 0.95,4.405807833070867,254.453125,254.453125,not_applicable,3000
+probcover_dinov2,0.1,4,45,69,0.1699,0.6022,0.414,"{'regulatory': 75, 'warning': 8, 'information': 9}",ProbCover; unlabeled delta at purity >= 0.95,4.405807833070867,254.453125,254.453125,not_applicable,3000
+probcover_dinov2,0.1,5,46,69,0.1708,0.6341,0.414,"{'regulatory': 77, 'information': 9, 'warning': 9}",ProbCover; unlabeled delta at purity >= 0.95,4.405807833070867,254.453125,254.453125,not_applicable,3000
+probcover_dinov2,0.1,6,47,69,0.1708,0.6022,0.414,"{'regulatory': 75, 'warning': 9, 'information': 6}",ProbCover; unlabeled delta at purity >= 0.95,4.405807833070867,254.453125,254.453125,not_applicable,3000
+probcover_dinov2,0.1,7,48,69,0.1714,0.6022,0.414,"{'regulatory': 78, 'warning': 8, 'information': 8}",ProbCover; unlabeled delta at purity >= 0.95,4.405807833070867,254.453125,254.453125,not_applicable,3000
+probcover_dinov2,0.1,8,49,69,0.1699,0.6022,0.414,"{'regulatory': 76, 'information': 9, 'warning': 7}",ProbCover; unlabeled delta at purity >= 0.95,4.405807833070867,254.453125,254.453125,not_applicable,3000
+facility_dinov2,0.1,1,42,69,0.1745,0.6029,0.139,"{'regulatory': 68, 'information': 13, 'warning': 9}",greedy facility location; bootstrap per repeat,0.22642500000074506,254.453125,254.453125,not_applicable,3000
+facility_dinov2,0.1,2,43,69,0.1752,0.5954,0.139,"{'regulatory': 75, 'warning': 10, 'information': 8}",greedy facility location; bootstrap per repeat,0.22642500000074506,254.453125,254.453125,not_applicable,3000
+facility_dinov2,0.1,3,44,69,0.1751,0.6029,0.139,"{'regulatory': 73, 'warning': 9, 'information': 7}",greedy facility location; bootstrap per repeat,0.22642500000074506,254.453125,254.453125,not_applicable,3000
+facility_dinov2,0.1,4,45,69,0.1741,0.6147,0.139,"{'regulatory': 82, 'information': 7, 'warning': 5}",greedy facility location; bootstrap per repeat,0.22642500000074506,254.453125,254.453125,not_applicable,3000
+facility_dinov2,0.1,5,46,69,0.1755,0.6022,0.139,"{'regulatory': 81, 'information': 7, 'warning': 7}",greedy facility location; bootstrap per repeat,0.22642500000074506,254.453125,254.453125,not_applicable,3000
+facility_dinov2,0.1,6,47,69,0.1731,0.6029,0.139,"{'regulatory': 80, 'warning': 5, 'information': 5}",greedy facility location; bootstrap per repeat,0.22642500000074506,254.453125,254.453125,not_applicable,3000
+facility_dinov2,0.1,7,48,69,0.1731,0.5837,0.139,"{'regulatory': 83, 'warning': 8, 'information': 7}",greedy facility location; bootstrap per repeat,0.22642500000074506,254.453125,254.453125,not_applicable,3000
+facility_dinov2,0.1,8,49,69,0.1733,0.5837,0.139,"{'regulatory': 79, 'warning': 6, 'information': 8}",greedy facility location; bootstrap per repeat,0.22642500000074506,254.453125,254.453125,not_applicable,3000
+freesel_dino,0.1,1,42,69,0.2049,0.6295,0.494,"{'regulatory': 75, 'information': 3, 'warning': 5}",FreeSel; FDS on local DINO patterns,0.927018207963556,254.453125,254.453125,not_applicable,3000
+freesel_dino,0.1,2,43,69,0.2044,0.6295,0.494,"{'regulatory': 72, 'information': 3, 'warning': 7}",FreeSel; FDS on local DINO patterns,0.927018207963556,254.453125,254.453125,not_applicable,3000
+freesel_dino,0.1,3,44,69,0.2039,0.6295,0.494,"{'regulatory': 72, 'information': 4, 'warning': 6}",FreeSel; FDS on local DINO patterns,0.927018207963556,254.453125,254.453125,not_applicable,3000
+freesel_dino,0.1,4,45,69,0.2015,0.5837,0.494,"{'regulatory': 77, 'information': 5, 'warning': 6}",FreeSel; FDS on local DINO patterns,0.927018207963556,254.453125,254.453125,not_applicable,3000
+freesel_dino,0.1,5,46,69,0.2089,0.6415,0.494,"{'regulatory': 77, 'warning': 8, 'information': 3}",FreeSel; FDS on local DINO patterns,0.927018207963556,254.453125,254.453125,not_applicable,3000
+freesel_dino,0.1,6,47,69,0.204,0.6295,0.494,"{'regulatory': 73, 'information': 3, 'warning': 6}",FreeSel; FDS on local DINO patterns,0.927018207963556,254.453125,254.453125,not_applicable,3000
+freesel_dino,0.1,7,48,69,0.2089,0.6295,0.494,"{'regulatory': 74, 'information': 3, 'warning': 6}",FreeSel; FDS on local DINO patterns,0.927018207963556,254.453125,254.453125,not_applicable,3000
+freesel_dino,0.1,8,49,69,0.2019,0.6003,0.494,"{'regulatory': 65, 'warning': 11, 'information': 2}",FreeSel; FDS on local DINO patterns,0.927018207963556,254.453125,254.453125,not_applicable,3000
