@@ -187,55 +187,24 @@ full grid. O estado auditável atual está em
 
 ## Methods
 
-| Method | Representation space | O que cada ponto representa | Selection rule |
-|---|---|---|---|
-| `random` | Nenhum embedding | Uma imagem em um arbitrary index grid | Sorteia uniformemente o budget; é o control baseline. |
-| `kmeans_dinov2` | DINOv2, 384 dimensions | Uma whole image | Forma `k = budget` clusters e seleciona o medoid de cada cluster. |
-| `kmeans_clip` | CLIP, 512 dimensions | Uma whole image | Aplica a mesma regra k-means + medoid no CLIP embedding. |
-| `kmeans_shallow` | Color, texture e edge features, 2.276 dimensions | Uma whole image | Aplica k-means + medoid sem usar deep embedding. |
-| `opf_dinov2` | DINOv2, 384 dimensions | Uma whole image | Usa OPF roots como density peaks e completa o budget com proportional cluster quotas. |
-| `typiclust_dinov2` | DINOv2, 384 dimensions | Uma whole image | Forma budget-defined clusters e escolhe a imagem de maior local density em cada um. |
-| `kcenter_dinov2` | DINOv2, 384 dimensions | Uma whole image | Farthest-first selection: adiciona a imagem mais distante do current selected set. |
-| `probcover_dinov2` | DINOv2, 384 dimensions | Uma whole image | Escolhe a imagem que cobre mais ainda-uncovered neighbors dentro de um radius estimado sem ground-truth labels. |
-| `facility_dinov2` | DINOv2, 384 dimensions | Uma whole image | Maximiza, de forma greedy, a similarity de cada pool image ao nearest selected representative. |
-| `freesel_dino` | Local DINO patterns, 384 dimensions | Uma local region; existem cinco patterns por imagem | Farthest-first selection no pattern space; quando um pattern é escolhido, sua parent image entra na selection. |
+`Full-dimensional space` é o espaço usado pelo algoritmo antes da t-SNE. Cada
+painel comprime seu próprio espaço para duas dimensions; posições de painéis
+diferentes não compartilham o mesmo sistema de coordenadas. Os methods com
+representation usam L2-normalized vectors e cosine distance. Ground-truth
+labels nunca decidem a selection.
 
-### Como o FreeSel funciona
-
-Os outros embedding-based methods resumem cada imagem em **um vetor global**.
-No BVTSLD, isso produz 693 vetores: um para cada pool image. O FreeSel preserva
-informação local e extrai **cinco DINO patterns por imagem**. Seu espaço contém,
-portanto, `693 × 5 = 3.465` vetores de 384 dimensions.
-
-`Full-dimensional space` significa o espaço original usado pelo algoritmo,
-antes da t-SNE: 384 dimensions para DINOv2 e FreeSel, 512 para CLIP e 2.276
-para shallow features. A figura comprime cada espaço separadamente para duas
-dimensions; posições de painéis diferentes não devem ser comparadas como se
-pertencessem ao mesmo sistema de coordenadas.
-
-O processo de selection é:
-
-1. escolhe uma initial image;
-2. mede a cosine distance entre cada ainda-uncovered local pattern e os
-   patterns das imagens já selecionadas;
-3. encontra o pattern mais distante, inclui sua parent image na selection e
-   passa a considerar todos os cinco patterns dessa nova imagem como cobertos;
-4. repete até completar o budget de 69 imagens.
-
-Assim, o FreeSel procura imagens que tragam alguma **local region ainda não
-representada**, mesmo quando a whole scene se parece com cenas já selecionadas.
-Isso é relevante para traffic sign detection porque uma placa pode ocupar uma
-área pequena da imagem.
-
-Na figura, o FreeSel tem 3.465 pontos cinza porque cada ponto é um local
-pattern, não uma imagem inteira. Para manter a comparação visual, apenas um
-selection-driving/representative pattern aparece em azul para cada uma das 69
-selected images. O algoritmo real usa todos os cinco patterns de cada imagem.
-
-Todos os representation-based methods usam L2-normalized vectors e cosine
-distance. DINOv2 funciona também como common space para calcular as coverage
-metrics depois da selection. Ground-truth labels aparecem somente no YOLO
-training e nos diagnostics, nunca para decidir as selections.
+| Method | Representation space | O que cada ponto representa | Como seleciona | Intuição experimental |
+|---|---|---|---|---|
+| `random` | Nenhum embedding | Uma imagem em um arbitrary index grid | Sorteia uniformemente 69 imagens. | Control baseline: mede o que cada method acrescenta além do acaso. |
+| `kmeans_dinov2` | DINOv2, 384 dimensions | Uma whole image | Forma `k = 69` clusters e escolhe o medoid de cada cluster. | Representar cada global scene cluster por uma imagem real. |
+| `kmeans_clip` | CLIP, 512 dimensions | Uma whole image | Repete k-means + medoid no CLIP embedding. | Isolar o efeito da representation mantendo a selection rule fixa. |
+| `kmeans_shallow` | Color, texture e edge features, 2.276 dimensions | Uma whole image | Repete k-means + medoid sem deep embedding. | Verificar quanto deep representations acrescentam sobre visual low-level features. |
+| `opf_dinov2` | DINOv2, 384 dimensions | Uma whole image | Usa OPF roots como density peaks e completa o budget com proportional cluster quotas. | Descobrir clusters adaptativamente, sem impor `k = budget` ao agrupamento inicial. |
+| `typiclust_dinov2` | DINOv2, 384 dimensions | Uma whole image | Forma 69 clusters e escolhe a imagem de maior local density em cada um. | Priorizar typical samples de dense regions e evitar outliers. |
+| `kcenter_dinov2` | DINOv2, 384 dimensions | Uma whole image | Adiciona iterativamente a imagem mais distante do current selected set. | Maximizar worst-case coverage, mesmo que isso atraia outliers. |
+| `probcover_dinov2` | DINOv2, 384 dimensions | Uma whole image | Escolhe a imagem que cobre mais ainda-uncovered neighbors dentro de um radius estimado sem labels. | Cobrir dense regions sem perseguir todo ponto extremo. |
+| `facility_dinov2` | DINOv2, 384 dimensions | Uma whole image | Maximiza de forma greedy a similarity de cada pool image ao nearest selected representative. | Obter um subset globalmente representativo do pool. |
+| `freesel_dino` | Local DINO patterns, 384 dimensions | Uma local region: cinco patterns por imagem, totalizando `693 × 5 = 3.465` pontos cinza | Procura o ainda-uncovered pattern mais distante; sua parent image entra na selection e seus cinco patterns passam a representar aquela imagem. | Encontrar imagens com uma local region nova, como uma placa pequena, mesmo quando a whole scene já parece representada. Na figura, um representative pattern azul é mostrado para cada uma das 69 selected images. |
 
 ## Trabalho futuro — dissertação
 
