@@ -13,6 +13,7 @@ import argparse
 import json
 import math
 import re
+import textwrap
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable
@@ -66,13 +67,13 @@ TECHNIQUES: tuple[TechniqueSpec, ...] = (
     ),
     TechniqueSpec(
         "kmeans_clip",
-        "k-means + medoid (CLIP)",
+        "k-means · CLIP",
         "method_02b_kmeans_clip",
         "same k-means selection using CLIP embeddings",
     ),
     TechniqueSpec(
         "kmeans_shallow",
-        "k-means + medoid (shallow features)",
+        "k-means · shallow features",
         "method_02c_kmeans_shallow",
         "same k-means selection using color and texture features",
     ),
@@ -331,14 +332,31 @@ def draw_selection(
         zorder=3,
     )
     if compact:
-        ax.set_title(title, fontsize=11.5, fontweight="bold", color=TEXT_COLOR, pad=6)
+        ax.text(
+            0.0, 1.14, title, transform=ax.transAxes, ha="left", va="bottom",
+            fontsize=15, fontweight="bold", color=TEXT_COLOR,
+        )
+        ax.text(
+            0.0, 1.055, textwrap.fill(note, width=62), transform=ax.transAxes,
+            ha="left", va="bottom", fontsize=9.5, color=MUTED_COLOR,
+        )
+        ax.text(
+            0.965, 0.96, f"{len(selected)} selected", transform=ax.transAxes,
+            ha="right", va="top", fontsize=8.5, fontweight="bold",
+            color=SELECTED_COLOR,
+            bbox={"boxstyle": "round,pad=0.28", "facecolor": "white",
+                  "edgecolor": GRID_COLOR, "alpha": 0.92},
+        )
         ax.set_xticks([])
         ax.set_yticks([])
         ax.set_xlim(-0.08, 1.08)
         ax.set_ylim(-0.08, 1.08)
+        ax.set_aspect("equal", adjustable="box")
         ax.set_facecolor(PANEL_BG)
         for spine in ax.spines.values():
-            spine.set_visible(False)
+            spine.set_visible(True)
+            spine.set_color(GRID_COLOR)
+            spine.set_linewidth(0.9)
     else:
         setup_axis(ax, title, note, len(selected), len(xy))
 
@@ -347,7 +365,7 @@ def save_figure(fig: plt.Figure, output_dir: Path, stem: str) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
     fig.savefig(
         output_dir / f"{stem}.png",
-        dpi=240,
+        dpi=200,
         bbox_inches="tight",
         facecolor="white",
         metadata={"Creator": "generate_empirical_technique_figures.py"},
@@ -386,11 +404,11 @@ def render_grid(
     specs: list[TechniqueSpec],
     args: argparse.Namespace,
 ) -> None:
-    cols = 4
+    cols = 2
     rows = math.ceil(len(specs) / cols)
-    fig, axes = plt.subplots(rows, cols, figsize=(13.6, 3.45 * rows), constrained_layout=False)
+    fig, axes = plt.subplots(rows, cols, figsize=(10.5, 4.55 * rows), constrained_layout=False)
     fig.patch.set_facecolor(FIGURE_BG)
-    fig.subplots_adjust(left=0.025, right=0.985, top=0.83, bottom=0.09, hspace=0.38, wspace=0.12)
+    fig.subplots_adjust(left=0.055, right=0.975, top=0.89, bottom=0.045, hspace=0.42, wspace=0.16)
     axes_arr = np.array(axes, dtype=object).reshape(rows, cols)
 
     for ax, spec in zip(axes_arr.flat, specs):
@@ -399,18 +417,16 @@ def render_grid(
     for ax in axes_arr.flat[len(specs):]:
         ax.axis("off")
 
-    title = (
-        "Saved sample selections in a shared 2D projection"
-    )
-    fig.suptitle(title, fontsize=17, fontweight="bold", color=TEXT_COLOR, y=0.965)
+    title = "How each method samples the same unlabeled pool"
+    fig.suptitle(title, fontsize=22, fontweight="bold", color=TEXT_COLOR, y=0.985)
     fig.text(
         0.5,
-        0.925,
-        f"{args.dataset.upper()} · {args.embedding.upper()} · {args.projection.upper()} · "
-        f"fraction {args.fraction:.0%} · repeat {args.repeat}",
+        0.965,
+        f"{args.dataset.upper()} · shared {args.embedding.upper()} {args.projection.upper()} projection · "
+        f"label fraction {args.fraction:.0%} · repeat {args.repeat}",
         ha="center",
         va="top",
-        fontsize=10,
+        fontsize=11,
         color=MUTED_COLOR,
     )
 
@@ -423,11 +439,16 @@ def render_grid(
     ]
     fig.legend(
         handles=handles,
-        loc="lower center",
+        loc="upper center",
         ncols=2,
         frameon=False,
-        fontsize=10,
-        bbox_to_anchor=(0.5, -0.018),
+        fontsize=10.5,
+        bbox_to_anchor=(0.5, 0.944),
+    )
+    fig.text(
+        0.5, 0.014,
+        "The 2D projection is for visualization only; selection runs in the full embedding space.",
+        ha="center", va="bottom", fontsize=9.5, color=MUTED_COLOR,
     )
     save_figure(
         fig,
