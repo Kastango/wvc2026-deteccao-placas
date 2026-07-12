@@ -32,6 +32,7 @@ DEFAULT_DATASET = "bvtsld"
 DEFAULT_FRACTION = 0.10
 DEFAULT_REPEAT = 1
 DEFAULT_PROJECTION = "tsne"
+SELECTION_SEED = 42
 
 FIGURE_BG = "#FAFBFC"
 PANEL_BG = "#FFFFFF"
@@ -68,70 +69,70 @@ TECHNIQUES: tuple[TechniqueSpec, ...] = (
         "Random sampling",
         "method_01_random",
         "control: samples without using the pool geometry",
-        "none · arbitrary index grid",
+        "no embedding · index grid",
     ),
     TechniqueSpec(
         "kmeans_dinov2",
         "k-means + medoid",
         "method_02_kmeans",
         "one real sample per cluster in the DINOv2 embedding",
-        "DINOv2 · whole-image embedding",
+        "DINOv2 · image embedding",
     ),
     TechniqueSpec(
         "kmeans_clip",
         "k-means · CLIP",
         "method_02b_kmeans_clip",
         "same k-means selection using CLIP embeddings",
-        "CLIP · whole-image embedding",
+        "CLIP · image embedding",
     ),
     TechniqueSpec(
         "kmeans_shallow",
         "k-means · shallow features",
         "method_02c_kmeans_shallow",
         "same k-means selection using color and texture features",
-        "shallow · color, texture and edges",
+        "shallow features",
     ),
     TechniqueSpec(
         "opf_dinov2",
         "OPF root + quota",
         "method_03_opf",
         "OPF roots and clusters completed by quota to a fixed budget",
-        "DINOv2 · whole-image embedding",
+        "DINOv2 · image embedding",
     ),
     TechniqueSpec(
         "typiclust_dinov2",
         "TypiClust",
         "method_04_typiclust",
         "typical samples in budget-defined clusters",
-        "DINOv2 · whole-image embedding",
+        "DINOv2 · image embedding",
     ),
     TechniqueSpec(
         "kcenter_dinov2",
         "k-center greedy",
         "method_05_kcenter",
         "coverage by samples far from the current selection",
-        "DINOv2 · whole-image embedding",
+        "DINOv2 · image embedding",
     ),
     TechniqueSpec(
         "probcover_dinov2",
         "ProbCover",
         "method_06_probcover",
         "coverage of neighbors not yet covered",
-        "DINOv2 · whole-image embedding",
+        "DINOv2 · image embedding",
     ),
     TechniqueSpec(
         "facility_dinov2",
         "Facility location",
         "method_07_facility",
         "maximizes global similarity to the nearest prototype",
-        "DINOv2 · whole-image embedding",
+        "DINOv2 · image embedding",
     ),
     TechniqueSpec(
         "freesel_dino",
         "FreeSel",
         "method_08_freesel",
         "selects diverse local patterns instead of only whole scenes",
-        "DINO · local-pattern embedding",
+        "DINO · local patterns",
     ),
 )
 
@@ -377,16 +378,16 @@ def draw_selection(
     )
     if compact:
         ax.text(
-            0.0, 1.14, title, transform=ax.transAxes, ha="left", va="bottom",
-            fontsize=15, fontweight="bold", color=TEXT_COLOR,
+            0.5, 1.14, title, transform=ax.transAxes, ha="center", va="bottom",
+            fontsize=11.5, fontweight="bold", color=TEXT_COLOR,
         )
         ax.text(
-            0.0, 1.055, textwrap.fill(note, width=62), transform=ax.transAxes,
-            ha="left", va="bottom", fontsize=9.5, color=MUTED_COLOR,
+            0.5, 1.045, textwrap.fill(note, width=38), transform=ax.transAxes,
+            ha="center", va="bottom", fontsize=7.5, color=MUTED_COLOR,
         )
         ax.text(
-            0.035, 0.04, panel.space_label, transform=ax.transAxes,
-            ha="left", va="bottom", fontsize=7.8, fontweight="bold",
+            0.5, 0.04, panel.space_label, transform=ax.transAxes,
+            ha="center", va="bottom", fontsize=6.8, fontweight="bold",
             color=MUTED_COLOR,
             bbox={"boxstyle": "round,pad=0.3", "facecolor": "#F4F7FA",
                   "edgecolor": GRID_COLOR, "alpha": 0.94},
@@ -405,6 +406,39 @@ def draw_selection(
         setup_axis(ax, title, note, panel.selected_images, panel.pool_items)
 
 
+def trace_freesel_patterns(
+    patterns: np.ndarray,
+    pattern_ids: np.ndarray,
+    n_images: int,
+    fraction: float,
+    seed: int,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Reproduce FreeSel and retain the pattern that triggers each image choice."""
+    budget = max(1, int(round(fraction * n_images)))
+    rng = np.random.RandomState(seed)
+    first_image = int(rng.randint(n_images))
+    first_patterns = np.flatnonzero(pattern_ids == first_image)
+    chosen_images = [first_image]
+    # The first image is sampled before any farthest pattern exists. Use its
+    # first local pattern as its single visual representative.
+    trigger_patterns = [int(first_patterns[0])]
+    min_distance = (1.0 - patterns @ patterns[first_patterns].T).min(axis=1)
+
+    while len(chosen_images) < budget:
+        for pattern_index in np.argsort(-min_distance):
+            image_index = int(pattern_ids[pattern_index])
+            if image_index not in chosen_images:
+                break
+        chosen_images.append(image_index)
+        trigger_patterns.append(int(pattern_index))
+        image_patterns = np.flatnonzero(pattern_ids == image_index)
+        min_distance = np.minimum(
+            min_distance,
+            (1.0 - patterns @ patterns[image_patterns].T).min(axis=1),
+        )
+    return np.asarray(chosen_images), np.asarray(trigger_patterns)
+
+
 def build_panels(
     output: Path,
     dataset: str,
@@ -413,6 +447,8 @@ def build_panels(
     specs: list[TechniqueSpec],
     projection: str,
     seed: int,
+    fraction: float,
+    repeat: int,
 ) -> dict[str, PanelData]:
     """Project each method in the representation space it actually uses."""
     image_spaces = {
@@ -456,7 +492,15 @@ def build_panels(
                 draw_pool_density=False,
             )
         elif spec.key == "freesel_dino":
-            selected_patterns = np.flatnonzero(np.isin(pattern_ids, selected_images))
+            traced_images, selected_patterns = trace_freesel_patterns(
+                patterns,
+                pattern_ids,
+                len(pool_ids),
+                fraction,
+                SELECTION_SEED + repeat - 1,
+            )
+            if set(traced_images.tolist()) != set(selected_images.tolist()):
+                raise ValueError("Reconstructed FreeSel trace differs from saved selection")
             panels[spec.key] = PanelData(
                 xy=projected_patterns,
                 selected_points=selected_patterns,
@@ -517,11 +561,11 @@ def render_grid(
     specs: list[TechniqueSpec],
     args: argparse.Namespace,
 ) -> None:
-    cols = 2
+    cols = 5
     rows = math.ceil(len(specs) / cols)
-    fig, axes = plt.subplots(rows, cols, figsize=(10.5, 4.55 * rows), constrained_layout=False)
+    fig, axes = plt.subplots(rows, cols, figsize=(20.0, 9.3), constrained_layout=False)
     fig.patch.set_facecolor(FIGURE_BG)
-    fig.subplots_adjust(left=0.055, right=0.975, top=0.89, bottom=0.045, hspace=0.42, wspace=0.16)
+    fig.subplots_adjust(left=0.025, right=0.985, top=0.76, bottom=0.10, hspace=0.48, wspace=0.12)
     axes_arr = np.array(axes, dtype=object).reshape(rows, cols)
 
     for ax, spec in zip(axes_arr.flat, specs):
@@ -531,16 +575,19 @@ def render_grid(
         ax.axis("off")
 
     title = "How each method represents and samples the unlabeled pool"
-    fig.suptitle(title, fontsize=22, fontweight="bold", color=TEXT_COLOR, y=0.985)
+    fig.suptitle(
+        title, x=0.5, ha="center", fontsize=21, fontweight="bold",
+        color=TEXT_COLOR, y=0.98,
+    )
     fig.text(
         0.5,
-        0.965,
+        0.94,
         f"{args.dataset.upper()} · method-specific {args.projection.upper()} projections · "
         f"{next(iter(panels.values())).selected_images} "
         f"images selected per method · repeat {args.repeat}",
         ha="center",
         va="top",
-        fontsize=11,
+        fontsize=10.5,
         color=MUTED_COLOR,
     )
 
@@ -549,18 +596,18 @@ def render_grid(
                markeredgewidth=0, markersize=7, alpha=0.42, label="pool item in the method's space"),
         Line2D([0], [0], marker="o", color="none", markerfacecolor=SELECTED_COLOR,
                markeredgecolor="white", markeredgewidth=1.0, markersize=9,
-               label="selected image (or its local patterns)"),
+               label="selected image (representative pattern for FreeSel)"),
     ]
     fig.legend(
         handles=handles,
         loc="upper center",
         ncols=2,
         frameon=False,
-        fontsize=10.5,
-        bbox_to_anchor=(0.5, 0.944),
+        fontsize=10,
+        bbox_to_anchor=(0.5, 0.89),
     )
     fig.text(
-        0.5, 0.014,
+        0.5, 0.025,
         "Each panel projects the representation actually used by that method; selection runs in the full space.",
         ha="center", va="bottom", fontsize=9.5, color=MUTED_COLOR,
     )
@@ -582,7 +629,8 @@ def main() -> None:
         for spec in specs
     }
     panels = build_panels(
-        output, args.dataset, pool_ids, selections, specs, args.projection, args.seed
+        output, args.dataset, pool_ids, selections, specs, args.projection,
+        args.seed, args.fraction, args.repeat,
     )
 
     plt.rcParams.update(

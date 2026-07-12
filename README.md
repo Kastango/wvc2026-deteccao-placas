@@ -71,10 +71,11 @@ selection instances.
 *Uma selection instance real de cada method, com label fraction de 10%. Os
 pontos cinza são os pool items no representation space efetivamente usado pelo
 method; os pontos azuis representam as 69 selected images. Em `FreeSel`, cada
-imagem possui cinco local patterns, portanto os patterns pertencentes às 69
-selected images são destacados. `Random sampling` não usa embedding e aparece
-em um arbitrary index grid. Cada t-SNE é independente e serve apenas para
-visualização; a selection opera no respectivo full-dimensional space.*
+imagem possui cinco local patterns, mas apenas um representative/selection-driving
+pattern é destacado por selected image para manter a comparação visual em 69
+pontos azuis. `Random sampling` não usa embedding e aparece em um arbitrary
+index grid. Cada t-SNE é independente e serve apenas para visualização; a
+selection opera no respectivo full-dimensional space.*
 
 #### Label fraction 5% — 35 imagens por selection
 
