@@ -2,6 +2,7 @@ matplotlib==3.11.0
 numpy==1.26.4
 opfython==1.0.12
 pandas==3.0.3
+pillow==12.3.0
 scikit-learn==1.9.0
 scipy==1.17.1
 torch==2.12.1

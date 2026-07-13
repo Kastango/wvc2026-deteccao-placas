@@ -50,7 +50,7 @@ def validate(data: pd.DataFrame) -> None:
     if unknown:
         raise ValueError(f"Unknown methods: {sorted(unknown)}")
     if set(data["fraction"].round(2)) != FRACTIONS:
-        raise ValueError("The CSV must contain only fractions 0.05 and 0.10")
+        raise ValueError("The CSV must contain fractions 0.05, 0.10, 0.20 and 0.50")
     for technique, group in data.groupby("technique"):
         if set(group["selection_repeat"]) != TECHNIQUE_REPEATS[technique]:
             raise ValueError(

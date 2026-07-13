@@ -14,11 +14,12 @@ A pergunta de pesquisa é:
 > conjunto de imagens que preserve o desempenho de um detector de sinais de
 > trânsito?
 
-O experimento compara dois treinos do mesmo YOLOv8n. O **oráculo** usa 100%
-do pool rotulado e define o teto de desempenho. Cada método de seleção escolhe
-5, 10, 20 ou 50% do pool, e o YOLOv8n é treinado só com essas imagens. A grade
-completa produz o mAP de cada método, fração de rótulos, repetição e semente
-de treino.
+O experimento compara o **oráculo**, treinado com 100% do pool rotulado e usado
+como referência de dados completos, com os modelos YOLOv8n treinados sobre
+cada subconjunto selecionado. Cada método de seleção escolhe 5, 10, 20 ou 50%
+do pool, e cada seleção é treinada com duas sementes, 41 e 42. A grade completa
+totaliza 328 runs e produz o mAP de cada método, fração de rótulos, repetição e
+semente de treino.
 
 ## As etapas do estudo
 
@@ -51,8 +52,9 @@ rotulado inicial; o restante do pool entra com *pseudo-labels*.
 
 ### Conjunto de dados e partições fixas
 
-O BVTSLD (Brazilian Vertical Traffic Signs and Lights Dataset) foi auditado e
-mapeado para três classes-alvo: `regulatory`, `warning` e `information`.
+O BVTSLD (Brazilian Vertical Traffic Signs and Lights Dataset) foi auditado
+automaticamente e mapeado para três classes-alvo: `regulatory`, `warning` e
+`information`. A revisão humana box a box desse mapeamento está pendente.
 Imagens com semáforos fora dessa taxonomia ficam em quarentena.
 
 | Resultado | Valor |
@@ -77,7 +79,7 @@ Fontes: [`records.json`](outputs/bvtsld/records.json),
 [`quarantine.json`](outputs/bvtsld/quarantine.json) e
 [`taxonomy_report.json`](outputs/bvtsld/taxonomy_report.json).
 
-### Oráculo YOLOv8n — o teto de referência
+### Oráculo YOLOv8n — referência de dados completos
 
 O oráculo foi treinado com 100% do pool no protocolo fixo (ver
 [apêndice](#protocolo-fixo-de-treino-yolo)). Apenas a validação foi avaliada.
@@ -111,16 +113,20 @@ detector.*
 
 ### Os métodos escolhidos e por quê
 
-Nenhum método usa rótulos do dataset-alvo. Eles usam apenas *embeddings* de
-redes auto-supervisionadas prontas (vetores L2-normalizados, distância de
-cosseno) ou nenhuma representação. O conjunto cobre as principais famílias de
-seleção *cold-start* da literatura, com um representante de cada família:
+Nenhum seletor consulta os rótulos do dataset-alvo. Quando há representação,
+os *embeddings* de redes auto-supervisionadas prontas são L2-normalizados; a
+dissimilaridade depende do método. O k-means usa distância euclidiana, o
+OPFython usa sua dissimilaridade `log_squared_euclidean` padrão e as rotinas de
+cobertura e vizinhança dos demais seletores usam distância de cosseno. O
+conjunto contrasta seis vieses de seleção — sorteio, agrupamento global,
+densidade e conectividade por OPF, densidade local, cobertura e padrões locais
+— sem pretender constituir uma taxonomia exaustiva da literatura:
 
 | Método | Representação | Como seleciona | Por que está no estudo | Referência |
 |---|---|---|---|---|
 | `random` | Nenhuma | Sorteia as imagens do orçamento de forma uniforme. | *Baseline* de controle. O protocolo estatístico mede o ganho pareado de cada método contra ele. | — |
-| `kmeans_dinov2` | DINOv2, 384 dim, imagem inteira | Forma `k = orçamento` grupos e escolhe o medoide de cada um. | Representante simples da família de **representatividade global**: uma imagem real por grupo de cenas. | k-means: [Lloyd (1982)](https://doi.org/10.1109/TIT.1982.1056489); DINOv2: [Oquab et al. (2024)](https://arxiv.org/abs/2304.07193) |
-| `opf_dinov2` | DINOv2, 384 dim, imagem inteira | Usa as raízes da floresta de caminhos ótimos (OPF) como picos de densidade e completa o orçamento com cotas proporcionais por grupo. | Descobre o número de grupos **de forma adaptativa**, sem impor `k = orçamento`. Hipótese complementar ao k-means. | [Rocha, Cappabianco & Falcão (2009)](https://doi.org/10.1002/ima.20191) |
+| `kmeans_dinov2` | DINOv2, 384 dim, imagem inteira | Na implementação deste estudo, forma `k = orçamento` grupos e retorna a imagem real mais próxima do centroide de cada um. | *Baseline* de **representatividade global**: uma imagem real por agrupamento no espaço DINOv2. Lloyd fundamenta a alternância entre médias e atribuição ao centro mais próximo, não a etapa adicional de escolher um exemplar real. | k-means: [Lloyd (1982)](https://doi.org/10.1109/TIT.1982.1056489); DINOv2: [Oquab et al. (2024)](https://arxiv.org/abs/2304.07193) |
+| `opf_dinov2` | DINOv2, 384 dim, imagem inteira | Agrupa o pool em árvores enraizadas em máximos relevantes da densidade estimada no grafo kNN. **Extensão deste estudo:** grupos com cota positiva fornecem primeiro sua raiz, e o orçamento é completado com amostras próximas à raiz por uma heurística de cotas baseada no tamanho dos grupos. | Não fixa o número de grupos igual ao orçamento: com `max_k = 20`, o OPFython escolhe o número de vizinhos do grafo entre 1 e 20 pelo menor corte normalizado, e o número de árvores resulta do agrupamento. Hipótese complementar ao k-means. | [Rocha, Cappabianco & Falcão (2009)](https://doi.org/10.1002/ima.20191) |
 | `typiclust_dinov2` | DINOv2, 384 dim, imagem inteira | Forma `k = orçamento` grupos e escolhe a imagem de maior densidade local em cada um. | Método de referência para **rotulagem com orçamento baixo**: amostras típicas superam estratégias de incerteza quando há poucos rótulos. | [Hacohen, Dekel & Weinshall (2022)](https://arxiv.org/abs/2202.02794) |
 | `probcover_dinov2` | DINOv2, 384 dim, imagem inteira | Escolhe a imagem que cobre mais vizinhos ainda não cobertos, dentro de um raio estimado sem rótulos. | Formula a seleção como **cobertura** do pool. Estado da arte em *cold-start* junto com o TypiClust. | [Yehuda et al. (2022)](https://arxiv.org/abs/2205.11320) |
 | `freesel_dino` | DINO v1, 384 dim, **padrões locais** (5 por imagem) | Busca o padrão local ainda não coberto mais distante; a imagem dona do padrão entra na seleção. | Único método que enxerga **regiões locais** — uma placa pequena conta, mesmo quando a cena inteira já parece representada. Usa DINO v1 por fidelidade ao artigo original, cujos mapas de atenção guiam a extração dos padrões. | FreeSel: [Xie et al. (2023)](https://arxiv.org/abs/2309.17342); DINO: [Caron et al. (2021)](https://arxiv.org/abs/2104.14294) |
@@ -415,7 +421,7 @@ de classificação:
 | **embedding** | um vetor de números que resume o conteúdo de uma imagem, gerado por uma rede pronta (não precisa de rótulo para calcular) |
 | **agrupamento (clustering)** | juntar imagens de embedding parecido em grupos ("cenas de rodovia", "ruas à noite"...) |
 | **cobertura DINOv2** | distância média de cada imagem do pool à imagem selecionada mais parecida no DINOv2 global — diagnóstico interno desse espaço, não critério de ranking entre métodos |
-| **oráculo** | YOLO treinado com 100% dos rótulos — o teto de referência |
+| **oráculo** | YOLO treinado com 100% dos rótulos, usado como referência de dados completos |
 | **instância de seleção** | uma execução independente da técnica, identificada por uma semente de seleção; é a unidade de comparação com o sorteio |
 | **semente de treino** | inicialização e aleatoriedade do YOLO; cada instância de seleção é treinada com as mesmas 2 sementes em todas as técnicas |
 
@@ -430,63 +436,124 @@ de classificação:
 
 ### Reprodução
 
+#### Auditoria humana da taxonomia
+
+O revisor local apresenta os 16 códigos-fonte do BVTSLD. Para cada código, a
+interface reúne abaixo todas as *bounding boxes* correspondentes; a decisão é
+salva uma única vez para o código inteiro e a sessão pode ser retomada
+posteriormente:
+
 ```bash
-git clone <URL_DO_REPOSITORIO>
+.venv/bin/python scripts/review_bvtsld_taxonomy.py
+```
+
+As setas navegam entre os códigos. A interface inclui como *cheat sheet* uma
+imagem resumida dos tipos de placas de trânsito e mostra o grupo
+operacional usado pelo projeto. Essa agregação não é apresentada como uma
+categoria normativa do CONTRAN. O arquivo
+`outputs/bvtsld/taxonomy_human_review.json` é separado dos dados derivados e só
+recebe o estado `human_approved` depois que os 16 códigos forem revisados e a
+finalização for confirmada. A auditoria automática incorpora esse estado sem
+sobrescrever as decisões humanas.
+
+#### 1. Ambiente e dados
+
+```bash
+git clone https://github.com/Kastango/wvc2026-deteccao-placas.git
 cd wvc2026-deteccao-placas
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 ```
 
-O BVTSLD não é versionado. Coloque o dataset em:
-
-```text
-datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/
-```
-
-Os resultados compactos e as 164 seleções estão no Git. Imagens brutas,
-embeddings, datasets YOLO materializados, checkpoints e execuções de treino
-permanecem locais. Para compartilhar checkpoints, use um release ou um
-armazenamento de artefatos, não o histórico do repositório.
-
-O ambiente deve usar as versões de `requirements.txt`, incluindo
-`ultralytics==8.3.0`:
+Os datasets não são versionados. O script abaixo usa as fontes oficiais,
+retoma downloads interrompidos, confere o tamanho congelado e extrai os ZIPs
+com proteção contra caminhos inseguros. Revise as licenças indicadas antes de
+confirmar:
 
 ```bash
-.venv/bin/python scripts/generate_embeddings.py --verify --sample 32
-.venv/bin/python scripts/validate_bvtsld.py
-.venv/bin/python scripts/run_local_triage.py --dry-run
-.venv/bin/python scripts/run_local_triage.py --smoke
-.venv/bin/python scripts/run_local_triage.py
+# BVTSLD v2 (~3,86 GiB; CC BY 4.0)
+.venv/bin/python scripts/download_datasets.py \
+  --dataset bvtsld --accept-license
+
+# TT100K 2016 (~17,84 GiB; CC BY-NC; requer ao menos 100 GiB livres)
+.venv/bin/python scripts/download_datasets.py \
+  --dataset tt100k --accept-license
 ```
 
-O treinador é retomável: cada run concluído entra em
-`outputs/bvtsld/triage_results.csv` e não é repetido. Para executar só uma
-parte da grade:
+Os destinos são `datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights
+Dataset/` e `datasets/tt100k/data/`. Para apenas verificar as URLs e os tamanhos
+sem baixar, use `--dataset all --check`.
+
+Na primeira execução, é necessário acesso à internet para baixar os pesos
+DINO/DINOv2 e YOLOv8n. Imagens brutas, embeddings, dataset YOLO, checkpoints e
+runs permanecem locais; os resultados compactos e as 164 seleções estão no Git.
+
+#### 2. Reprodução rápida
+
+O fluxo rápido materializa o dataset YOLO, gera ou verifica as representações,
+reutiliza as seleções versionadas, executa um treino de duas épocas e audita os
+artefatos. Ele verifica o pipeline de ponta a ponta, mas não produz resultado
+experimental:
+
+```bash
+.venv/bin/python scripts/reproduce.py \
+  --stage quick --accept-dataset-licenses
+```
+
+Para apenas conferir os comandos, sem executar nada:
+
+```bash
+.venv/bin/python scripts/reproduce.py --stage quick --dry-run
+```
+
+#### 3. Reprodução completa
+
+O comando abaixo inclui o fluxo rápido, o retreino do oráculo, os 328 treinos
+comparativos e a análise estatística. É uma execução longa, indicada para GPU
+CUDA dedicada:
+
+```bash
+.venv/bin/python scripts/reproduce.py \
+  --stage all --device cuda --accept-dataset-licenses
+```
+
+O treinador é retomável: cada run concluído entra em `triage_results.csv` e
+não é repetido. As etapas também podem ser chamadas separadamente:
+
+| Etapa | Comando | Saída principal |
+|---|---|---|
+| Download BVTSLD | `--stage download` | `datasets/bvtsld/` |
+| Preparar YOLO | `--stage prepare` | `outputs/bvtsld/yolo_bvtsld/` |
+| Representações | `--stage embeddings` | embeddings DINOv2 e padrões FreeSel |
+| Seleções | `--stage selections` | 164 JSONs e `selections_summary.csv` |
+| Oráculo | `--stage oracle` | `oracle_results.json` e checkpoint local |
+| Verificação curta | `--stage smoke` | `triage_smoke.csv` e checkpoint local |
+| Auditoria | `--stage audit` | `local_pretrain_audit.json` |
+| Validar artefatos | `--stage verify` | `project_status.json` |
+| Grade completa | `--stage train` | `triage_results.csv` e checkpoints |
+| Análise | `--stage analyze` | `triage_analysis.csv` e `metrics_summary.csv` |
+
+Exemplo para executar somente uma célula da grade:
 
 ```bash
 .venv/bin/python scripts/run_local_triage.py \
   --technique typiclust_dinov2 --fraction 0.10 --repeat 1 --train-seed 42
 ```
 
-Em um clone que ainda não tenha os artefatos locais, gere as duas
-representações antes das seleções:
+Use `--force` no orquestrador somente para regenerar artefatos locais já
+existentes. A geração de seleções arquiva a versão anterior antes de escrever.
+
+#### 4. Notebook de resultados
+
+O notebook [01_results_bvtsld.ipynb](notebooks/01_results_bvtsld.ipynb) é uma
+camada de leitura: carrega os CSVs, resume o oráculo e gera tabelas e gráficos.
+Ele não contém lógica de seleção nem controla os treinos, evitando duplicação e
+estado oculto. Para abri-lo:
 
 ```bash
-.venv/bin/python scripts/generate_embeddings.py --dataset bvtsld
-.venv/bin/python scripts/generate_bvtsld_local_selections.py
+.venv/bin/pip install jupyterlab
+.venv/bin/jupyter lab notebooks/01_results_bvtsld.ipynb
 ```
-
-Após completar os 328 runs:
-
-```bash
-.venv/bin/python scripts/analyze_triage.py outputs/bvtsld/triage_results.csv \
-  --output outputs/bvtsld/triage_analysis.csv
-.venv/bin/python scripts/summarize_metrics.py
-```
-
-O primeiro comando gera a análise estatística pareada. O segundo agrega as
-médias por técnica × fração (qualidade, tempo e consumo computacional) em
-`outputs/bvtsld/metrics_summary.csv`.
 
 ### Layout dos artefatos
 
@@ -494,9 +561,12 @@ médias por técnica × fração (qualidade, tempo e consumo computacional) em
 README.md                                visão geral, protocolo e resultados
 requirements.txt                         dependências Python fixadas
 scripts/                                 auditoria, seleção, treino e análise
+notebooks/01_results_bvtsld.ipynb        exploração dos resultados gerados
 figs/                                    figuras de publicação
 outputs/bvtsld/records.json              anotações limpas
 outputs/bvtsld/split.json                partições fixas pool/validação/teste
+outputs/bvtsld/taxonomy_report.json      auditoria automática e estado da revisão
+outputs/bvtsld/taxonomy_human_review.json decisões humanas por código (quando iniciado)
 outputs/bvtsld/selections/*.json         164 seleções
 outputs/bvtsld/selections_summary.csv    cobertura, estabilidade e tempos
 outputs/bvtsld/oracle_results.json       protocolo e métricas do oráculo

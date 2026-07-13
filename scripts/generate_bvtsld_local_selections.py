@@ -29,7 +29,7 @@ KNN_BACKENDS_USED: set[str] = set()
 
 METHOD_FIDELITY = {
     "random": "random sampling control",
-    "kmeans_dinov2": "k-means + medoid on DINOv2 embeddings",
+    "kmeans_dinov2": "k-means + sample nearest to centroid on DINOv2 embeddings",
     "opf_dinov2": "OPF root + quota on the full pool",
     "typiclust_dinov2": "TypiClust",
     "probcover_dinov2": "ProbCover; unlabeled delta at purity >= 0.95",
@@ -100,7 +100,7 @@ def group_quotas(group_labels, budget):
     return dict(zip(groups.tolist(), quotas.tolist()))
 
 
-def medoid_near_centroid(indices, emb, center):
+def sample_near_centroid(indices, emb, center):
     d_center = np.linalg.norm(emb[indices] - center, axis=1)
     return int(indices[np.argmin(d_center)])
 
@@ -119,7 +119,7 @@ def kmeans_selections(emb, fraction, seed=SEED):
         k = min(budget, len(emb))
         km = fit_kmeans(emb, n_clusters=k, n_init=10, seed=seed + rep)
         sel = [
-            medoid_near_centroid(np.where(km.labels_ == group)[0], emb, km.cluster_centers_[group])
+            sample_near_centroid(np.where(km.labels_ == group)[0], emb, km.cluster_centers_[group])
             for group in range(k)
         ]
         if len(sel) != budget or len(set(sel)) != budget:

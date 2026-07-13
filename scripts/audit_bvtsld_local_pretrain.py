@@ -66,6 +66,63 @@ def write_json(path: Path, payload) -> None:
     path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n")
 
 
+def human_review_metadata(observed_codes: dict[str, int]) -> tuple[str, dict]:
+    path = OUTPUT / "taxonomy_human_review.json"
+    total_codes = len(observed_codes)
+    total_occurrences = sum(observed_codes.values())
+    try:
+        artifact_label = str(path.relative_to(ROOT))
+    except ValueError:
+        artifact_label = str(path)
+    pending = {
+        "status": "machine_audited",
+        "reviewers": [],
+        "map_version": "bvtsld-code-review-v2",
+        "review_unit": "source_code",
+        "human_review_required_for_main_evidence": True,
+        "artifact": artifact_label,
+        "artifact_exists": path.exists(),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+    }
+    if not path.exists():
+        return "local_machine_audited_human_review_pending", pending
+    try:
+        artifact = read_json(path) or {}
+        summary = artifact.get("summary", {})
+        review = artifact.get("review", {})
+        approved = all(
+            [
+                artifact.get("dataset") == "bvtsld",
+                artifact.get("map_version") == "bvtsld-code-review-v2",
+                review.get("status") == "human_approved",
+                review.get("scope") == "source_codes",
+                bool(review.get("reviewers")),
+                int(summary.get("total", -1)) == total_codes,
+                int(summary.get("reviewed", -1)) == total_codes,
+                int(summary.get("remaining", -1)) == 0,
+                int(summary.get("total_occurrences", -1)) == total_occurrences,
+            ]
+        )
+        metadata = {
+            **pending,
+            "status": "human_approved" if approved else "human_review_in_progress",
+            "reviewers": review.get("reviewers", []),
+            "human_review_required_for_main_evidence": not approved,
+            "artifact_status": review.get("status", "unknown"),
+            "codes_reviewed": int(summary.get("reviewed", 0)),
+            "codes_total": total_codes,
+            "occurrences_available": total_occurrences,
+            "completed_at_utc": review.get("completed_at_utc"),
+        }
+        mapping_status = (
+            "human_reviewed" if approved else "local_machine_audited_human_review_pending"
+        )
+        return mapping_status, metadata
+    except (KeyError, TypeError, ValueError, json.JSONDecodeError) as error:
+        pending["artifact_error"] = str(error)
+        return "local_machine_audited_human_review_pending", pending
+
+
 def base_id(path: Path) -> str:
     return path.stem.split("@", 1)[0]
 
@@ -395,16 +452,13 @@ def main() -> None:
     records = read_json(OUTPUT / "records.json") or []
     split = read_json(OUTPUT / "split.json") or {}
 
+    mapping_status, review_metadata = human_review_metadata(
+        raw["observed_codes_original_boxes"]
+    )
     taxonomy_report = {
         "dataset": "bvtsld",
-        "mapping_status": "local_machine_audited_human_review_pending",
-        "review": {
-            "status": "machine_audited",
-            "reviewers": [],
-            "map_version": "bvtsld-visual-v1",
-            "human_review_required_for_main_evidence": True,
-            "generated_at_utc": datetime.now(timezone.utc).isoformat(),
-        },
+        "mapping_status": mapping_status,
+        "review": review_metadata,
         "target_classes": TARGET_CLASSES,
         "code_map": BVTSLD_CODE_MAP,
         "unknown_object_policy": UNKNOWN_OBJECT_POLICY,

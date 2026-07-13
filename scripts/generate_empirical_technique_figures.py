@@ -73,7 +73,7 @@ TECHNIQUES: tuple[TechniqueSpec, ...] = (
     ),
     TechniqueSpec(
         "kmeans_dinov2",
-        "k-means + medoid",
+        "k-means + nearest-to-centroid sample",
         "method_02_kmeans",
         "one real sample per cluster in the DINOv2 embedding",
         "DINOv2 · image embedding",

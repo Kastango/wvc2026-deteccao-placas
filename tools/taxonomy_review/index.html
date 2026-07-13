@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Auditoria por código · BVTSLD</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header>
+    <div>
+      <p class="eyebrow">BVTSLD · revisão humana</p>
+      <h1>Auditoria por código</h1>
+    </div>
+    <div class="reviewer-box">
+      <label for="reviewer">Revisor</label>
+      <input id="reviewer" autocomplete="name" placeholder="Seu nome">
+      <button id="set-reviewer" class="secondary">Confirmar</button>
+    </div>
+  </header>
+
+  <section class="progress-panel">
+    <div class="progress-copy">
+      <strong id="progress-text">Carregando…</strong>
+      <span id="save-status"></span>
+    </div>
+    <div class="progress-track"><div id="progress-bar"></div></div>
+  </section>
+
+  <main>
+    <aside>
+      <h2>Códigos</h2>
+      <label>Estado
+        <select id="status-filter">
+          <option value="pending">Pendentes</option>
+          <option value="">Todos</option>
+          <option value="reviewed">Revisados</option>
+          <option value="approve">Aprovados</option>
+          <option value="remap">Remapear grupo</option>
+          <option value="mixed">Código misto</option>
+          <option value="quarantine">Quarentena</option>
+          <option value="ambiguous">Ambíguos</option>
+        </select>
+      </label>
+      <label>Buscar
+        <input id="search-filter" placeholder="Código, R-…, significado">
+      </label>
+      <div class="filter-count" id="filter-count"></div>
+      <button id="cheatsheet-open" class="reference-open">Abrir cheat sheet</button>
+      <div class="navigator">
+        <button id="previous" class="secondary">← Anterior</button>
+        <button id="next" class="secondary">Próximo →</button>
+      </div>
+      <button id="finalize" class="finalize">Finalizar auditoria</button>
+      <p class="hint">Uma decisão é salva para cada código-fonte. A finalização exige os 16 códigos revisados.</p>
+    </aside>
+
+    <section class="workspace">
+      <section class="code-card">
+        <div>
+          <p class="eyebrow dark">Código atual</p>
+          <h2 id="code-title">—</h2>
+          <p id="code-meaning" class="code-meaning">—</p>
+        </div>
+        <div class="code-facts">
+          <div><span>Grupo operacional atual</span><strong id="current-group">—</strong></div>
+          <div><span>Ocorrências no dataset</span><strong id="occurrence-count">—</strong></div>
+          <div><span>Posição</span><strong id="position">—</strong></div>
+        </div>
+      </section>
+
+      <section class="decision-panel">
+        <div class="section-heading">
+          <div>
+            <h2>Decisão para o código inteiro</h2>
+            <p>Compare o tipo visual da placa com as ocorrências abaixo. O grupo é uma agregação operacional do projeto, não uma categoria normativa do CONTRAN.</p>
+          </div>
+          <button id="cheatsheet-inline" class="secondary">Consultar cheat sheet</button>
+        </div>
+        <div class="decisions" role="radiogroup" aria-label="Decisão para o código">
+          <button data-decision="approve">Código e grupo aprovados</button>
+          <button data-decision="remap">Remapear grupo</button>
+          <button data-decision="mixed">Código misto ou incorreto</button>
+          <button data-decision="quarantine">Quarentena</button>
+          <button data-decision="ambiguous">Ambíguo</button>
+        </div>
+        <div class="details">
+          <label>Novo grupo operacional
+            <select id="corrected-class" disabled>
+              <option value="">Selecione</option>
+              <option value="regulatory">regulatory</option>
+              <option value="warning">warning</option>
+              <option value="information">information</option>
+            </select>
+          </label>
+          <label class="note-label">Observação
+            <textarea id="note" rows="2" placeholder="Opcional; anote misturas, exceções ou justificativa"></textarea>
+          </label>
+          <button id="save" class="primary">Salvar código e avançar</button>
+        </div>
+      </section>
+
+      <section class="occurrences-section">
+        <div class="section-heading">
+          <div>
+            <h2>Tabela de ocorrências do mesmo código</h2>
+            <p id="occurrence-help">Todas as boxes anotadas com este código. Clique em uma miniatura para ampliar.</p>
+          </div>
+        </div>
+        <div id="occurrence-grid" class="occurrence-grid" aria-live="polite"></div>
+      </section>
+    </section>
+  </main>
+
+  <dialog id="cheatsheet-dialog" class="sheet-dialog">
+    <div class="dialog-header">
+      <div>
+        <p class="eyebrow">Referência visual</p>
+        <h2>Cheat sheet de tipos de placas</h2>
+      </div>
+      <button id="cheatsheet-close" class="secondary">Fechar</button>
+    </div>
+    <p class="dialog-intro">Referência visual resumida para distinguir placas de regulamentação, advertência, indicação e sinalização temporária.</p>
+    <div id="sheet-gallery" class="sheet-gallery"></div>
+    <p class="reference-source">
+      Fonte da imagem:
+      <a href="https://blog.usezapay.com.br/wp-content/uploads/2025/01/tipos-de-placas-de-transito.png" target="_blank" rel="noreferrer">Zapay · Tipos de placas de trânsito</a>.
+    </p>
+  </dialog>
+
+  <dialog id="occurrence-dialog" class="occurrence-dialog">
+    <div class="dialog-header">
+      <div>
+        <p class="eyebrow">Ocorrência do dataset</p>
+        <h2 id="occurrence-dialog-title">—</h2>
+      </div>
+      <button id="occurrence-close" class="secondary">Fechar</button>
+    </div>
+    <img id="occurrence-large" alt="Recorte ampliado da ocorrência">
+    <p id="occurrence-metadata" class="reference-source"></p>
+  </dialog>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+  <script src="/app.js"></script>
+</body>
+</html>

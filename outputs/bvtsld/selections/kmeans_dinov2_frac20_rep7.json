@@ -1,6 +1,6 @@
 {
  "technique": "kmeans_dinov2",
- "implementation": "k-means + medoid on DINOv2 embeddings",
+ "implementation": "k-means + sample nearest to centroid on DINOv2 embeddings",
  "fraction": 0.2,
  "repeat": 7,
  "selection_seed": 48,
