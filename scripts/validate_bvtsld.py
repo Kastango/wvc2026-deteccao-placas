@@ -14,12 +14,22 @@ ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "outputs" / "bvtsld"
 YOLO = OUTPUT / "yolo_bvtsld"
 METHODS = {
-    "random", "kmeans_dinov2", "kmeans_clip", "kmeans_shallow",
-    "opf_dinov2", "typiclust_dinov2", "kcenter_dinov2",
-    "probcover_dinov2", "facility_dinov2", "freesel_dino",
+    "random", "kmeans_dinov2", "opf_dinov2",
+    "typiclust_dinov2", "probcover_dinov2", "freesel_dino",
 }
-FRACTIONS = {0.05, 0.10}
-REPEATS = set(range(1, 9))
+FRACTIONS = {0.05, 0.10, 0.20, 0.50}
+
+
+def method_repeats() -> dict[str, set[int]]:
+    repeats = {method: set(range(1, 9)) for method in METHODS}
+    repeats["opf_dinov2"] = {1}
+    return repeats
+
+
+def expected_selections() -> int:
+    return sum(len(r) for r in method_repeats().values()) * len(FRACTIONS)
+
+
 SPLIT_DIRS = {"pool": "train", "validation": "val", "test": "test"}
 
 
@@ -65,10 +75,13 @@ def check_selections(pool: set[str]) -> tuple[dict, list[str]]:
             errors.append(f"Invalid selection budget or duplicates: {path.name}")
         if not set(images) <= pool:
             errors.append(f"Selection outside train pool: {path.name}")
-    expected = {(m, f, r) for m in METHODS for f in FRACTIONS for r in REPEATS}
+    repeats = method_repeats()
+    expected = {(m, f, r) for m in METHODS for f in FRACTIONS for r in repeats[m]}
     present = set(counts)
     if present != expected or any(value != 1 for value in counts.values()):
-        errors.append("Selection grid is not exactly 10 methods x 2 fractions x 8 repeats")
+        errors.append(
+            "Selection grid does not match 6 methods x 4 fractions x expected repeats"
+        )
     return {"files": len(paths), "expected": len(expected), "complete": not errors}, errors
 
 
@@ -97,6 +110,7 @@ def main() -> None:
         yolo_report, yolo_errors = check_yolo_labels(split)
         selection_report, selection_errors = check_selections(split_sets["pool"])
         errors.extend(yolo_errors + selection_errors)
+        n_selections = expected_selections()
 
         embeddings = {}
         for path in sorted(OUTPUT.glob("embeddings_bvtsld_*.npy")):
@@ -107,8 +121,10 @@ def main() -> None:
 
         with (OUTPUT / "selections_summary.csv").open(newline="") as handle:
             summary_rows = sum(1 for _ in csv.DictReader(handle))
-        if summary_rows != 160:
-            errors.append(f"Expected 160 selection summary rows, found {summary_rows}")
+        if summary_rows != n_selections:
+            errors.append(
+                f"Expected {n_selections} selection summary rows, found {summary_rows}"
+            )
 
         oracle = load_json(OUTPUT / "oracle_results.json")
         oracle_ok = all([
@@ -134,9 +150,13 @@ def main() -> None:
         training_lists = YOLO / "triage_lists"
         list_count = len(list(training_lists.glob("*.txt")))
         yaml_count = len(list(training_lists.glob("*.yaml")))
-        training_configs_ready = list_count == 160 and yaml_count == 160
+        training_configs_ready = (
+            list_count == n_selections and yaml_count == n_selections
+        )
         if not training_configs_ready:
-            errors.append("Expected 160 materialized YOLO training lists and configs")
+            errors.append(
+                f"Expected {n_selections} materialized YOLO training lists and configs"
+            )
 
         report = {
             "generated_at_utc": datetime.now(timezone.utc).isoformat(),
@@ -151,7 +171,7 @@ def main() -> None:
                 "validation": oracle["validation"],
                 "protocol_valid": oracle_ok,
             },
-            "triage": {"completed_runs": triage_runs, "expected_runs": 320},
+            "triage": {"completed_runs": triage_runs, "expected_runs": n_selections * 2},
             "training_configs": {
                 "ready": training_configs_ready,
                 "lists": list_count,

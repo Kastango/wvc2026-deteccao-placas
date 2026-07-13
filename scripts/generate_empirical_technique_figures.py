@@ -79,20 +79,6 @@ TECHNIQUES: tuple[TechniqueSpec, ...] = (
         "DINOv2 · image embedding",
     ),
     TechniqueSpec(
-        "kmeans_clip",
-        "k-means · CLIP",
-        "method_02b_kmeans_clip",
-        "same k-means selection using CLIP embeddings",
-        "CLIP · image embedding",
-    ),
-    TechniqueSpec(
-        "kmeans_shallow",
-        "k-means · shallow features",
-        "method_02c_kmeans_shallow",
-        "same k-means selection using color and texture features",
-        "shallow features",
-    ),
-    TechniqueSpec(
         "opf_dinov2",
         "OPF root + quota",
         "method_03_opf",
@@ -107,24 +93,10 @@ TECHNIQUES: tuple[TechniqueSpec, ...] = (
         "DINOv2 · image embedding",
     ),
     TechniqueSpec(
-        "kcenter_dinov2",
-        "k-center greedy",
-        "method_05_kcenter",
-        "coverage by samples far from the current selection",
-        "DINOv2 · image embedding",
-    ),
-    TechniqueSpec(
         "probcover_dinov2",
         "ProbCover",
         "method_06_probcover",
         "coverage of neighbors not yet covered",
-        "DINOv2 · image embedding",
-    ),
-    TechniqueSpec(
-        "facility_dinov2",
-        "Facility location",
-        "method_07_facility",
-        "maximizes global similarity to the nearest prototype",
         "DINOv2 · image embedding",
     ),
     TechniqueSpec(
@@ -453,8 +425,6 @@ def build_panels(
     """Project each method in the representation space it actually uses."""
     image_spaces = {
         "dinov2": load_embeddings(output, dataset, "dinov2"),
-        "clip": load_embeddings(output, dataset, "clip"),
-        "shallow": load_embeddings(output, dataset, "shallow"),
     }
     for name, values in image_spaces.items():
         if len(values) != len(pool_ids):
@@ -475,10 +445,6 @@ def build_panels(
         raise ValueError("FreeSel pattern IDs do not span the image pool")
     projected_patterns = normalize_xy(project_embeddings(patterns, projection, seed))
 
-    image_space_by_method = {
-        "kmeans_clip": "clip",
-        "kmeans_shallow": "shallow",
-    }
     panels: dict[str, PanelData] = {}
     for spec in specs:
         selected_images = selections[spec.key]
@@ -509,9 +475,8 @@ def build_panels(
                 space_label=spec.space,
             )
         else:
-            space_name = image_space_by_method.get(spec.key, "dinov2")
             panels[spec.key] = PanelData(
-                xy=projected[space_name],
+                xy=projected["dinov2"],
                 selected_points=selected_images,
                 selected_images=len(selected_images),
                 pool_items=len(pool_ids),
@@ -561,9 +526,9 @@ def render_grid(
     specs: list[TechniqueSpec],
     args: argparse.Namespace,
 ) -> None:
-    cols = 5
+    cols = 3
     rows = math.ceil(len(specs) / cols)
-    fig, axes = plt.subplots(rows, cols, figsize=(20.0, 9.3), constrained_layout=False)
+    fig, axes = plt.subplots(rows, cols, figsize=(12.4, 9.3), constrained_layout=False)
     fig.patch.set_facecolor(FIGURE_BG)
     fig.subplots_adjust(left=0.025, right=0.985, top=0.76, bottom=0.10, hspace=0.48, wspace=0.12)
     axes_arr = np.array(axes, dtype=object).reshape(rows, cols)

@@ -1,176 +1,411 @@
-# Pergunta de pesquisa
+# Seleção de amostras sem rótulos para detecção de placas de trânsito
 
-É possível escolher, **sem usar rótulos do dataset-alvo**, um pequeno conjunto
-de imagens que preserve o desempenho de um detector de sinais de trânsito?
+## O problema
 
-## BVTSLD sample selection benchmark
+Treinar um detector de placas exige rotular *bounding boxes* manualmente. O
+custo cresce com o tamanho do conjunto de dados. Antes de existir qualquer
+rótulo, é preciso decidir quais imagens rotular primeiro. Esse é o problema de
+*cold-start sample selection*: escolher as primeiras imagens sem nenhum rótulo
+disponível.
 
-Este projeto investiga **cold-start sample selection** para traffic sign
-detection. O objetivo é medir quanto do desempenho do YOLOv8n oracle pode ser
-preservado treinando com 5% ou 10% do BVTSLD pool.
+A pergunta de pesquisa é:
 
-## Estado reproduzível
+> É possível escolher, **sem usar rótulos do dataset-alvo**, um pequeno
+> conjunto de imagens que preserve o desempenho de um detector de sinais de
+> trânsito?
 
-- Dataset: 990 clean images, 1.279 bounding boxes e 373 quarantined images.
-- Fixed split (seed 42): 693 train pool, 148 validation e 149 test images.
-- Target classes: `regulatory`, `warning` e `information`.
-- 160 selections: 10 methods × 2 fractions × 8 repeats.
-- Oracle: YOLOv8n, 640 px, 40 epochs, SGD, seed 42.
-- Oracle validation: mAP@0.5 `0.9483`; mAP@0.5:0.95 `0.6270`.
-- O test split permanece fechado até a escolha final do method e da fraction.
+O experimento compara dois treinos do mesmo YOLOv8n. O **oráculo** usa 100%
+do pool rotulado e define o teto de desempenho. Cada método de seleção escolhe
+5, 10, 20 ou 50% do pool, e o YOLOv8n é treinado só com essas imagens. A grade
+completa produz o mAP de cada método, fração de rótulos, repetição e semente
+de treino.
 
-O checkpoint local do oracle fica em
-`outputs/bvtsld/runs/oracle/weights/best.pt`, mas não é versionado no Git. O
-protocolo e as metrics estão em
-[`oracle_results.json`](outputs/bvtsld/oracle_results.json); o inventário
-compacto está em [`project_status.json`](outputs/bvtsld/project_status.json).
+## As etapas do estudo
 
-## Resultados obtidos até o momento
+**Etapa 1 — BVTSLD (teste preliminar)** — pool de 693 imagens. Valida o
+*pipeline* e compara os métodos em escala pequena.
 
-### Dataset audit e fixed split
+- [x] Auditoria do dataset, partições fixas e oráculo
+- [x] 164 seleções (6 métodos × 4 frações × 8 repetições; OPF: 1) e diagnósticos
+- [ ] Grade completa de treino YOLO (0/328 runs)
+
+**Etapa 2 — TT100K (replicação em escala)** — pool ~10× maior. Verifica se o
+ranking dos métodos se mantém.
+
+- [ ] Auditoria do dataset e mapeamento de taxonomia
+- [ ] Partições fixas pool/validação/teste (semente 42)
+- [ ] Embeddings DINOv2 e padrões locais DINO do pool
+- [ ] Oráculo YOLOv8n com 100% do pool
+- [ ] 164 seleções (OPF determinístico: 1 repetição) e diagnósticos
+- [ ] Grade completa de treino YOLO (328 runs) e análise estatística
+
+**Etapa 3 — Semi-supervisão (dissertação)** — a melhor seleção vira o conjunto
+rotulado inicial; o restante do pool entra com *pseudo-labels*.
+
+- [ ] Montar o pipeline professor–aluno de detecção semi-supervisionada
+- [ ] Comparar as estratégias de filtragem de *pseudo-labels* (estilo FixMatch, FreeMatch e SoftMatch) com base nas Etapas 1 e 2
+
+---
+
+## Etapa 1 — Teste preliminar no BVTSLD
+
+### Conjunto de dados e partições fixas
+
+O BVTSLD (Brazilian Vertical Traffic Signs and Lights Dataset) foi auditado e
+mapeado para três classes-alvo: `regulatory`, `warning` e `information`.
+Imagens com semáforos fora dessa taxonomia ficam em quarentena.
 
 | Resultado | Valor |
 |---|---:|
 | Imagens originais elegíveis | 990 |
-| Bounding boxes | 1.279 |
-| `regulatory` bounding boxes | 1.084 |
-| `warning` bounding boxes | 98 |
-| `information` bounding boxes | 97 |
-| Quarantined images com traffic lights fora da target taxonomy | 373 |
-| Train pool | 693 imagens |
-| Validation split | 148 imagens |
-| Test split | 149 imagens |
-| Split leakage | 0 imagens |
+| *Bounding boxes* | 1.279 |
+| *Bounding boxes* `regulatory` | 1.084 |
+| *Bounding boxes* `warning` | 98 |
+| *Bounding boxes* `information` | 97 |
+| Imagens em quarentena (semáforos fora da taxonomia) | 373 |
+| Pool de treino | 693 imagens |
+| Partição de validação | 148 imagens |
+| Partição de teste | 149 imagens |
+| Vazamento entre partições | 0 imagens |
+
+As partições são fixas (semente 42). A partição de teste permanece fechada.
+Ela será aberta uma única vez, no final, para a avaliação definitiva. Todas as
+comparações intermediárias usam apenas a validação.
 
 Fontes: [`records.json`](outputs/bvtsld/records.json),
 [`split.json`](outputs/bvtsld/split.json),
 [`quarantine.json`](outputs/bvtsld/quarantine.json) e
 [`taxonomy_report.json`](outputs/bvtsld/taxonomy_report.json).
 
-![BVTSLD source-category examples](figs/bvtsld_taxonomy_examples.png)
+### Oráculo YOLOv8n — o teto de referência
 
-*Exemplos auditados das source categories do BVTSLD. As três últimas linhas
-(`000051`, `000052` e `000053`) são traffic lights e ficam em quarantine; as
-demais são mapeadas para as três target classes.*
+O oráculo foi treinado com 100% do pool no protocolo fixo (ver
+[apêndice](#protocolo-fixo-de-treino-yolo)). Apenas a validação foi avaliada.
 
-### Sample-selection diagnostics
+| Partição | mAP@0.5 | mAP@0.5:0.95 | AP@0.5 `regulatory` | AP@0.5 `warning` | AP@0.5 `information` |
+|---|---:|---:|---:|---:|---:|
+| Validação | 0,9483 | 0,6270 | 0,9645 | 0,9721 | 0,9082 |
 
-Foram geradas e auditadas 160 selections: 10 methods × 2 label fractions × 8
-repeats. As tabelas abaixo são diagnostics calculados **antes do YOLO
-training**. Portanto, elas medem representação do pool, stability, quantidade
-de bounding boxes recuperadas e selection runtime; ainda não determinam o
-method vencedor.
+- Tempo de treino: 2.318,2 s (~38,6 min) em Apple M2 Pro/MPS.
+- Checkpoint local: `outputs/bvtsld/runs/oracle/weights/best.pt` (fora do Git).
+- Protocolo e métricas: [`oracle_results.json`](outputs/bvtsld/oracle_results.json).
 
-`Δ coverage` compara cada method com `random` na mesma fraction. Valores
-negativos são melhores. `Δ worst-case` usa a maior cosine distance encontrada;
-valores negativos também são melhores. `Jaccard` mede a stability entre
-selection instances.
+![Curvas de treino do oráculo](figs/oracle_training_curves.png)
 
-![Comparison of the representation spaces used by the ten sample-selection methods](figs/methods_selection_spaces_bvtsld_tsne_frac10_rep1.png)
+*Perdas de treino e validação, precisão, revocação e mAP ao longo das 40
+épocas.*
 
-*Uma selection instance real de cada method, com label fraction de 10%. Os
-pontos cinza são os pool items no representation space efetivamente usado pelo
-method; os pontos azuis representam as 69 selected images. Em `FreeSel`, cada
-imagem possui cinco local patterns, mas apenas um representative/selection-driving
-pattern é destacado por selected image para manter a comparação visual em 69
-pontos azuis. `Random sampling` não usa embedding e aparece em um arbitrary
-index grid. Cada t-SNE é independente e serve apenas para visualização; a
-selection opera no respectivo full-dimensional space.*
+![Curva precisão-revocação do oráculo na validação](figs/oracle_validation_pr_curve.png)
 
-#### Label fraction 5% — 35 imagens por selection
+*Curvas de precisão–revocação na validação. O valor agregado é 0,948 mAP@0.5.*
 
-| Method | Coverage | Δ coverage | Δ worst-case | Jaccard | Bounding boxes | Runtime (s) |
+![Matriz de confusão normalizada do oráculo](figs/oracle_validation_confusion_matrix_normalized.png)
+
+*Matriz de confusão normalizada na validação. A coluna `background` mostra
+falsos positivos; a linha `background`, falsos negativos.*
+
+![Predições do oráculo em imagens de validação](figs/oracle_validation_predictions.jpg)
+
+*Exemplos de predições do oráculo, com a classe-alvo e a confiança do
+detector.*
+
+### Os métodos escolhidos e por quê
+
+Nenhum método usa rótulos do dataset-alvo. Eles usam apenas *embeddings* de
+redes auto-supervisionadas prontas (vetores L2-normalizados, distância de
+cosseno) ou nenhuma representação. O conjunto cobre as principais famílias de
+seleção *cold-start* da literatura, com um representante de cada família:
+
+| Método | Representação | Como seleciona | Por que está no estudo | Referência |
+|---|---|---|---|---|
+| `random` | Nenhuma | Sorteia as imagens do orçamento de forma uniforme. | *Baseline* de controle. O protocolo estatístico mede o ganho pareado de cada método contra ele. | — |
+| `kmeans_dinov2` | DINOv2, 384 dim, imagem inteira | Forma `k = orçamento` grupos e escolhe o medoide de cada um. | Representante simples da família de **representatividade global**: uma imagem real por grupo de cenas. | k-means: [Lloyd (1982)](https://doi.org/10.1109/TIT.1982.1056489); DINOv2: [Oquab et al. (2024)](https://arxiv.org/abs/2304.07193) |
+| `opf_dinov2` | DINOv2, 384 dim, imagem inteira | Usa as raízes da floresta de caminhos ótimos (OPF) como picos de densidade e completa o orçamento com cotas proporcionais por grupo. | Descobre o número de grupos **de forma adaptativa**, sem impor `k = orçamento`. Hipótese complementar ao k-means. | [Rocha, Cappabianco & Falcão (2009)](https://doi.org/10.1002/ima.20191) |
+| `typiclust_dinov2` | DINOv2, 384 dim, imagem inteira | Forma `k = orçamento` grupos e escolhe a imagem de maior densidade local em cada um. | Método de referência para **rotulagem com orçamento baixo**: amostras típicas superam estratégias de incerteza quando há poucos rótulos. | [Hacohen, Dekel & Weinshall (2022)](https://arxiv.org/abs/2202.02794) |
+| `probcover_dinov2` | DINOv2, 384 dim, imagem inteira | Escolhe a imagem que cobre mais vizinhos ainda não cobertos, dentro de um raio estimado sem rótulos. | Formula a seleção como **cobertura** do pool. Estado da arte em *cold-start* junto com o TypiClust. | [Yehuda et al. (2022)](https://arxiv.org/abs/2205.11320) |
+| `freesel_dino` | DINO v1, 384 dim, **padrões locais** (5 por imagem) | Busca o padrão local ainda não coberto mais distante; a imagem dona do padrão entra na seleção. | Único método que enxerga **regiões locais** — uma placa pequena conta, mesmo quando a cena inteira já parece representada. Usa DINO v1 por fidelidade ao artigo original, cujos mapas de atenção guiam a extração dos padrões. | FreeSel: [Xie et al. (2023)](https://arxiv.org/abs/2309.17342); DINO: [Caron et al. (2021)](https://arxiv.org/abs/2104.14294) |
+
+Duas observações de protocolo:
+
+- O `opf_dinov2` roda sempre sobre o pool inteiro e é determinístico; repetições
+  adicionais produziriam a mesma seleção. Por isso ele usa 1 repetição tanto no
+  BVTSLD quanto no TT100K, enquanto os demais métodos usam 8.
+- Os orçamentos são de 35 (5%), 69 (10%), 139 (20%) e 346 (50%) imagens por
+  seleção.
+
+### Diagnósticos das seleções
+
+Foram geradas e auditadas 164 seleções: 6 métodos × 4 frações de rótulos × 8
+repetições (OPF: 1). As tabelas abaixo são diagnósticos calculados **antes do
+treino YOLO**. Eles medem a representação do pool, a estabilidade, a
+quantidade de *bounding boxes* recuperadas e o tempo de seleção. Não definem
+o ranking.
+
+Como ler as colunas:
+
+- **Cobertura DINOv2**: distância média de cada imagem do pool à imagem
+  selecionada mais parecida no espaço DINOv2 global. Menor é melhor.
+- **Δ cobertura**: diferença relativa para o `random` na mesma fração.
+  Negativo é melhor.
+- **Δ pior caso**: mesma comparação usando a maior distância encontrada.
+  Negativo é melhor.
+- **Jaccard**: sobreposição entre as repetições do método. Mede estabilidade.
+- **Tempo (s)**: tempo para gerar todas as repetições da fração, em um Apple
+  M2 Pro. Os valores atuais foram medidos com a máquina compartilhada com
+  outros processos e serão remedidos de forma sequencial em um servidor com
+  GPU dedicado e ocioso. A GPU acelera a extração das representações; as
+  rotinas de seleção baseadas no scikit-learn continuam majoritariamente na
+  CPU. Até essa remedição, os valores servem apenas como ordem de grandeza.
+
+#### Fração de 5% — 35 imagens por seleção
+
+| Método | Cobertura DINOv2 | Δ cobertura | Δ pior caso | Jaccard | *Bounding boxes* | Tempo (s) |
 |---|---:|---:|---:|---:|---:|---:|
-| `kmeans_dinov2` | 0,1996 | −18,1% | −18,2% | 0,305 | 48,4 | 3,9 |
-| `typiclust_dinov2` | 0,2006 | −17,7% | −17,3% | 0,307 | 49,5 | 6,3 |
-| `probcover_dinov2` | 0,2051 | −15,8% | −18,0% | 0,490 | 48,8 | 3,1 |
-| `facility_dinov2` | 0,2060 | −15,4% | −17,1% | 0,151 | 48,0 | 0,2 |
-| `kmeans_clip` | 0,2220 | −8,9% | −19,7% | 0,215 | 46,0 | 5,0 |
-| `kmeans_shallow` | 0,2256 | −7,4% | −16,1% | 0,250 | 46,5 | 18,3 |
+| `kmeans_dinov2` | 0,1996 | −18,1% | −18,2% | 0,305 | 48,4 | 101,6 |
+| `typiclust_dinov2` | 0,2006 | −17,7% | −17,3% | 0,307 | 49,5 | 45,5 |
+| `probcover_dinov2` | 0,2051 | −15,8% | −18,0% | 0,490 | 48,8 | 42,4 |
 | `random` | 0,2436 | 0,0% | 0,0% | 0,028 | 44,0 | <0,1 |
-| `opf_dinov2` | 0,2486 | +2,0% | +14,4% | 1,000¹ | 50,0 | 24,6 |
-| `freesel_dino` | 0,2575 | +5,7% | −16,1% | 0,330 | 44,2 | 0,5 |
-| `kcenter_dinov2` | 0,2860 | +17,4% | −41,8% | 0,391 | 43,1 | 0,2 |
+| `opf_dinov2` | 0,2486 | +2,0% | +14,4% | 1,000¹ | 50,0 | 6,6 |
+| `freesel_dino` | 0,2575 | +5,7% | −16,1% | 0,330 | 44,2 | 4,5 |
 
-#### Label fraction 10% — 69 imagens por selection
+#### Fração de 10% — 69 imagens por seleção
 
-| Method | Coverage | Δ coverage | Δ worst-case | Jaccard | Bounding boxes | Runtime (s) |
+| Método | Cobertura DINOv2 | Δ cobertura | Δ pior caso | Jaccard | *Bounding boxes* | Tempo (s) |
 |---|---:|---:|---:|---:|---:|---:|
-| `kmeans_dinov2` | 0,1655 | −19,6% | −25,5% | 0,293 | 92,4 | 7,0 |
-| `typiclust_dinov2` | 0,1666 | −19,1% | −23,9% | 0,274 | 93,2 | 12,4 |
-| `probcover_dinov2` | 0,1708 | −17,0% | −20,5% | 0,414 | 93,2 | 4,4 |
-| `facility_dinov2` | 0,1742 | −15,3% | −22,5% | 0,139 | 92,8 | 0,2 |
-| `kmeans_clip` | 0,1833 | −10,9% | −21,3% | 0,224 | 90,1 | 8,2 |
-| `kmeans_shallow` | 0,1869 | −9,2% | −17,8% | 0,267 | 88,1 | 30,6 |
-| `freesel_dino` | 0,2048 | −0,5% | −19,5% | 0,494 | 83,2 | 0,9 |
+| `kmeans_dinov2` | 0,1655 | −19,6% | −25,5% | 0,293 | 92,4 | 181,9 |
+| `typiclust_dinov2` | 0,1666 | −19,1% | −23,9% | 0,274 | 93,2 | 81,7 |
+| `probcover_dinov2` | 0,1708 | −17,0% | −20,5% | 0,414 | 93,2 | 71,4 |
+| `freesel_dino` | 0,2048 | −0,5% | −19,5% | 0,494 | 83,2 | 8,7 |
 | `random` | 0,2058 | 0,0% | 0,0% | 0,056 | 88,4 | <0,1 |
-| `opf_dinov2` | 0,2211 | +7,4% | +15,1% | 1,000¹ | 99,0 | 23,8 |
-| `kcenter_dinov2` | 0,2257 | +9,7% | −53,2% | 0,426 | 86,9 | 0,3 |
+| `opf_dinov2` | 0,2211 | +7,4% | +15,1% | 1,000¹ | 99,0 | 3,7 |
 
-¹ OPF é determinístico neste pool: os oito repeats produzem a mesma selection.
+#### Fração de 20% — 139 imagens por seleção
 
-Até aqui, `kmeans_dinov2`, `typiclust_dinov2`, `probcover_dinov2` e
-`facility_dinov2` apresentam a melhor mean coverage nas duas fractions.
-`kcenter_dinov2` apresenta a melhor worst-case coverage, enquanto
-`opf_dinov2` recupera mais bounding boxes. Essas observações são apenas
-hypotheses: o ranking final depende do validation mAP@0.5:0.95.
+| Método | Cobertura DINOv2 | Δ cobertura | Δ pior caso | Jaccard | *Bounding boxes* | Tempo (s) |
+|---|---:|---:|---:|---:|---:|---:|
+| `kmeans_dinov2` | 0,1234 | −21,6% | −35,2% | 0,391 | 185,6 | 380,5 |
+| `typiclust_dinov2` | 0,1237 | −21,4% | −31,0% | 0,387 | 183,6 | 166,6 |
+| `probcover_dinov2` | 0,1307 | −17,0% | −15,7% | 0,344 | 181,9 | 141,3 |
+| `random` | 0,1574 | 0,0% | 0,0% | 0,113 | 179,6 | <0,1 |
+| `freesel_dino` | 0,1576 | +0,1% | −28,3% | 0,669 | 171,5 | 16,3 |
+| `opf_dinov2` | 0,1862 | +18,3% | −4,3% | 1,000¹ | 187,0 | 3,7 |
+
+#### Fração de 50% — 346 imagens por seleção
+
+| Método | Cobertura DINOv2 | Δ cobertura | Δ pior caso | Jaccard | *Bounding boxes* | Tempo (s) |
+|---|---:|---:|---:|---:|---:|---:|
+| `kmeans_dinov2` | 0,0550 | −30,5% | −63,2% | 0,682 | 441,5 | 917,9 |
+| `typiclust_dinov2` | 0,0550 | −30,4% | −63,1% | 0,670 | 441,9 | 567,1 |
+| `probcover_dinov2` | 0,0668 | −15,5% | −63,9% | 0,762 | 450,5 | 508,4 |
+| `freesel_dino` | 0,0716 | −9,5% | −24,7% | 0,861 | 434,4 | 51,5 |
+| `random` | 0,0791 | 0,0% | 0,0% | 0,337 | 450,1 | <0,1 |
+| `opf_dinov2` | 0,1126 | +42,3% | +7,1% | 1,000¹ | 460,0 | 4,2 |
+
+¹ O OPF é determinístico neste pool (o pool inteiro cabe em um único ajuste do
+algoritmo). O protocolo usa uma única repetição para o método no BVTSLD.
+
+Leitura preliminar: `kmeans_dinov2` e `typiclust_dinov2` têm a melhor
+cobertura média nas quatro frações, com `probcover_dinov2` próximo. O
+`opf_dinov2` tem cobertura pior que o `random` em todas as frações, mas
+recupera mais *bounding boxes*. Esse resultado **não sustenta um ranking entre
+métodos**: k-means, TypiClust e ProbCover selecionam no mesmo espaço DINOv2 em
+que a cobertura é medida, enquanto FreeSel opera em padrões DINO locais e
+`random` não otimiza representação alguma. Portanto, a cobertura DINOv2 é um
+diagnóstico interno de comportamento, não evidência comparativa de qualidade.
+Uma eventual análise de cobertura cruzada deve usar uma representação externa,
+congelada antes da análise e não utilizada por nenhum seletor. O ranking real
+virá exclusivamente do mAP da grade de treino.
 
 Fonte completa: [`selections_summary.csv`](outputs/bvtsld/selections_summary.csv).
-As selection instances individuais estão em
-[`outputs/bvtsld/selections/`](outputs/bvtsld/selections/) e as visualizações
-empíricas em [`figs/`](figs/).
+As seleções individuais estão em
+[`outputs/bvtsld/selections/`](outputs/bvtsld/selections/).
 
-### YOLOv8n oracle
+### Como cada método enxerga o pool
 
-O oracle foi treinado com 100% do train pool no fixed protocol. Somente o
-validation split foi avaliado.
+![Comparação dos espaços de representação dos seis métodos de seleção](figs/methods_selection_spaces_bvtsld_tsne_frac10_rep1.png)
 
-| Split | mAP@0.5 | mAP@0.5:0.95 | AP@0.5 `regulatory` | AP@0.5 `warning` | AP@0.5 `information` |
-|---|---:|---:|---:|---:|---:|
-| Validation | 0,9483 | 0,6270 | 0,9645 | 0,9721 | 0,9082 |
+*Uma seleção real de cada método, com fração de 10%. Os pontos cinza são as
+imagens do pool no espaço de representação usado pelo método; os pontos azuis
+são as 69 imagens selecionadas. No `FreeSel`, cada imagem tem cinco padrões
+locais, mas apenas o padrão que motivou a escolha é destacado, para manter a
+comparação em 69 pontos azuis. O `random` não usa embedding e aparece em uma
+grade arbitrária de índices. Cada t-SNE é independente e serve apenas para
+visualização; a seleção opera no espaço original de 384 dimensões.*
 
-![Oracle training curves](figs/oracle_training_curves.png)
+### Treino YOLO por seleção — mAP vs. oráculo
 
-*Training e validation losses, precision, recall e mAP ao longo das 40 epochs.*
+A grade contém **328 runs**: 164 seleções × 2 sementes de treino (41 e 42),
+40 épocas cada, no mesmo protocolo do oráculo. Cada run registra em
+[`triage_results.csv`](outputs/bvtsld/triage_results.csv):
 
-![Oracle validation precision-recall curve](figs/oracle_validation_pr_curve.png)
+- **Qualidade**: precisão, revocação, F1, mAP@0.5, mAP@0.75, mAP@0.5:0.95 e
+  AP@0.5 por classe na validação. O mAP@0.5:0.95 já varre limiares de IoU de
+  0,50 a 0,95; o mAP@0.75 dá a leitura em IoU estrito. A AP por classe é
+  necessária porque `warning` e `information` são raras (98 e 97 *bounding
+  boxes* no pool): na fração de 5%, uma seleção pode conter zero exemplos de
+  uma dessas classes, a AP dela desaba e domina a variância do mAP — reportar
+  por classe separa esse efeito da qualidade geral da seleção.
+- **Tempo**: tempo de treino, tempo de validação, inferência média por imagem
+  (ms) e tempo de CPU (usuário + sistema) do run.
+- **Consumo computacional**: pico de RAM do processo, memória média e de pico
+  da GPU durante o run. A utilização média da GPU (%) é registrada apenas em
+  device CUDA; o macOS não expõe essa leitura sem privilégios de
+  administrador.
 
-*Precision–recall curves no validation split. O valor agregado é 0,948
-mAP@0.5.*
+A fase de seleção tem o próprio registro: o
+[`selections_summary.csv`](outputs/bvtsld/selections_summary.csv) guarda, por
+técnica × fração, tempo de seleção, RAM e as métricas de cobertura. O script
+[`summarize_metrics.py`](scripts/summarize_metrics.py) cruza os dois arquivos
+e gera o [`metrics_summary.csv`](outputs/bvtsld/metrics_summary.csv): uma
+linha por técnica × fração com média e desvio de todas as métricas — a fonte
+direta das tabelas deste README.
 
-![Oracle normalized confusion matrix](figs/oracle_validation_confusion_matrix_normalized.png)
+A tabela abaixo será preenchida com a média sobre repetições e sementes. Cada
+célula reporta mAP@0.5 / mAP@0.5:0.95 na validação.
 
-*Normalized confusion matrix do oracle no validation split. A coluna
-`background` evidencia false positives; a linha `background`, false
-negatives.*
+Referência: o oráculo, treinado com 100% do pool, atinge **0,9483 / 0,6270**.
 
-![Oracle predictions on BVTSLD validation images](figs/oracle_validation_predictions.jpg)
+| Método | 5% | 10% | 20% | 50% |
+|---|---:|---:|---:|---:|
+| `random` | — / — | — / — | — / — | — / — |
+| `kmeans_dinov2` | — / — | — / — | — / — | — / — |
+| `opf_dinov2` | — / — | — / — | — / — | — / — |
+| `typiclust_dinov2` | — / — | — / — | — / — | — / — |
+| `probcover_dinov2` | — / — | — / — | — / — | — / — |
+| `freesel_dino` | — / — | — / — | — / — | — / — |
 
-*Exemplos de predictions do oracle. As bounding boxes mostram a target class e
-a confidence atribuída pelo detector.*
+Estado atual da etapa de treino:
 
-- Training time: 2.318,2 s, aproximadamente 38,6 min, em Apple M2 Pro/MPS.
-- Checkpoint local: `outputs/bvtsld/runs/oracle/weights/best.pt` (ignorado pelo Git).
-- Protocol e metrics: [`oracle_results.json`](outputs/bvtsld/oracle_results.json).
-- As curvas e validation figures relevantes estão versionadas em [`figs/`](figs/).
-
-### Status dos selection training runs
-
-| Etapa | Status |
+| Item | Estado |
 |---|---:|
-| Saved selections | 160/160 |
-| Materialized YOLO training configs | 160/160 |
-| Smoke training | aprovado |
-| Full selection training grid | **0/320 runs** |
+| Seleções salvas | 164/164 |
+| Configurações de treino materializadas | 164/164 |
+| Treino de verificação (*smoke*) | aprovado |
+| Grade completa de treino | **0/328 runs** |
 
-O smoke training de duas epochs verifica apenas que dataset, labels, selection,
-YOLO training, validation e persistência dos artifacts funcionam de ponta a
-ponta. Seu mAP não é resultado experimental. Os primeiros comparative mAP
-results aparecerão em `outputs/bvtsld/triage_results.csv` durante a execução da
-full grid. O estado auditável atual está em
+O treino de verificação tem duas épocas. Ele confirma que dataset, rótulos,
+seleção, treino, validação e gravação dos artefatos funcionam de ponta a
+ponta. Seu mAP não é resultado experimental. Após a grade completa, a análise
+estatística (ganho médio pareado contra o `random`, intervalo de confiança de
+95% por *bootstrap* hierárquico, teste exato de aleatorização de sinais e
+correção de Holm) é gerada por
+[`analyze_triage.py`](scripts/analyze_triage.py). O estado auditável está em
 [`project_status.json`](outputs/bvtsld/project_status.json).
 
-## Termos
+Depois de escolher a fração na validação, a abertura única do teste avaliará
+**todos os métodos nessa fração**, e não apenas o vencedor da validação. A
+escolha não será refeita com base no teste. Isso permite verificar se o ganho
+do vencedor se sustenta fora dos dados usados para escolhê-lo e expõe o
+otimismo de seleção (*winner's curse*): entre muitos candidatos ruidosos, o
+maior resultado de validação tende a superestimar o desempenho verdadeiro.
+
+---
+
+## Etapa 2 — Replicação no TT100K
+
+*Etapa não iniciada. As tabelas serão preenchidas quando a etapa começar.*
+
+O [TT100K (Tsinghua-Tencent 100K)](https://cg.cs.tsinghua.edu.cn/traffic-sign/)
+([Zhu et al., 2016](https://doi.org/10.1109/CVPR.2016.232)) contém cerca de
+100 mil imagens de *street view* em alta resolução (2048 × 2048). Cerca de 10
+mil têm placas anotadas — um pool ~10× maior que o do BVTSLD, com placas
+pequenas em cenas complexas. O objetivo é verificar se o ranking dos métodos
+do teste preliminar se mantém em escala.
+
+O protocolo é o mesmo da Etapa 1: auditoria e taxonomia, partições fixas,
+oráculo, 6 métodos × 4 frações, 8 repetições para métodos estocásticos e 1 para
+o OPF, além de 2 sementes de treino, com mAP registrado para todos os métodos e
+frações. O OPF opera sobre o pool completo também nesta escala; não há amostra
+aleatória intermediária. São 164 seleções e 328 runs.
+
+Escalar para o TT100K reduz o risco de apenas ~120 atualizações nas menores
+seleções do BVTSLD, porque 5% do pool já contém centenas de imagens. Isso não
+elimina completamente o confundidor: com 40 épocas fixas, o número de passos
+ainda cresce linearmente com a fração. Por isso, antes de iniciar a grade do
+TT100K, a política congelada deve ser uma destas duas: manter 40 épocas e
+interpretar a curva como desempenho sob orçamento computacional crescente, ou
+fixar o número de atualizações por run para isolar melhor o efeito da seleção.
+Essa decisão será tomada antes do primeiro treino da Etapa 2 e não será
+alterada depois de observar resultados.
+
+A grade completa não deve começar no M2 Pro. O pré-requisito operacional da
+Etapa 2 é reservar uma GPU CUDA dedicada, espaço para checkpoints e uma janela
+de execução retomável. Antes de reservar a grade inteira, serão cronometrados
+o oráculo e um run de 5% e 50% no hardware definitivo; esses três tempos
+extrapolam o custo total de 328 runs. O piloto estima custo e capacidade, mas
+não elimina método, fração ou repetição da grade congelada.
+
+### Conjunto de dados e partições fixas — TT100K
+
+| Resultado | Valor |
+|---|---:|
+| Imagens elegíveis | — |
+| *Bounding boxes* | — |
+| Classes-alvo | — |
+| Pool de treino | — |
+| Partição de validação | — |
+| Partição de teste | — |
+
+### Oráculo YOLOv8n — TT100K
+
+| Partição | mAP@0.5 | mAP@0.5:0.95 |
+|---|---:|---:|
+| Validação | — | — |
+
+### Treino YOLO por seleção — mAP vs. oráculo — TT100K
+
+Cada célula reporta mAP@0.5 / mAP@0.5:0.95 na validação. Referência: oráculo
+com 100% do pool: — / —.
+
+| Método | 5% | 10% | 20% | 50% |
+|---|---:|---:|---:|---:|
+| `random` | — / — | — / — | — / — | — / — |
+| `kmeans_dinov2` | — / — | — / — | — / — | — / — |
+| `opf_dinov2` | — / — | — / — | — / — | — / — |
+| `typiclust_dinov2` | — / — | — / — | — / — | — / — |
+| `probcover_dinov2` | — / — | — / — | — / — | — / — |
+| `freesel_dino` | — / — | — / — | — / — | — / — |
+
+---
+
+## Etapa 3 — Trabalhos futuros: semi-supervisão na dissertação
+
+Com os resultados das Etapas 1 e 2, a seleção vencedora define o conjunto
+rotulado inicial. O restante do pool entra sem rótulos, por meio de
+*pseudo-labels*.
+
+Uma distinção importante: FixMatch, FreeMatch e SoftMatch foram propostos para
+**classificação**. Em detecção, o *pseudo-label* é um conjunto de *bounding
+boxes* filtradas por confiança e NMS, e a linha de pesquisa própria da área —
+Unbiased Teacher ([Liu et al., 2021](https://arxiv.org/abs/2102.09480)), Soft
+Teacher ([Xu et al., 2021](https://arxiv.org/abs/2106.09018)) e, para a
+família YOLO, Efficient Teacher ([Xu et al., 2023](https://arxiv.org/abs/2302.07577))
+— usa um par professor–aluno com EMA para gerar e consumir esses rótulos. O
+plano da dissertação é adotar essa estrutura professor–aluno e comparar, dentro
+dela, três estratégias de filtragem dos *pseudo-labels*, derivadas dos métodos
+de classificação:
+
+- **Limiar fixo** (estilo FixMatch, [Sohn et al., 2020](https://arxiv.org/abs/2001.07685)):
+  a predição do professor na visão com *weak augmentation* vira *pseudo-label*
+  quando a confiança supera um limiar fixo (`τ = 0,95`) e supervisiona o aluno
+  na visão com *strong augmentation*.
+
+- **Limiares adaptativos por classe** (estilo FreeMatch,
+  [Wang et al., 2023](https://arxiv.org/abs/2205.07246)): limiares globais e
+  por classe estimados a partir da confiança do próprio modelo. Relevante
+  quando as classes têm frequências muito diferentes, como `information` no
+  BVTSLD.
+
+- **Pesos contínuos de confiança** (estilo SoftMatch,
+  [Chen et al., 2023](https://arxiv.org/abs/2301.10921)): substitui o corte
+  binário por um peso gaussiano centrado na confiança média, para equilibrar
+  quantidade e qualidade dos *pseudo-labels*.
+
+---
+
+## Apêndice
+
+### Termos
 
 | Termo | O que é |
 |---|---|
@@ -179,54 +414,21 @@ full grid. O estado auditável atual está em
 | **seleção** | o subconjunto de imagens escolhido para receber rótulo manual |
 | **embedding** | um vetor de números que resume o conteúdo de uma imagem, gerado por uma rede pronta (não precisa de rótulo para calcular) |
 | **agrupamento (clustering)** | juntar imagens de embedding parecido em grupos ("cenas de rodovia", "ruas à noite"...) |
-| **amostragem estratificada** | montar a seleção pegando um pouco de cada grupo, proporcional ao tamanho do grupo — em vez de sortear no escuro |
-| **cobertura** | distância média de cada imagem do pool à imagem selecionada mais parecida — mede, sem treinar nada, o quão bem a seleção representa o pool |
+| **cobertura DINOv2** | distância média de cada imagem do pool à imagem selecionada mais parecida no DINOv2 global — diagnóstico interno desse espaço, não critério de ranking entre métodos |
 | **oráculo** | YOLO treinado com 100% dos rótulos — o teto de referência |
 | **instância de seleção** | uma execução independente da técnica, identificada por uma semente de seleção; é a unidade de comparação com o sorteio |
 | **semente de treino** | inicialização e aleatoriedade do YOLO; cada instância de seleção é treinada com as mesmas 2 sementes em todas as técnicas |
 
-## Methods
+### Protocolo fixo de treino YOLO
 
-`Full-dimensional space` é o espaço usado pelo algoritmo antes da t-SNE. Cada
-painel comprime seu próprio espaço para duas dimensions; posições de painéis
-diferentes não compartilham o mesmo sistema de coordenadas. Os methods com
-representation usam L2-normalized vectors e cosine distance. Ground-truth
-labels nunca decidem a selection.
+| Item | Configuração fixa |
+|---|---|
+| Modelo e treino | YOLOv8n pré-treinado no COCO; 640 px; 40 épocas; SGD; *batch* 16; `patience=0`; determinístico; sementes 41 e 42 |
+| Aumentações | HSV `(0.015, 0.7, 0.4)`; translação `0.1`; escala `0.5`; espelhamento `0.5`; *mosaic* `1.0` desligado nas 10 épocas finais; *erasing* `0.4` |
+| Decisão | mAP@0.5:0.95 de validação; comparação pareada com `random`; ganho mínimo relevante de `0.02` |
+| Inferência estatística | Ganho médio pareado, IC 95% por *bootstrap* hierárquico, teste exato de sinais e correção de Holm |
 
-| Method | Representation space | O que cada ponto representa | Como seleciona | Intuição experimental |
-|---|---|---|---|---|
-| `random` | Nenhum embedding | Uma imagem em um arbitrary index grid | Sorteia uniformemente 69 imagens. | Control baseline: mede o que cada method acrescenta além do acaso. |
-| `kmeans_dinov2` | DINOv2, 384 dimensions | Uma whole image | Forma `k = 69` clusters e escolhe o medoid de cada cluster. | Representar cada global scene cluster por uma imagem real. |
-| `kmeans_clip` | CLIP, 512 dimensions | Uma whole image | Repete k-means + medoid no CLIP embedding. | Isolar o efeito da representation mantendo a selection rule fixa. |
-| `kmeans_shallow` | Color, texture e edge features, 2.276 dimensions | Uma whole image | Repete k-means + medoid sem deep embedding. | Verificar quanto deep representations acrescentam sobre visual low-level features. |
-| `opf_dinov2` | DINOv2, 384 dimensions | Uma whole image | Usa OPF roots como density peaks e completa o budget com proportional cluster quotas. | Descobrir clusters adaptativamente, sem impor `k = budget` ao agrupamento inicial. |
-| `typiclust_dinov2` | DINOv2, 384 dimensions | Uma whole image | Forma 69 clusters e escolhe a imagem de maior local density em cada um. | Priorizar typical samples de dense regions e evitar outliers. |
-| `kcenter_dinov2` | DINOv2, 384 dimensions | Uma whole image | Adiciona iterativamente a imagem mais distante do current selected set. | Maximizar worst-case coverage, mesmo que isso atraia outliers. |
-| `probcover_dinov2` | DINOv2, 384 dimensions | Uma whole image | Escolhe a imagem que cobre mais ainda-uncovered neighbors dentro de um radius estimado sem labels. | Cobrir dense regions sem perseguir todo ponto extremo. |
-| `facility_dinov2` | DINOv2, 384 dimensions | Uma whole image | Maximiza de forma greedy a similarity de cada pool image ao nearest selected representative. | Obter um subset globalmente representativo do pool. |
-| `freesel_dino` | Local DINO patterns, 384 dimensions | Uma local region: cinco patterns por imagem, totalizando `693 × 5 = 3.465` pontos cinza | Procura o ainda-uncovered pattern mais distante; sua parent image entra na selection e seus cinco patterns passam a representar aquela imagem. | Encontrar imagens com uma local region nova, como uma placa pequena, mesmo quando a whole scene já parece representada. Na figura, um representative pattern azul é mostrado para cada uma das 69 selected images. |
-
-## Trabalho futuro — dissertação
-
-A selection vencedora define o labeled initial set; o restante do pool entra
-sem labels por meio de pseudo-labels:
-
-- **FixMatch**: a prediction na view com *weak augmentation* vira pseudo-label
-  quando a confidence supera um fixed threshold (`τ = 0,95`) e supervisiona a
-  view com *strong augmentation*.
-
-- **FreeMatch**: substitui o fixed threshold por global and per-class adaptive
-  thresholds, estimados por EMA da confidence do próprio model. Isso é
-  relevante quando as classes têm frequências muito diferentes, como
-  `information`.
-
-- **SoftMatch**: substitui o binary cutoff por continuous confidence weighting,
-  usando um Gaussian weight centrado na mean confidence, para equilibrar
-  quantidade e qualidade dos pseudo-labels.
-
-## Uso
-
-### Preparar um clone novo
+### Reprodução
 
 ```bash
 git clone <URL_DO_REPOSITORIO>
@@ -241,66 +443,108 @@ O BVTSLD não é versionado. Coloque o dataset em:
 datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/
 ```
 
-Os compact experiment results e as 160 selections estão no Git. Raw images,
-embeddings, materialized YOLO datasets, checkpoints e training runs permanecem
-locais. Para compartilhar checkpoints, use um release ou artifact storage em
-vez do histórico principal do repositório.
-
-### Validar e treinar
+Os resultados compactos e as 164 seleções estão no Git. Imagens brutas,
+embeddings, datasets YOLO materializados, checkpoints e execuções de treino
+permanecem locais. Para compartilhar checkpoints, use um release ou um
+armazenamento de artefatos, não o histórico do repositório.
 
 O ambiente deve usar as versões de `requirements.txt`, incluindo
 `ultralytics==8.3.0`:
 
 ```bash
+.venv/bin/python scripts/generate_embeddings.py --verify --sample 32
 .venv/bin/python scripts/validate_bvtsld.py
 .venv/bin/python scripts/run_local_triage.py --dry-run
 .venv/bin/python scripts/run_local_triage.py --smoke
 .venv/bin/python scripts/run_local_triage.py
 ```
 
-O training runner é resumable: cada completed run entra em
-`outputs/bvtsld/triage_results.csv` e não é repetido. Para executar apenas uma
-parte da grid:
+O treinador é retomável: cada run concluído entra em
+`outputs/bvtsld/triage_results.csv` e não é repetido. Para executar só uma
+parte da grade:
 
 ```bash
 .venv/bin/python scripts/run_local_triage.py \
   --technique typiclust_dinov2 --fraction 0.10 --repeat 1 --train-seed 42
 ```
 
-Após completar os 320 runs:
+Em um clone que ainda não tenha os artefatos locais, gere as duas
+representações antes das seleções:
+
+```bash
+.venv/bin/python scripts/generate_embeddings.py --dataset bvtsld
+.venv/bin/python scripts/generate_bvtsld_local_selections.py
+```
+
+Após completar os 328 runs:
 
 ```bash
 .venv/bin/python scripts/analyze_triage.py outputs/bvtsld/triage_results.csv \
   --output outputs/bvtsld/triage_analysis.csv
+.venv/bin/python scripts/summarize_metrics.py
 ```
 
-## Fixed YOLO protocol
+O primeiro comando gera a análise estatística pareada. O segundo agrega as
+médias por técnica × fração (qualidade, tempo e consumo computacional) em
+`outputs/bvtsld/metrics_summary.csv`.
 
-YOLOv8n pretrained on COCO; input 640 × 640; 40 epochs; `patience=0`; SGD;
-batch 16; deterministic training; train seeds 41 and 42. Augmentations:
-HSV `(0.015, 0.7, 0.4)`, translation `0.1`, scale `0.5`, horizontal flip
-`0.5`, mosaic `1.0` closed for the final 10 epochs, and erasing `0.4`.
-
-Selection ranking uses validation mAP@0.5:0.95. Each repeat is paired with
-the same random baseline and train seed. Analysis reports paired mean gain,
-hierarchical bootstrap 95% CI, exact sign randomization and Holm correction.
-The minimum practically relevant gain is `0.02` mAP.
-
-## Artifact layout
+### Layout dos artefatos
 
 ```text
-README.md                                overview, protocol and current results [Git]
-requirements.txt                         pinned Python dependencies [Git]
-scripts/                                 audit, selection, training and analysis [Git]
-figs/                                    curated publication figures [Git]
-outputs/bvtsld/records.json              clean annotations [Git]
-outputs/bvtsld/split.json                fixed pool/validation/test split [Git]
-outputs/bvtsld/selections/*.json         160 sample selections [Git]
-outputs/bvtsld/selections_summary.csv    coverage, stability and runtime [Git]
-outputs/bvtsld/oracle_results.json       oracle protocol and validation metrics [Git]
-outputs/bvtsld/triage_results.csv        selection training metrics [Git, when generated]
-datasets/bvtsld/                         raw dataset [local]
-outputs/bvtsld/embeddings_*.npy          frozen embeddings [local]
-outputs/bvtsld/yolo_bvtsld/              materialized YOLO dataset [local]
-outputs/bvtsld/runs/                     checkpoints and training runs [local]
+README.md                                visão geral, protocolo e resultados
+requirements.txt                         dependências Python fixadas
+scripts/                                 auditoria, seleção, treino e análise
+figs/                                    figuras de publicação
+outputs/bvtsld/records.json              anotações limpas
+outputs/bvtsld/split.json                partições fixas pool/validação/teste
+outputs/bvtsld/selections/*.json         164 seleções
+outputs/bvtsld/selections_summary.csv    cobertura, estabilidade e tempos
+outputs/bvtsld/oracle_results.json       protocolo e métricas do oráculo
+outputs/bvtsld/triage_results.csv        métricas de treino por run (quando gerado)
+outputs/bvtsld/metrics_summary.csv       médias por técnica x fração (quando gerado)
+datasets/bvtsld/                         dataset bruto (fora do Git)
+outputs/bvtsld/embeddings_*.npy          embeddings congelados (fora do Git)
+outputs/bvtsld/yolo_bvtsld/              dataset YOLO materializado (fora do Git)
+outputs/bvtsld/runs/                     checkpoints e execuções de treino (fora do Git)
 ```
+
+### Referências
+
+- Caron, M. et al. (2021). *Emerging Properties in Self-Supervised Vision
+  Transformers* (DINO). ICCV. [arXiv:2104.14294](https://arxiv.org/abs/2104.14294)
+- Chen, H. et al. (2023). *SoftMatch: Addressing the Quantity-Quality
+  Trade-off in Semi-supervised Learning*. ICLR.
+  [arXiv:2301.10921](https://arxiv.org/abs/2301.10921)
+- Hacohen, G., Dekel, A. & Weinshall, D. (2022). *Active Learning on a Budget:
+  Opposite Strategies Suit High and Low Budgets* (TypiClust). ICML.
+  [arXiv:2202.02794](https://arxiv.org/abs/2202.02794)
+- Liu, Y.-C. et al. (2021). *Unbiased Teacher for Semi-Supervised Object
+  Detection*. ICLR. [arXiv:2102.09480](https://arxiv.org/abs/2102.09480)
+- Lloyd, S. (1982). *Least Squares Quantization in PCM* (k-means). IEEE
+  Transactions on Information Theory.
+  [DOI:10.1109/TIT.1982.1056489](https://doi.org/10.1109/TIT.1982.1056489)
+- Oquab, M. et al. (2024). *DINOv2: Learning Robust Visual Features without
+  Supervision*. TMLR. [arXiv:2304.07193](https://arxiv.org/abs/2304.07193)
+- Rocha, L. M., Cappabianco, F. A. M. & Falcão, A. X. (2009). *Data Clustering
+  as an Optimum-Path Forest Problem with Applications in Image Analysis*.
+  International Journal of Imaging Systems and Technology.
+  [DOI:10.1002/ima.20191](https://doi.org/10.1002/ima.20191)
+- Sohn, K. et al. (2020). *FixMatch: Simplifying Semi-Supervised Learning with
+  Consistency and Confidence*. NeurIPS.
+  [arXiv:2001.07685](https://arxiv.org/abs/2001.07685)
+- Wang, Y. et al. (2023). *FreeMatch: Self-adaptive Thresholding for
+  Semi-supervised Learning*. ICLR.
+  [arXiv:2205.07246](https://arxiv.org/abs/2205.07246)
+- Xie, Y. et al. (2023). *Towards Free Data Selection with General-Purpose
+  Models* (FreeSel). NeurIPS.
+  [arXiv:2309.17342](https://arxiv.org/abs/2309.17342)
+- Xu, B. et al. (2023). *Efficient Teacher: Semi-Supervised Object Detection
+  for YOLOv5*. [arXiv:2302.07577](https://arxiv.org/abs/2302.07577)
+- Xu, M. et al. (2021). *End-to-End Semi-Supervised Object Detection with Soft
+  Teacher*. ICCV. [arXiv:2106.09018](https://arxiv.org/abs/2106.09018)
+- Yehuda, O., Dekel, A., Hacohen, G. & Weinshall, D. (2022). *Active Learning
+  Through a Covering Lens* (ProbCover). NeurIPS.
+  [arXiv:2205.11320](https://arxiv.org/abs/2205.11320)
+- Zhu, Z. et al. (2016). *Traffic-Sign Detection and Classification in the
+  Wild* (TT100K). CVPR.
+  [DOI:10.1109/CVPR.2016.232](https://doi.org/10.1109/CVPR.2016.232)

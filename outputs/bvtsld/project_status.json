@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-07-12T14:12:53.801407+00:00",
+  "generated_at_utc": "2026-07-13T02:04:25.944670+00:00",
   "ready": true,
   "errors": [],
   "dataset": {
@@ -28,25 +28,17 @@
     }
   },
   "embeddings": {
-    "embeddings_bvtsld_clip_full.npy": [
-      693,
-      512
-    ],
     "embeddings_bvtsld_dinov2_full.npy": [
       693,
       384
-    ],
-    "embeddings_bvtsld_shallow.npy": [
-      693,
-      2276
     ],
     "embeddings_bvtsld_signness.npy": [
       693
     ]
   },
   "selections": {
-    "files": 160,
-    "expected": 160,
+    "files": 164,
+    "expected": 164,
     "complete": true
   },
   "oracle": {
@@ -64,12 +56,12 @@
   },
   "triage": {
     "completed_runs": 0,
-    "expected_runs": 320
+    "expected_runs": 328
   },
   "training_configs": {
     "ready": true,
-    "lists": 160,
-    "yamls": 160
+    "lists": 164,
+    "yamls": 164
   },
   "smoke_test": {
     "passed": true,

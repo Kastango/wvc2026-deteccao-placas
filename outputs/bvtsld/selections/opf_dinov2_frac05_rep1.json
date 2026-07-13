@@ -1,6 +1,6 @@
 {
  "technique": "opf_dinov2",
- "implementation": "OPF root + quota; sketch when N > 3000",
+ "implementation": "OPF root + quota on the full pool",
  "fraction": 0.05,
  "repeat": 1,
  "selection_seed": 42,

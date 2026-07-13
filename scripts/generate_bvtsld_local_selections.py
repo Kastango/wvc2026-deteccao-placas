@@ -19,25 +19,20 @@ ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "outputs" / "bvtsld"
 SELECTIONS_DIR = OUTPUT / "selections"
 SEED = 42
-FRACTIONS = [0.05, 0.10]
+FRACTIONS = [0.05, 0.10, 0.20, 0.50]
 REPEATS = 8
 CLASSES = ["regulatory", "warning", "information"]
 KNN_K = 64
 KNN_QUERY_BATCH = 2_048
-OPF_MAX_POINTS = 3_000
 KMEANS_EXACT_MAX_POINTS = 10_000
 KNN_BACKENDS_USED: set[str] = set()
 
 METHOD_FIDELITY = {
     "random": "random sampling control",
     "kmeans_dinov2": "k-means + medoid on DINOv2 embeddings",
-    "kmeans_clip": "k-means + medoid on CLIP embeddings",
-    "kmeans_shallow": "k-means + medoid on shallow features",
-    "opf_dinov2": "OPF root + quota; sketch when N > 3000",
+    "opf_dinov2": "OPF root + quota on the full pool",
     "typiclust_dinov2": "TypiClust",
-    "kcenter_dinov2": "k-center greedy",
     "probcover_dinov2": "ProbCover; unlabeled delta at purity >= 0.95",
-    "facility_dinov2": "greedy facility location; bootstrap per repeat",
     "freesel_dino": "FreeSel; FDS on local DINO patterns",
 }
 
@@ -50,6 +45,11 @@ def normalize_rows(x):
 def rss_mb():
     value = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
     return value / (1024**2) if os.uname().sysname == "Darwin" else value / 1024
+
+
+def cpu_seconds():
+    usage = resource.getrusage(resource.RUSAGE_SELF)
+    return usage.ru_utime + usage.ru_stime
 
 
 def budget_for(fraction, n):
@@ -128,7 +128,7 @@ def kmeans_selections(emb, fraction, seed=SEED):
     return out
 
 
-def opf_selections(emb, fraction, seed=SEED):
+def opf_selections(emb, fraction):
     import logging
     from opfython.models import UnsupervisedOPF
 
@@ -136,28 +136,23 @@ def opf_selections(emb, fraction, seed=SEED):
         if name.startswith("opfython"):
             logging.getLogger(name).setLevel(logging.ERROR)
 
-    budget, out = budget_for(fraction, len(emb)), []
-    for rep in range(REPEATS):
-        rnd = np.random.RandomState(seed + rep)
-        sketch_n = min(len(emb), OPF_MAX_POINTS)
-        sample = np.sort(rnd.choice(len(emb), sketch_n, replace=False))
-        opf = UnsupervisedOPF(max_k=20)
-        opf.fit(emb[sample].tolist())
-        labels = np.array([node.cluster_label for node in opf.subgraph.nodes])
-        group_root = {
-            node.cluster_label: node.idx for node in opf.subgraph.nodes if node.root == node.idx
-        }
-        sel = []
-        for group, quota in group_quotas(labels, budget).items():
-            if quota == 0:
-                continue
-            idx = np.where(labels == group)[0]
-            root = int(group_root.get(group, idx[0]))
-            ranked = idx[np.argsort(np.linalg.norm(emb[sample][idx] - emb[sample][root], axis=1))]
-            picked = [root] + [int(i) for i in ranked if int(i) != root]
-            sel += [int(sample[i]) for i in picked[:quota]]
-        out.append(np.sort(np.unique(sel))[:budget])
-    return out
+    budget = budget_for(fraction, len(emb))
+    opf = UnsupervisedOPF(max_k=20)
+    opf.fit(emb.tolist())
+    labels = np.array([node.cluster_label for node in opf.subgraph.nodes])
+    group_root = {
+        node.cluster_label: node.idx for node in opf.subgraph.nodes if node.root == node.idx
+    }
+    selection = []
+    for group, quota in group_quotas(labels, budget).items():
+        if quota == 0:
+            continue
+        idx = np.where(labels == group)[0]
+        root = int(group_root.get(group, idx[0]))
+        ranked = idx[np.argsort(np.linalg.norm(emb[idx] - emb[root], axis=1))]
+        picked = [root] + [int(i) for i in ranked if int(i) != root]
+        selection.extend(picked[:quota])
+    return [np.sort(np.unique(selection))[:budget]]
 
 
 def typicality(emb, indices, k_nn=20):
@@ -181,20 +176,6 @@ def typiclust_selections(emb, fraction, seed=SEED):
         while len(set(sel)) < budget:
             sel.append(int(rnd.randint(len(emb))))
         out.append(np.sort(np.unique(sel))[:budget])
-    return out
-
-
-def kcenter_selections(emb, fraction, seed=SEED):
-    budget, out = budget_for(fraction, len(emb)), []
-    for rep in range(REPEATS):
-        rnd = np.random.RandomState(seed + rep)
-        sel = [int(rnd.randint(len(emb)))]
-        dmin = chunked_cosine_distance(emb, np.array(sel))
-        while len(sel) < budget:
-            nxt = int(np.argmax(dmin))
-            sel.append(nxt)
-            dmin = np.minimum(dmin, chunked_cosine_distance(emb, np.array([nxt])))
-        out.append(np.sort(np.unique(sel)))
     return out
 
 
@@ -231,28 +212,6 @@ def probcover_selections(emb, fraction, seed=SEED, purity_target=0.95):
             nxt = int(rnd.choice(best))
             sel.append(nxt)
             covered |= cover[nxt]
-        out.append(np.sort(np.array(sel, dtype=int)))
-    return out
-
-
-def facility_selections(emb, fraction, seed=SEED):
-    x = normalize_rows(emb)
-    n = len(x)
-    budget = budget_for(fraction, n)
-    out = []
-    for rep in range(REPEATS):
-        rnd = np.random.RandomState(seed + rep)
-        clients = np.sort(rnd.choice(n, n, replace=True))
-        sim = x[clients] @ x.T
-        best = np.full(len(clients), -1.0, dtype=np.float32)
-        sel = []
-        for _ in range(budget):
-            gains = np.maximum(sim, best[:, None]).sum(axis=0) - best.sum()
-            if sel:
-                gains[np.array(sel, dtype=int)] = -np.inf
-            nxt = int(np.argmax(gains))
-            sel.append(nxt)
-            best = np.maximum(best, sim[:, nxt])
         out.append(np.sort(np.array(sel, dtype=int)))
     return out
 
@@ -309,13 +268,10 @@ def main():
     by_id = {record["id"]: record for record in records}
     pool = [by_id[image_id] for image_id in split["pool"]]
     emb = normalize_rows(np.load(OUTPUT / "embeddings_bvtsld_dinov2_full.npy"))
-    emb_clip = normalize_rows(np.load(OUTPUT / "embeddings_bvtsld_clip_full.npy"))
-    emb_shallow = normalize_rows(np.load(OUTPUT / "embeddings_bvtsld_shallow.npy"))
     freesel = np.load(OUTPUT / "patterns_bvtsld_freesel.npz")
     patterns, pattern_ids = freesel["patterns"], freesel["ids"]
-    for name, matrix in [("dinov2", emb), ("clip", emb_clip), ("shallow", emb_shallow)]:
-        if len(matrix) != len(pool):
-            raise RuntimeError(f"embedding {name} rows {len(matrix)} != pool size {len(pool)}")
+    if len(emb) != len(pool):
+        raise RuntimeError(f"embedding dinov2 rows {len(emb)} != pool size {len(pool)}")
     if int(pattern_ids.max()) != len(pool) - 1:
         raise RuntimeError("freesel pattern ids do not span the pool")
 
@@ -324,13 +280,9 @@ def main():
     jobs = {
         "random": lambda fraction: random_selections(len(pool), fraction),
         "kmeans_dinov2": lambda fraction: kmeans_selections(emb, fraction),
-        "kmeans_clip": lambda fraction: kmeans_selections(emb_clip, fraction),
-        "kmeans_shallow": lambda fraction: kmeans_selections(emb_shallow, fraction),
         "opf_dinov2": lambda fraction: opf_selections(emb, fraction),
         "typiclust_dinov2": lambda fraction: typiclust_selections(emb, fraction),
-        "kcenter_dinov2": lambda fraction: kcenter_selections(emb, fraction),
         "probcover_dinov2": lambda fraction: probcover_selections(emb, fraction),
-        "facility_dinov2": lambda fraction: facility_selections(emb, fraction),
         "freesel_dino": lambda fraction: freesel_selections(
             patterns, pattern_ids, len(pool), fraction
         ),
@@ -340,18 +292,22 @@ def main():
         for technique, job in jobs.items():
             KNN_BACKENDS_USED.clear()
             rss_before, started = rss_mb(), time.perf_counter()
+            cpu_before = cpu_seconds()
             selections = job(fraction)
+            wall = time.perf_counter() - started
             telemetry = {
-                "selection_seconds_total": time.perf_counter() - started,
+                "selection_seconds_total": wall,
+                "selection_seconds_per_repeat": wall / len(selections),
+                "selection_cpu_seconds_total": cpu_seconds() - cpu_before,
                 "rss_before_mb": rss_before,
                 "rss_peak_mb": rss_mb(),
                 "knn_backend": "+".join(sorted(KNN_BACKENDS_USED)) or "not_applicable",
-                "opf_max_points": OPF_MAX_POINTS,
+                "opf_scope": "full_pool" if technique == "opf_dinov2" else "not_applicable",
             }
             overlaps = [
                 jaccard(selections[i], selections[j])
-                for i in range(REPEATS)
-                for j in range(i + 1, REPEATS)
+                for i in range(len(selections))
+                for j in range(i + 1, len(selections))
             ]
             for rep, selection in enumerate(selections):
                 selection_seed = SEED + rep
@@ -377,7 +333,9 @@ def main():
                         "size": len(selection),
                         "coverage_mean": round(cov_mean, 4),
                         "coverage_max": round(cov_max, 4),
-                        "stability_jaccard": round(float(np.mean(overlaps)), 3),
+                        "stability_jaccard": (
+                            round(float(np.mean(overlaps)), 3) if overlaps else 1.0
+                        ),
                         "classes": selection_classes(pool, selection),
                         "implementation": METHOD_FIDELITY[technique],
                         **telemetry,

@@ -41,17 +41,20 @@ UNMAPPED_TRAFFIC_LIGHT_CODES = {"000051", "000052", "000053"}
 EXPECTED_TECHNIQUES = {
     "random",
     "kmeans_dinov2",
-    "kmeans_clip",
-    "kmeans_shallow",
     "opf_dinov2",
     "typiclust_dinov2",
-    "kcenter_dinov2",
     "probcover_dinov2",
-    "facility_dinov2",
     "freesel_dino",
 }
-EXPECTED_FRACTIONS = {0.05, 0.10}
-EXPECTED_REPEATS = 8
+EXPECTED_FRACTIONS = {0.05, 0.10, 0.20, 0.50}
+
+
+def expected_repeats() -> dict[str, int]:
+    repeats = {technique: 8 for technique in EXPECTED_TECHNIQUES}
+    repeats["opf_dinov2"] = 1
+    return repeats
+
+
 EXPECTED_ULTRALYTICS = "8.3.0"
 
 
@@ -252,6 +255,7 @@ def audit_selections(split: dict) -> dict:
     selection_dir = OUTPUT / "selections"
     files = sorted(selection_dir.glob("*.json"))
     pool_ids = set(split.get("pool", []))
+    repeats_by_technique = expected_repeats()
     groups = defaultdict(list)
     subset_ok = True
     budget_ok = True
@@ -291,7 +295,7 @@ def audit_selections(split: dict) -> dict:
                 and fraction in EXPECTED_FRACTIONS,
                 "complete_for_current_protocol": technique in EXPECTED_TECHNIQUES
                 and fraction in EXPECTED_FRACTIONS
-                and len(selections) == EXPECTED_REPEATS,
+                and len(selections) == repeats_by_technique.get(technique, 0),
             }
         )
 
@@ -317,9 +321,8 @@ def audit_selections(split: dict) -> dict:
         "groups": group_status,
         "current_protocol_complete": complete,
         "extra_historical_groups": extra_groups,
-        "expected_current_protocol_files": len(EXPECTED_TECHNIQUES)
-        * len(EXPECTED_FRACTIONS)
-        * EXPECTED_REPEATS,
+        "expected_current_protocol_files": sum(repeats_by_technique.values())
+        * len(EXPECTED_FRACTIONS),
     }
 
 

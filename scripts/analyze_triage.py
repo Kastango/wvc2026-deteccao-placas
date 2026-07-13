@@ -3,8 +3,9 @@
 Required CSV columns:
 technique,fraction,selection_repeat,selection_hash,train_seed,map50_95
 
-Validates N methods x 2 fractions x 8 selections x 2 train seeds, then computes
-paired differences against random sampling, hierarchical bootstrap confidence
+Validates 6 methods x 4 fractions x 8 selections x 2 train seeds (OPF is
+deterministic and keeps a single selection repeat), then computes paired
+differences against random sampling, hierarchical bootstrap confidence
 intervals, exact sign randomization and Holm correction within each fraction.
 """
 
@@ -19,17 +20,17 @@ import pandas as pd
 TECHNIQUES = {
     "random",
     "kmeans_dinov2",
-    "kmeans_clip",
-    "kmeans_shallow",
     "opf_dinov2",
     "typiclust_dinov2",
-    "kcenter_dinov2",
     "probcover_dinov2",
-    "facility_dinov2",
     "freesel_dino",
 }
-FRACTIONS = {0.05, 0.10}
+FRACTIONS = {0.05, 0.10, 0.20, 0.50}
 REPEATS = set(range(1, 9))
+# OPF always runs on the full pool and is deterministic, so one repeat carries
+# all the information regardless of pool size.
+TECHNIQUE_REPEATS = {technique: REPEATS for technique in TECHNIQUES}
+TECHNIQUE_REPEATS["opf_dinov2"] = {1}
 TRAIN_SEEDS = {41, 42}
 BOOTSTRAPS = 10_000
 
@@ -50,8 +51,11 @@ def validate(data: pd.DataFrame) -> None:
         raise ValueError(f"Unknown methods: {sorted(unknown)}")
     if set(data["fraction"].round(2)) != FRACTIONS:
         raise ValueError("The CSV must contain only fractions 0.05 and 0.10")
-    if set(data["selection_repeat"]) != REPEATS:
-        raise ValueError("Each cell must contain repeats 1..8")
+    for technique, group in data.groupby("technique"):
+        if set(group["selection_repeat"]) != TECHNIQUE_REPEATS[technique]:
+            raise ValueError(
+                f"{technique} must contain repeats {sorted(TECHNIQUE_REPEATS[technique])}"
+            )
     if set(data["train_seed"]) != TRAIN_SEEDS:
         raise ValueError("Each selection must use train seeds 41 and 42")
 
@@ -59,11 +63,18 @@ def validate(data: pd.DataFrame) -> None:
     if data.duplicated(keys).any():
         raise ValueError("Duplicate training runs found for the same cell")
     counts = data.groupby(["technique", "fraction"]).size()
-    if not counts.eq(16).all():
-        raise ValueError("Each method x fraction must contain 8 selections x 2 train seeds")
+    for (technique, _), count in counts.items():
+        expected = len(TECHNIQUE_REPEATS[technique]) * len(TRAIN_SEEDS)
+        if count != expected:
+            raise ValueError(
+                f"{technique} must contain {expected} runs per fraction, found {count}"
+            )
 
     unique = data.groupby(["technique", "fraction"])["selection_hash"].nunique()
-    deterministic = unique[~unique.eq(8)]
+    expected_unique = unique.index.get_level_values("technique").map(
+        lambda t: len(TECHNIQUE_REPEATS[t])
+    )
+    deterministic = unique[unique.to_numpy() != expected_unique.to_numpy()]
     if not deterministic.empty:
         print(
             "WARNING: duplicate deterministic selections; variability in these cells "
@@ -113,7 +124,7 @@ def analyze(data: pd.DataFrame) -> pd.DataFrame:
         block = scores.loc[fraction]
         for technique in sorted(set(block.columns) - {"random"}):
             paired = (block[technique] - block["random"]).unstack("train_seed")
-            paired = paired.loc[sorted(REPEATS), sorted(TRAIN_SEEDS)]
+            paired = paired.loc[sorted(TECHNIQUE_REPEATS[technique]), sorted(TRAIN_SEEDS)]
             by_selection = paired.mean(axis=1).to_numpy()
             low, high = hierarchical_ci(paired.to_numpy(), rng)
             rows.append({
