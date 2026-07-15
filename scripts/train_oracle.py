@@ -14,6 +14,7 @@ from run_local_triage import (
     MODEL_WEIGHTS,
     PATIENCE,
     ULTRALYTICS_VERSION,
+    fresh_run_dir,
 )
 
 
@@ -46,6 +47,8 @@ def main() -> None:
         raise FileNotFoundError(f"materialize o dataset YOLO primeiro: {data_yaml}")
 
     runs = dataset.output_dir / "runs"
+    fresh_run_dir(runs, "oracle")
+    fresh_run_dir(runs, "oracle_eval")
     model = YOLO(str(MODEL_WEIGHTS) if MODEL_WEIGHTS.exists() else MODEL_WEIGHTS.name)
     started = time.time()
     model.train(

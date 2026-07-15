@@ -8,36 +8,11 @@ projeto.
 
 ## Métodos de seleção
 
-- [ ] **Documentar o TypiClust como variante da implementação publicada.**
-  - Local: [`README.md:130`](README.md#os-métodos-escolhidos-e-por-quê).
-  - Explicitar: uso de cosseno e ausência dos filtros/regras para clusters
-    pequenos descritos no apêndice do artigo.
-  - Concluído quando: o texto separar o núcleo do método das escolhas próprias
-    do projeto.
-
-- [ ] **Documentar as adaptações do ProbCover e limitar “estado da arte”.**
-  - Local: [`README.md:131`](README.md#os-métodos-escolhidos-e-por-quê).
-  - Explicitar: o artigo estima o raio com `k = número de classes`; o projeto
-    usa `k = orçamento` e reinicia a cobertura quando ela se esgota.
-  - Restringir “estado da arte” aos benchmarks de classificação avaliados no
-    artigo de 2022.
-
-- [ ] **Corrigir a atribuição e o nome da variante FreeSel.**
-  - Local: [`README.md:132`](README.md#os-métodos-escolhidos-e-por-quê) e
-    artefatos/código que usam `freesel_dino`.
-  - Problema: o projeto implementa FreeSel-FDS determinístico e k-means local;
-    o método principal usa amostragem proporcional à distância² e agrupamento
-    espectral guiado por atenção.
-  - Decidir se a técnica será renomeada para `freesel_fds_dino` em código,
-    seleções, tabelas e figuras.
-  - Concluído quando: nome e descrição identificarem inequivocamente a variante.
-
-- [ ] **Reformular “uma placa pequena conta” como hipótese.**
-  - Local: [`README.md:132`](README.md#os-métodos-escolhidos-e-por-quê).
-  - Problema: FreeSel sustenta padrões locais, mas não demonstra especificamente
-    seleção de placas pequenas.
-  - Concluído quando: a frase estiver apresentada como hipótese a ser testada
-    no estudo, não como efeito comprovado.
+- [ ] **Decidir se `freesel_dino` será renomeado para `freesel_fds_dino`.**
+  - Local: código, seleções, tabelas e figuras que usam `freesel_dino`.
+  - Contexto: o README já descreve a implementação como a variante
+    determinística FDS; falta apenas decidir se o identificador acompanha a
+    descrição em todos os artefatos.
 
 ## Diagnósticos e medições
 

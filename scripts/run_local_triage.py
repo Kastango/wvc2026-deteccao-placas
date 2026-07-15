@@ -11,6 +11,7 @@ import hashlib
 import json
 import os
 import resource
+import shutil
 import subprocess
 import sys
 import threading
@@ -137,6 +138,14 @@ def append_row(results_csv: Path, fields: list[str], row: dict) -> None:
         if new_file:
             writer.writeheader()
         writer.writerow(row)
+
+
+def fresh_run_dir(runs_dir: Path, name: str) -> None:
+    """Ultralytics appends to a stale results.csv when it reuses a run
+    directory, corrupting curves; interrupted leftovers must go first."""
+    stale = runs_dir / name
+    if stale.exists():
+        shutil.rmtree(stale)
 
 
 def main() -> None:
@@ -288,6 +297,8 @@ def main() -> None:
                 print(f"PENDING {path.stem} train_seed={seed}")
                 continue
             run_name = f"{path.stem}_seed{seed}"
+            fresh_run_dir(runs_dir, run_name)
+            fresh_run_dir(runs_dir, f"{run_name}_eval")
             started = time.time()
             cpu_before = cpu_time_s()
             model = YOLO(str(MODEL_WEIGHTS) if MODEL_WEIGHTS.exists() else MODEL_WEIGHTS.name)
