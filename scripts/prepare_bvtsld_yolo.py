@@ -1,4 +1,4 @@
-"""Materialize the frozen BVTSLD split in Ultralytics YOLO format."""
+"""Materialize a frozen dataset split in Ultralytics YOLO format."""
 from __future__ import annotations
 
 import argparse
@@ -8,12 +8,10 @@ from pathlib import Path
 
 from PIL import Image
 
+from dataset_config import ROOT, spec
 
-ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT / "outputs" / "bvtsld"
-DEFAULT_OUTPUT = SOURCE / "yolo_bvtsld"
+
 SPLIT_DIRS = {"pool": "train", "validation": "val", "test": "test"}
-CLASS_NAMES = ["regulatory", "warning", "information"]
 JPEG_QUALITY = 92
 
 
@@ -34,9 +32,13 @@ def is_complete(output: Path, split: dict[str, list[str]]) -> bool:
     )
 
 
-def materialize(output: Path, force: bool = False) -> None:
-    records = {item["id"]: item for item in json.loads((SOURCE / "records.json").read_text())}
-    split = json.loads((SOURCE / "split.json").read_text())
+def materialize(dataset_key: str, output: Path | None, force: bool = False) -> None:
+    dataset = spec(dataset_key)
+    source = dataset.output_dir
+    output = output or dataset.yolo_dir
+    class_names = list(dataset.target_classes)
+    records = {item["id"]: item for item in json.loads((source / "records.json").read_text())}
+    split = json.loads((source / "split.json").read_text())
 
     if is_complete(output, split) and not force:
         print(f"already complete: {output}")
@@ -61,7 +63,7 @@ def materialize(output: Path, force: bool = False) -> None:
                 image.convert("RGB").save(image_dir / f"{image_id}.jpg", quality=JPEG_QUALITY)
             (label_dir / f"{image_id}.txt").write_text(label_text(record["boxes"]))
 
-    names = "".join(f"  {index}: {name}\n" for index, name in enumerate(CLASS_NAMES))
+    names = "".join(f"  {index}: {name}\n" for index, name in enumerate(class_names))
     (output / "data.yaml").write_text(
         f"path: {output.resolve()}\n"
         "train: images/train\nval: images/val\ntest: images/test\n"
@@ -73,10 +75,11 @@ def materialize(output: Path, force: bool = False) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
+    parser.add_argument("--dataset", default="bvtsld", choices=("bvtsld", "tt100k"))
+    parser.add_argument("--output", type=Path, help="Override the default yolo_<dataset> dir")
     parser.add_argument("--force", action="store_true")
     args = parser.parse_args()
-    materialize(args.output, args.force)
+    materialize(args.dataset, args.output, args.force)
 
 
 if __name__ == "__main__":

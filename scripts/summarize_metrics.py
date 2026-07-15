@@ -14,13 +14,13 @@ from pathlib import Path
 
 import pandas as pd
 
+from dataset_config import spec
 
-ROOT = Path(__file__).resolve().parents[1]
-OUTPUT = ROOT / "outputs" / "bvtsld"
 
+# Per-class AP columns (``ap50_<classe>``) are detected dynamically, so the
+# same summary works for the 2-class BVTSLD and the 3-class TT100K.
 TRAINING_METRICS = [
     "precision", "recall", "f1", "map50", "map75", "map50_95",
-    "ap50_regulatory", "ap50_warning", "ap50_information",
     "train_time_s", "val_time_s", "infer_ms_per_img", "cpu_time_s",
     "peak_rss_mb", "gpu_mem_avg_mb", "gpu_mem_peak_mb", "gpu_util_avg_pct",
 ]
@@ -31,7 +31,10 @@ SELECTION_METRICS = [
 
 
 def summarize_training(runs: pd.DataFrame) -> pd.DataFrame:
-    present = [name for name in TRAINING_METRICS if name in runs.columns]
+    present = [
+        name for name in runs.columns
+        if name in TRAINING_METRICS or name.startswith("ap50_")
+    ]
     numeric = runs[present].apply(pd.to_numeric, errors="coerce")
     numeric[["technique", "fraction"]] = runs[["technique", "fraction"]]
     grouped = numeric.groupby(["technique", "fraction"])
@@ -54,12 +57,15 @@ def summarize_selection(selections: pd.DataFrame) -> pd.DataFrame:
 
 def main() -> None:
     parser = ArgumentParser(description=__doc__)
-    parser.add_argument("--training-csv", type=Path, default=OUTPUT / "triage_results.csv")
-    parser.add_argument(
-        "--selections-csv", type=Path, default=OUTPUT / "selections_summary.csv"
-    )
-    parser.add_argument("--output", type=Path, default=OUTPUT / "metrics_summary.csv")
+    parser.add_argument("--dataset", default="bvtsld", choices=("bvtsld", "tt100k"))
+    parser.add_argument("--training-csv", type=Path)
+    parser.add_argument("--selections-csv", type=Path)
+    parser.add_argument("--output", type=Path)
     args = parser.parse_args()
+    output_dir = spec(args.dataset).output_dir
+    args.training_csv = args.training_csv or output_dir / "triage_results.csv"
+    args.selections_csv = args.selections_csv or output_dir / "selections_summary.csv"
+    args.output = args.output or output_dir / "metrics_summary.csv"
 
     parts = []
     if args.training_csv.exists():

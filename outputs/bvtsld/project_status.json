@@ -1,39 +1,36 @@
 {
-  "generated_at_utc": "2026-07-13T02:04:25.944670+00:00",
+  "generated_at_utc": "2026-07-15T03:39:30.737650+00:00",
   "ready": true,
   "errors": [],
   "dataset": {
-    "records": 990,
+    "records": 1271,
     "split": {
-      "pool": 693,
-      "validation": 148,
-      "test": 149
+      "pool": 889,
+      "validation": 191,
+      "test": 191
     }
   },
   "yolo_dataset": {
     "train": {
-      "images": 693,
-      "labels": 693,
-      "expected": 693
+      "images": 889,
+      "labels": 889,
+      "expected": 889
     },
     "val": {
-      "images": 148,
-      "labels": 148,
-      "expected": 148
+      "images": 191,
+      "labels": 191,
+      "expected": 191
     },
     "test": {
-      "images": 149,
-      "labels": 149,
-      "expected": 149
+      "images": 191,
+      "labels": 191,
+      "expected": 191
     }
   },
   "embeddings": {
     "embeddings_bvtsld_dinov2_full.npy": [
-      693,
+      889,
       384
-    ],
-    "embeddings_bvtsld_signness.npy": [
-      693
     ]
   },
   "selections": {
@@ -44,12 +41,11 @@
   "oracle": {
     "checkpoint": "outputs/bvtsld/runs/oracle/weights/best.pt",
     "validation": {
-      "map50": 0.9483,
-      "map50_95": 0.627,
+      "map50": 0.9365,
+      "map50_95": 0.6035,
       "ap50_per_class": {
-        "regulatory": 0.9645,
-        "warning": 0.9721,
-        "information": 0.9082
+        "regulatory": 0.9502,
+        "traffic_light": 0.9228
       }
     },
     "protocol_valid": true

@@ -24,8 +24,8 @@ DEFAULT_DATASET_ROOT = (
 )
 DEFAULT_REVIEW_FILE = ROOT / "outputs" / "bvtsld" / "taxonomy_human_review.json"
 WEB_ROOT = ROOT / "tools" / "taxonomy_review"
-MAP_VERSION = "bvtsld-code-review-v2"
-TARGET_CLASSES = ["regulatory", "warning", "information"]
+MAP_VERSION = "bvtsld-2class-v3"
+TARGET_CLASSES = ["regulatory", "traffic_light"]
 CODE_MAP = {
     "000000": "regulatory",
     "000001": "regulatory",
@@ -36,13 +36,13 @@ CODE_MAP = {
     "000009": "regulatory",
     "000023": "regulatory",
     "000028": "regulatory",
+    "000035": "regulatory",
+    "000040": "regulatory",
     "000042": "regulatory",
-    "000025": "warning",
-    "000035": "information",
-    "000040": "information",
-    "000051": "quarantine_traffic_light",
-    "000052": "quarantine_traffic_light",
-    "000053": "quarantine_traffic_light",
+    "000051": "traffic_light",
+    "000052": "traffic_light",
+    "000053": "traffic_light",
+    "000025": "excluded_warning",
 }
 CODE_REFERENCE = {
     "000000": ("R-1", "Parada obrigatória"),

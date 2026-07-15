@@ -1,17 +1,10 @@
 {
   "dataset": "bvtsld",
-  "mapping_status": "local_machine_audited_human_review_pending",
-  "review": {
-    "status": "machine_audited",
-    "reviewers": [],
-    "map_version": "bvtsld-visual-v1",
-    "human_review_required_for_main_evidence": true,
-    "generated_at_utc": "2026-07-13T02:04:41.555166+00:00"
-  },
+  "mapping_status": "frozen_code_map",
+  "map_version": "bvtsld-2class-v3",
   "target_classes": [
     "regulatory",
-    "warning",
-    "information"
+    "traffic_light"
   ],
   "code_map": {
     "000000": 0,
@@ -23,10 +16,12 @@
     "000009": 0,
     "000023": 0,
     "000028": 0,
+    "000035": 0,
+    "000040": 0,
     "000042": 0,
-    "000025": 1,
-    "000035": 2,
-    "000040": 2
+    "000051": 1,
+    "000052": 1,
+    "000053": 1
   },
   "unknown_object_policy": "quarantine",
   "auxiliary_boxes": 0,
@@ -48,11 +43,9 @@
     "000052": 119,
     "000053": 409
   },
-  "quarantine_count": 373,
+  "quarantine_count": 92,
   "quarantine_by_code": {
-    "000051": 24,
-    "000052": 78,
-    "000053": 275
+    "000025": 92
   },
   "raw_dataset": {
     "image_files_total": 55291,
@@ -148,16 +141,16 @@
       "000008": 0,
       "000009": 0,
       "000023": 0,
-      "000025": 1,
       "000028": 0,
-      "000035": 2,
-      "000040": 2,
-      "000042": 0
+      "000035": 0,
+      "000040": 0,
+      "000042": 0,
+      "000051": 1,
+      "000052": 1,
+      "000053": 1
     },
-    "unmapped_codes_expected": [
-      "000051",
-      "000052",
-      "000053"
+    "quarantined_codes_expected": [
+      "000025"
     ]
   }
 }

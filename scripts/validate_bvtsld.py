@@ -1,6 +1,7 @@
-"""Validate every artifact required by the BVTSLD YOLO training grid."""
+"""Validate every artifact required by a dataset's YOLO training grid."""
 from __future__ import annotations
 
+import argparse
 import csv
 import json
 from collections import Counter
@@ -9,28 +10,22 @@ from pathlib import Path
 
 import numpy as np
 
+from dataset_config import (
+    FRACTIONS, ROOT, TECHNIQUES, expected_repeats, expected_selections, spec,
+)
 
-ROOT = Path(__file__).resolve().parents[1]
-OUTPUT = ROOT / "outputs" / "bvtsld"
-YOLO = OUTPUT / "yolo_bvtsld"
-METHODS = {
-    "random", "kmeans_dinov2", "opf_dinov2",
-    "typiclust_dinov2", "probcover_dinov2", "freesel_dino",
-}
-FRACTIONS = {0.05, 0.10, 0.20, 0.50}
+
+DATASET = spec("bvtsld")
+OUTPUT = DATASET.output_dir
+YOLO = DATASET.yolo_dir
+SPLIT_DIRS = {"pool": "train", "validation": "val", "test": "test"}
 
 
 def method_repeats() -> dict[str, set[int]]:
-    repeats = {method: set(range(1, 9)) for method in METHODS}
-    repeats["opf_dinov2"] = {1}
-    return repeats
-
-
-def expected_selections() -> int:
-    return sum(len(r) for r in method_repeats().values()) * len(FRACTIONS)
-
-
-SPLIT_DIRS = {"pool": "train", "validation": "val", "test": "test"}
+    return {
+        method: set(range(1, count + 1))
+        for method, count in expected_repeats().items()
+    }
 
 
 def load_json(path: Path):
@@ -50,6 +45,7 @@ def check_yolo_labels(split: dict[str, list[str]]) -> tuple[dict, list[str]]:
             errors.append(f"YOLO {yolo_name} count mismatch")
         if {p.stem for p in images} != {p.stem for p in labels}:
             errors.append(f"YOLO {yolo_name} image/label stems differ")
+        valid_classes = {str(i) for i in range(len(DATASET.target_classes))}
         for path in labels:
             for line_number, line in enumerate(path.read_text().splitlines(), 1):
                 fields = line.split()
@@ -57,7 +53,7 @@ def check_yolo_labels(split: dict[str, list[str]]) -> tuple[dict, list[str]]:
                     errors.append(f"Malformed label: {path}:{line_number}")
                     continue
                 cls, *coords = fields
-                if cls not in {"0", "1", "2"} or any(not 0 <= float(v) <= 1 for v in coords):
+                if cls not in valid_classes or any(not 0 <= float(v) <= 1 for v in coords):
                     errors.append(f"Invalid label value: {path}:{line_number}")
     return report, errors
 
@@ -76,7 +72,7 @@ def check_selections(pool: set[str]) -> tuple[dict, list[str]]:
         if not set(images) <= pool:
             errors.append(f"Selection outside train pool: {path.name}")
     repeats = method_repeats()
-    expected = {(m, f, r) for m in METHODS for f in FRACTIONS for r in repeats[m]}
+    expected = {(m, f, r) for m in TECHNIQUES for f in FRACTIONS for r in repeats[m]}
     present = set(counts)
     if present != expected or any(value != 1 for value in counts.values()):
         errors.append(
@@ -86,6 +82,13 @@ def check_selections(pool: set[str]) -> tuple[dict, list[str]]:
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--dataset", default="bvtsld", choices=("bvtsld", "tt100k"))
+    args = parser.parse_args()
+    global DATASET, OUTPUT, YOLO
+    DATASET = spec(args.dataset)
+    OUTPUT, YOLO = DATASET.output_dir, DATASET.yolo_dir
+
     errors: list[str] = []
     required = [
         OUTPUT / "records.json", OUTPUT / "split.json", OUTPUT / "selections_summary.csv",
@@ -113,7 +116,7 @@ def main() -> None:
         n_selections = expected_selections()
 
         embeddings = {}
-        for path in sorted(OUTPUT.glob("embeddings_bvtsld_*.npy")):
+        for path in sorted(OUTPUT.glob(f"embeddings_{DATASET.key}_*.npy")):
             shape = list(np.load(path, mmap_mode="r").shape)
             embeddings[path.name] = shape
             if shape[0] != len(split_sets["pool"]):
@@ -128,7 +131,7 @@ def main() -> None:
 
         oracle = load_json(OUTPUT / "oracle_results.json")
         oracle_ok = all([
-            oracle.get("dataset") == "bvtsld", oracle.get("epochs") == 40,
+            oracle.get("dataset") == DATASET.key, oracle.get("epochs") == 40,
             oracle.get("train_seed") == 42,
             oracle.get("imgsz") == 640, oracle.get("patience") == 0,
             oracle.get("train_images") == len(split_sets["pool"]),

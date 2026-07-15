@@ -1,9 +1,13 @@
 from __future__ import annotations
 
+import argparse
 import json
 import os
 import resource
 import shutil
+import subprocess
+import sys
+import tempfile
 import time
 from collections import Counter
 from datetime import datetime
@@ -14,14 +18,15 @@ import pandas as pd
 from sklearn.cluster import KMeans, MiniBatchKMeans
 from sklearn.neighbors import NearestNeighbors
 
+from dataset_config import FRACTIONS, STOCHASTIC_REPEATS, spec
 
-ROOT = Path(__file__).resolve().parents[1]
-OUTPUT = ROOT / "outputs" / "bvtsld"
-SELECTIONS_DIR = OUTPUT / "selections"
+
 SEED = 42
-FRACTIONS = [0.05, 0.10, 0.20, 0.50]
-REPEATS = 8
-CLASSES = ["regulatory", "warning", "information"]
+REPEATS = STOCHASTIC_REPEATS
+DATASET = spec("bvtsld")
+OUTPUT = DATASET.output_dir
+SELECTIONS_DIR = OUTPUT / "selections"
+CLASSES = list(DATASET.target_classes)
 KNN_K = 64
 KNN_QUERY_BATCH = 2_048
 KMEANS_EXACT_MAX_POINTS = 10_000
@@ -262,22 +267,31 @@ def archive_previous_selections():
     return archive
 
 
-def main():
+def configure(dataset_key: str) -> None:
+    global DATASET, OUTPUT, SELECTIONS_DIR, CLASSES
+    DATASET = spec(dataset_key)
+    OUTPUT = DATASET.output_dir
+    SELECTIONS_DIR = OUTPUT / "selections"
+    CLASSES = list(DATASET.target_classes)
+
+
+def load_inputs():
     records = json.loads((OUTPUT / "records.json").read_text())
     split = json.loads((OUTPUT / "split.json").read_text())
     by_id = {record["id"]: record for record in records}
     pool = [by_id[image_id] for image_id in split["pool"]]
-    emb = normalize_rows(np.load(OUTPUT / "embeddings_bvtsld_dinov2_full.npy"))
-    freesel = np.load(OUTPUT / "patterns_bvtsld_freesel.npz")
+    emb = normalize_rows(np.load(DATASET.embeddings_path))
+    freesel = np.load(DATASET.patterns_path)
     patterns, pattern_ids = freesel["patterns"], freesel["ids"]
     if len(emb) != len(pool):
         raise RuntimeError(f"embedding dinov2 rows {len(emb)} != pool size {len(pool)}")
     if int(pattern_ids.max()) != len(pool) - 1:
         raise RuntimeError("freesel pattern ids do not span the pool")
+    return pool, emb, patterns, pattern_ids
 
-    archive = archive_previous_selections()
-    rows = []
-    jobs = {
+
+def job_table(pool, emb, patterns, pattern_ids):
+    return {
         "random": lambda fraction: random_selections(len(pool), fraction),
         "kmeans_dinov2": lambda fraction: kmeans_selections(emb, fraction),
         "opf_dinov2": lambda fraction: opf_selections(emb, fraction),
@@ -288,22 +302,67 @@ def main():
         ),
     }
 
+
+def run_job(technique: str, fraction: float, job_output: Path) -> None:
+    """Execute one technique x fraction in this dedicated process.
+
+    Wall time, CPU time and peak RSS are measured inside a process that runs
+    nothing else, so no other technique interferes with the measurement.
+    """
+    pool, emb, patterns, pattern_ids = load_inputs()
+    job = job_table(pool, emb, patterns, pattern_ids)[technique]
+    KNN_BACKENDS_USED.clear()
+    rss_before, started = rss_mb(), time.perf_counter()
+    cpu_before = cpu_seconds()
+    selections = job(fraction)
+    wall = time.perf_counter() - started
+    payload = {
+        "technique": technique,
+        "fraction": fraction,
+        "selections": [[int(i) for i in selection] for selection in selections],
+        "telemetry": {
+            "selection_seconds_total": wall,
+            "selection_seconds_per_repeat": wall / len(selections),
+            "selection_cpu_seconds_total": cpu_seconds() - cpu_before,
+            "rss_before_mb": rss_before,
+            "rss_peak_mb": rss_mb(),
+            "knn_backend": "+".join(sorted(KNN_BACKENDS_USED)) or "not_applicable",
+            "opf_scope": "full_pool" if technique == "opf_dinov2" else "not_applicable",
+            "measurement_isolation": "dedicated_process",
+        },
+    }
+    job_output.write_text(json.dumps(payload))
+
+
+def run_isolated(technique: str, fraction: float) -> dict:
+    with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as handle:
+        job_output = Path(handle.name)
+    try:
+        subprocess.run(
+            [
+                sys.executable, str(Path(__file__).resolve()),
+                "--dataset", DATASET.key,
+                "--job", technique, "--fraction", f"{fraction}",
+                "--job-output", str(job_output),
+            ],
+            check=True,
+        )
+        return json.loads(job_output.read_text())
+    finally:
+        job_output.unlink(missing_ok=True)
+
+
+def main():
+    pool, emb, patterns, pattern_ids = load_inputs()
+
+    archive = archive_previous_selections()
+    rows = []
+
     for fraction in FRACTIONS:
-        for technique, job in jobs.items():
-            KNN_BACKENDS_USED.clear()
-            rss_before, started = rss_mb(), time.perf_counter()
-            cpu_before = cpu_seconds()
-            selections = job(fraction)
-            wall = time.perf_counter() - started
-            telemetry = {
-                "selection_seconds_total": wall,
-                "selection_seconds_per_repeat": wall / len(selections),
-                "selection_cpu_seconds_total": cpu_seconds() - cpu_before,
-                "rss_before_mb": rss_before,
-                "rss_peak_mb": rss_mb(),
-                "knn_backend": "+".join(sorted(KNN_BACKENDS_USED)) or "not_applicable",
-                "opf_scope": "full_pool" if technique == "opf_dinov2" else "not_applicable",
-            }
+        for technique in METHOD_FIDELITY:
+            result = run_isolated(technique, fraction)
+            selections = [np.asarray(s, dtype=int) for s in result["selections"]]
+            telemetry = result["telemetry"]
             overlaps = [
                 jaccard(selections[i], selections[j])
                 for i in range(len(selections))
@@ -351,4 +410,16 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    cli = argparse.ArgumentParser(description=__doc__)
+    cli.add_argument("--dataset", default="bvtsld", choices=("bvtsld", "tt100k"))
+    cli.add_argument("--job", choices=sorted(METHOD_FIDELITY))
+    cli.add_argument("--fraction", type=float, choices=FRACTIONS)
+    cli.add_argument("--job-output", type=Path)
+    cli_args = cli.parse_args()
+    configure(cli_args.dataset)
+    if cli_args.job:
+        if cli_args.fraction is None or cli_args.job_output is None:
+            cli.error("--job requires --fraction and --job-output")
+        run_job(cli_args.job, cli_args.fraction, cli_args.job_output)
+    else:
+        main()

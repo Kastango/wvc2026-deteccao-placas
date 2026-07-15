@@ -1,21 +1,19 @@
-"""Train and validate the frozen full-pool BVTSLD YOLOv8n oracle."""
+"""Train and validate the frozen full-pool YOLOv8n oracle."""
 from __future__ import annotations
 
 import argparse
 import json
 import time
 
+from dataset_config import spec
 from run_local_triage import (
     AUGMENTATION,
     BATCH_SIZE,
     EPOCHS,
     IMG_SIZE,
     MODEL_WEIGHTS,
-    OUTPUT,
     PATIENCE,
-    TARGET_CLASSES,
     ULTRALYTICS_VERSION,
-    YOLO_DIR,
 )
 
 
@@ -24,6 +22,7 @@ TRAIN_SEED = 42
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--dataset", default="bvtsld", choices=("bvtsld", "tt100k"))
     parser.add_argument("--device", help="Ultralytics device: cuda, mps or cpu")
     args = parser.parse_args()
 
@@ -40,11 +39,13 @@ def main() -> None:
         "cuda" if torch.cuda.is_available()
         else ("mps" if torch.backends.mps.is_available() else "cpu")
     )
-    data_yaml = YOLO_DIR / "data.yaml"
+    dataset = spec(args.dataset)
+    target_classes = list(dataset.target_classes)
+    data_yaml = dataset.yolo_dir / "data.yaml"
     if not data_yaml.exists():
         raise FileNotFoundError(f"materialize o dataset YOLO primeiro: {data_yaml}")
 
-    runs = OUTPUT / "runs"
+    runs = dataset.output_dir / "runs"
     model = YOLO(str(MODEL_WEIGHTS) if MODEL_WEIGHTS.exists() else MODEL_WEIGHTS.name)
     started = time.time()
     model.train(
@@ -56,15 +57,15 @@ def main() -> None:
     train_time = time.time() - started
     metrics = YOLO(runs / "oracle" / "weights" / "best.pt").val(
         data=str(data_yaml), split="val", device=device, verbose=False,
-        project=str(runs.resolve()), name="oracle_eval", exist_ok=True,
+        project=str(runs.resolve()), name="oracle_eval", exist_ok=True, plots=True,
     )
-    ap50 = {name: 0.0 for name in TARGET_CLASSES}
+    ap50 = {name: 0.0 for name in target_classes}
     for class_index, value in zip(metrics.box.ap_class_index, metrics.box.ap50):
-        ap50[TARGET_CLASSES[int(class_index)]] = round(float(value), 4)
+        ap50[target_classes[int(class_index)]] = round(float(value), 4)
 
-    split = json.loads((OUTPUT / "split.json").read_text())
+    split = json.loads((dataset.output_dir / "split.json").read_text())
     result = {
-        "dataset": "bvtsld",
+        "dataset": dataset.key,
         "device": device,
         "ultralytics_version": ultralytics.__version__,
         "weights": MODEL_WEIGHTS.name,
@@ -84,7 +85,7 @@ def main() -> None:
             "ap50_per_class": ap50,
         },
     }
-    (OUTPUT / "oracle_results.json").write_text(
+    (dataset.output_dir / "oracle_results.json").write_text(
         json.dumps(result, indent=1, ensure_ascii=False) + "\n"
     )
     print(json.dumps(result["validation"], indent=2))

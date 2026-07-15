@@ -3,8 +3,6 @@ from __future__ import annotations
 import csv
 import importlib.metadata
 import json
-import math
-import statistics
 import xml.etree.ElementTree as ET
 from collections import Counter, defaultdict
 from datetime import datetime, timezone
@@ -15,45 +13,25 @@ try:
 except ImportError:  # pragma: no cover - dependency check is reported below
     np = None
 
+from dataset_config import (
+    FRACTIONS as EXPECTED_FRACTIONS,
+    ROOT,
+    TECHNIQUES,
+    expected_repeats,
+    spec,
+)
 
-ROOT = Path(__file__).resolve().parents[1]
-DATASET_ROOT = ROOT / "datasets" / "bvtsld" / "Brazilian Vertical Traffic Signs and Lights Dataset"
-OUTPUT = ROOT / "outputs" / "bvtsld"
 
-TARGET_CLASSES = ["regulatory", "warning", "information"]
+DATASET = spec("bvtsld")
+DATASET_ROOT = DATASET.dataset_root
+OUTPUT = DATASET.output_dir
+
+TARGET_CLASSES = list(DATASET.target_classes)
 UNKNOWN_OBJECT_POLICY = "quarantine"
-BVTSLD_CODE_MAP = {
-    "000000": 0,
-    "000001": 0,
-    "000003": 0,
-    "000004": 0,
-    "000007": 0,
-    "000008": 0,
-    "000009": 0,
-    "000023": 0,
-    "000028": 0,
-    "000042": 0,
-    "000025": 1,
-    "000035": 2,
-    "000040": 2,
-}
-UNMAPPED_TRAFFIC_LIGHT_CODES = {"000051", "000052", "000053"}
-EXPECTED_TECHNIQUES = {
-    "random",
-    "kmeans_dinov2",
-    "opf_dinov2",
-    "typiclust_dinov2",
-    "probcover_dinov2",
-    "freesel_dino",
-}
-EXPECTED_FRACTIONS = {0.05, 0.10, 0.20, 0.50}
-
-
-def expected_repeats() -> dict[str, int]:
-    repeats = {technique: 8 for technique in EXPECTED_TECHNIQUES}
-    repeats["opf_dinov2"] = 1
-    return repeats
-
+MAP_VERSION = DATASET.map_version
+BVTSLD_CODE_MAP = DATASET.code_map
+QUARANTINED_CODES = DATASET.quarantined_codes
+EXPECTED_TECHNIQUES = set(TECHNIQUES)
 
 EXPECTED_ULTRALYTICS = "8.3.0"
 
@@ -64,63 +42,6 @@ def read_json(path: Path):
 
 def write_json(path: Path, payload) -> None:
     path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n")
-
-
-def human_review_metadata(observed_codes: dict[str, int]) -> tuple[str, dict]:
-    path = OUTPUT / "taxonomy_human_review.json"
-    total_codes = len(observed_codes)
-    total_occurrences = sum(observed_codes.values())
-    try:
-        artifact_label = str(path.relative_to(ROOT))
-    except ValueError:
-        artifact_label = str(path)
-    pending = {
-        "status": "machine_audited",
-        "reviewers": [],
-        "map_version": "bvtsld-code-review-v2",
-        "review_unit": "source_code",
-        "human_review_required_for_main_evidence": True,
-        "artifact": artifact_label,
-        "artifact_exists": path.exists(),
-        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
-    }
-    if not path.exists():
-        return "local_machine_audited_human_review_pending", pending
-    try:
-        artifact = read_json(path) or {}
-        summary = artifact.get("summary", {})
-        review = artifact.get("review", {})
-        approved = all(
-            [
-                artifact.get("dataset") == "bvtsld",
-                artifact.get("map_version") == "bvtsld-code-review-v2",
-                review.get("status") == "human_approved",
-                review.get("scope") == "source_codes",
-                bool(review.get("reviewers")),
-                int(summary.get("total", -1)) == total_codes,
-                int(summary.get("reviewed", -1)) == total_codes,
-                int(summary.get("remaining", -1)) == 0,
-                int(summary.get("total_occurrences", -1)) == total_occurrences,
-            ]
-        )
-        metadata = {
-            **pending,
-            "status": "human_approved" if approved else "human_review_in_progress",
-            "reviewers": review.get("reviewers", []),
-            "human_review_required_for_main_evidence": not approved,
-            "artifact_status": review.get("status", "unknown"),
-            "codes_reviewed": int(summary.get("reviewed", 0)),
-            "codes_total": total_codes,
-            "occurrences_available": total_occurrences,
-            "completed_at_utc": review.get("completed_at_utc"),
-        }
-        mapping_status = (
-            "human_reviewed" if approved else "local_machine_audited_human_review_pending"
-        )
-        return mapping_status, metadata
-    except (KeyError, TypeError, ValueError, json.JSONDecodeError) as error:
-        pending["artifact_error"] = str(error)
-        return "local_machine_audited_human_review_pending", pending
 
 
 def base_id(path: Path) -> str:
@@ -199,9 +120,10 @@ def audit_raw_dataset() -> tuple[dict, list[dict]]:
         records_from_xml.append(
             {
                 "id": xml_file.stem,
-                "image": str(DATASET_ROOT / "images" / f"{xml_file.stem}.jpg"),
+                "image": str(
+                    (DATASET_ROOT / "images" / f"{xml_file.stem}.jpg").relative_to(ROOT)
+                ),
                 "boxes": boxes,
-                "source_categories": sorted(set(codes)),
             }
         )
 
@@ -223,7 +145,7 @@ def audit_raw_dataset() -> tuple[dict, list[dict]]:
         "observed_codes_original_boxes": dict(sorted(code_boxes_original.items())),
         "observed_codes_original_images": dict(sorted(code_images_original.items())),
         "mapped_codes": dict(sorted(BVTSLD_CODE_MAP.items())),
-        "unmapped_codes_expected": sorted(UNMAPPED_TRAFFIC_LIGHT_CODES),
+        "quarantined_codes_expected": sorted(QUARANTINED_CODES),
     }
     return raw, records_from_xml, quarantine
 
@@ -241,10 +163,15 @@ def audit_records(records: list[dict], records_from_xml: list[dict]) -> dict:
 
     generated_ids = {r["id"] for r in records_from_xml}
     current_ids = {r["id"] for r in records}
+    generated_boxes = {r["id"]: r["boxes"] for r in records_from_xml}
+    current_boxes = {r["id"]: r["boxes"] for r in records}
+    boxes_match = generated_boxes == current_boxes
     return {
         "records_json_count": len(records),
         "records_from_original_xml_count": len(records_from_xml),
-        "records_match_xml_rebuild": generated_ids == current_ids,
+        "records_match_xml_rebuild": generated_ids == current_ids and boxes_match,
+        "records_ids_match_xml_rebuild": generated_ids == current_ids,
+        "records_boxes_match_xml_rebuild": boxes_match,
         "missing_from_records_json": sorted(generated_ids - current_ids),
         "extra_in_records_json": sorted(current_ids - generated_ids),
         "class_box_counts": dict(box_counts),
@@ -447,18 +374,29 @@ def status_from_checks(audit: dict) -> dict:
 
 
 def main() -> None:
+    import argparse
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--write-records", action="store_true",
+        help="Materialize records.json from the raw XMLs with the frozen code map",
+    )
+    args = parser.parse_args()
+
     OUTPUT.mkdir(parents=True, exist_ok=True)
     raw, records_from_xml, quarantine = audit_raw_dataset()
+    if args.write_records:
+        (OUTPUT / "records.json").write_text(
+            json.dumps(records_from_xml, indent=1, ensure_ascii=False)
+        )
+        print(f"wrote {OUTPUT / 'records.json'} ({len(records_from_xml)} records)")
     records = read_json(OUTPUT / "records.json") or []
     split = read_json(OUTPUT / "split.json") or {}
 
-    mapping_status, review_metadata = human_review_metadata(
-        raw["observed_codes_original_boxes"]
-    )
     taxonomy_report = {
         "dataset": "bvtsld",
-        "mapping_status": mapping_status,
-        "review": review_metadata,
+        "mapping_status": "frozen_code_map",
+        "map_version": MAP_VERSION,
         "target_classes": TARGET_CLASSES,
         "code_map": BVTSLD_CODE_MAP,
         "unknown_object_policy": UNKNOWN_OBJECT_POLICY,

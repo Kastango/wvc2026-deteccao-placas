@@ -1,2990 +1,738 @@
 [
   {
-    "id": "000002",
+    "id": "000326",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000002.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000326.jpg"
   },
   {
-    "id": "000003",
+    "id": "000408",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000003.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000408.jpg"
   },
   {
-    "id": "000006",
+    "id": "000423",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000006.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000423.jpg"
   },
   {
-    "id": "000007",
+    "id": "000426",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000052"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000007.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000426.jpg"
   },
   {
-    "id": "000008",
+    "id": "000427",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000008.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000427.jpg"
   },
   {
-    "id": "000009",
+    "id": "000431",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000052"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000009.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000431.jpg"
   },
   {
-    "id": "000012",
+    "id": "000480",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000012.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000480.jpg"
   },
   {
-    "id": "000013",
+    "id": "000514",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000013.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000514.jpg"
   },
   {
-    "id": "000014",
+    "id": "000525",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000014.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000525.jpg"
   },
   {
-    "id": "000015",
+    "id": "000543",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000015.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000543.jpg"
   },
   {
-    "id": "000016",
+    "id": "000607",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000052"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000016.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000607.jpg"
   },
   {
-    "id": "000017",
+    "id": "000693",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000052"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000017.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000693.jpg"
   },
   {
-    "id": "000020",
+    "id": "000719",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000052",
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000020.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000719.jpg"
   },
   {
-    "id": "000021",
+    "id": "000756",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000021.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000756.jpg"
   },
   {
-    "id": "000022",
+    "id": "000774",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000022.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000774.jpg"
   },
   {
-    "id": "000024",
+    "id": "000783",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000024.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000783.jpg"
   },
   {
-    "id": "000025",
+    "id": "000791",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000052"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000025.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000791.jpg"
   },
   {
-    "id": "000026",
+    "id": "000820",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000026.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000820.jpg"
   },
   {
-    "id": "000027",
+    "id": "000834",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000027.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000834.jpg"
   },
   {
-    "id": "000028",
+    "id": "000836",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000028.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000836.jpg"
   },
   {
-    "id": "000029",
+    "id": "000838",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000029.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000838.jpg"
   },
   {
-    "id": "000030",
+    "id": "000853",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000052"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000030.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000853.jpg"
   },
   {
-    "id": "000042",
+    "id": "000857",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000042.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000857.jpg"
   },
   {
-    "id": "000043",
+    "id": "000881",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000052"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000043.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000881.jpg"
   },
   {
-    "id": "000045",
+    "id": "000894",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000052"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000045.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000894.jpg"
   },
   {
-    "id": "000046",
+    "id": "000900",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000046.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000900.jpg"
   },
   {
-    "id": "000052",
+    "id": "000909",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000051"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000052.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000909.jpg"
   },
   {
-    "id": "000053",
+    "id": "000916",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000053.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000916.jpg"
   },
   {
-    "id": "000055",
+    "id": "000927",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000055.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000927.jpg"
   },
   {
-    "id": "000056",
+    "id": "000945",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000052"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000056.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000945.jpg"
   },
   {
-    "id": "000058",
+    "id": "000962",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000058.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000962.jpg"
   },
   {
-    "id": "000060",
+    "id": "000966",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000052"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000060.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000966.jpg"
   },
   {
-    "id": "000062",
+    "id": "000976",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000062.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000976.jpg"
   },
   {
-    "id": "000063",
+    "id": "001016",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000051"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000063.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001016.jpg"
   },
   {
-    "id": "000065",
+    "id": "001054",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000065.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001054.jpg"
   },
   {
-    "id": "000066",
+    "id": "001077",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000066.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001077.jpg"
   },
   {
-    "id": "000069",
+    "id": "001082",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000069.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001082.jpg"
   },
   {
-    "id": "000071",
+    "id": "001083",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000071.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001083.jpg"
   },
   {
-    "id": "000072",
+    "id": "001089",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000072.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001089.jpg"
   },
   {
-    "id": "000075",
+    "id": "001097",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000052"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000075.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001097.jpg"
   },
   {
-    "id": "000076",
+    "id": "001099",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000076.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001099.jpg"
   },
   {
-    "id": "000078",
+    "id": "001119",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000051"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000078.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001119.jpg"
   },
   {
-    "id": "000079",
+    "id": "001124",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000079.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001124.jpg"
   },
   {
-    "id": "000081",
+    "id": "001125",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000052"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000081.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001125.jpg"
   },
   {
-    "id": "000083",
+    "id": "001129",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000083.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001129.jpg"
   },
   {
-    "id": "000085",
+    "id": "001133",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000052"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000085.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001133.jpg"
   },
   {
-    "id": "000086",
+    "id": "001140",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000086.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001140.jpg"
   },
   {
-    "id": "000087",
+    "id": "001150",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000087.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001150.jpg"
   },
   {
-    "id": "000088",
+    "id": "001153",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000088.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001153.jpg"
   },
   {
-    "id": "000091",
+    "id": "001155",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000091.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001155.jpg"
   },
   {
-    "id": "000092",
+    "id": "001159",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000092.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001159.jpg"
   },
   {
-    "id": "000093",
+    "id": "001167",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000052"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000093.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001167.jpg"
   },
   {
-    "id": "000095",
+    "id": "001174",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000095.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001174.jpg"
   },
   {
-    "id": "000096",
+    "id": "001176",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000052"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000096.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001176.jpg"
   },
   {
-    "id": "000098",
+    "id": "001180",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000051"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000098.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001180.jpg"
   },
   {
-    "id": "000099",
+    "id": "001182",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000099.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001182.jpg"
   },
   {
-    "id": "000100",
+    "id": "001193",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000051"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000100.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001193.jpg"
   },
   {
-    "id": "000101",
+    "id": "001201",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000101.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001201.jpg"
   },
   {
-    "id": "000102",
+    "id": "001203",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000102.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001203.jpg"
   },
   {
-    "id": "000103",
+    "id": "001207",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000103.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001207.jpg"
   },
   {
-    "id": "000104",
+    "id": "001210",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000104.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001210.jpg"
   },
   {
-    "id": "000105",
+    "id": "001226",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000052"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000105.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001226.jpg"
   },
   {
-    "id": "000108",
+    "id": "001232",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000108.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001232.jpg"
   },
   {
-    "id": "000111",
+    "id": "001236",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000111.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001236.jpg"
   },
   {
-    "id": "000112",
+    "id": "001238",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000052"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000112.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001238.jpg"
   },
   {
-    "id": "000114",
+    "id": "001245",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000114.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001245.jpg"
   },
   {
-    "id": "000115",
+    "id": "001246",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000051"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000115.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001246.jpg"
   },
   {
-    "id": "000116",
+    "id": "001262",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000116.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001262.jpg"
   },
   {
-    "id": "000117",
+    "id": "001268",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000117.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001268.jpg"
   },
   {
-    "id": "000119",
+    "id": "001275",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000052"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000119.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001275.jpg"
   },
   {
-    "id": "000124",
+    "id": "001277",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000051"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000124.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001277.jpg"
   },
   {
-    "id": "000125",
+    "id": "001282",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000052"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000125.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001282.jpg"
   },
   {
-    "id": "000128",
+    "id": "001292",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000128.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001292.jpg"
   },
   {
-    "id": "000131",
+    "id": "001309",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000131.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001309.jpg"
   },
   {
-    "id": "000132",
+    "id": "001325",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000051"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000132.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001325.jpg"
   },
   {
-    "id": "000135",
+    "id": "001330",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000135.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001330.jpg"
   },
   {
-    "id": "000138",
+    "id": "001332",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000138.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001332.jpg"
   },
   {
-    "id": "000139",
+    "id": "001338",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000051"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000139.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001338.jpg"
   },
   {
-    "id": "000141",
+    "id": "001345",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000141.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001345.jpg"
   },
   {
-    "id": "000143",
+    "id": "001362",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000143.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001362.jpg"
   },
   {
-    "id": "000144",
+    "id": "001415",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000144.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001415.jpg"
   },
   {
-    "id": "000145",
+    "id": "001419",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000145.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001419.jpg"
   },
   {
-    "id": "000146",
+    "id": "001424",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000052"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000146.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001424.jpg"
   },
   {
-    "id": "000148",
+    "id": "001425",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000148.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001425.jpg"
   },
   {
-    "id": "000149",
+    "id": "001443",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000052"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000149.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001443.jpg"
   },
   {
-    "id": "000153",
+    "id": "001447",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000153.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001447.jpg"
   },
   {
-    "id": "000155",
+    "id": "001449",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000155.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001449.jpg"
   },
   {
-    "id": "000156",
+    "id": "001450",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000156.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001450.jpg"
   },
   {
-    "id": "000157",
+    "id": "001451",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000157.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001451.jpg"
   },
   {
-    "id": "000162",
+    "id": "001462",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000162.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001462.jpg"
   },
   {
-    "id": "000163",
+    "id": "001463",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000053"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000163.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001463.jpg"
   },
   {
-    "id": "000167",
+    "id": "001473",
     "reason": "unmapped_or_unverified_code",
     "source_categories": [
-      "000052"
+      "000025"
     ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000167.jpg"
-  },
-  {
-    "id": "000171",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000171.jpg"
-  },
-  {
-    "id": "000172",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000172.jpg"
-  },
-  {
-    "id": "000175",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000175.jpg"
-  },
-  {
-    "id": "000178",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000178.jpg"
-  },
-  {
-    "id": "000179",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000179.jpg"
-  },
-  {
-    "id": "000182",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000182.jpg"
-  },
-  {
-    "id": "000183",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000183.jpg"
-  },
-  {
-    "id": "000184",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000184.jpg"
-  },
-  {
-    "id": "000186",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000186.jpg"
-  },
-  {
-    "id": "000187",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000187.jpg"
-  },
-  {
-    "id": "000189",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000189.jpg"
-  },
-  {
-    "id": "000192",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000192.jpg"
-  },
-  {
-    "id": "000197",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000197.jpg"
-  },
-  {
-    "id": "000199",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000199.jpg"
-  },
-  {
-    "id": "000200",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000200.jpg"
-  },
-  {
-    "id": "000201",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000201.jpg"
-  },
-  {
-    "id": "000204",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000051"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000204.jpg"
-  },
-  {
-    "id": "000205",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000205.jpg"
-  },
-  {
-    "id": "000207",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000207.jpg"
-  },
-  {
-    "id": "000208",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000208.jpg"
-  },
-  {
-    "id": "000212",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000212.jpg"
-  },
-  {
-    "id": "000213",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000213.jpg"
-  },
-  {
-    "id": "000214",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000214.jpg"
-  },
-  {
-    "id": "000215",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000215.jpg"
-  },
-  {
-    "id": "000216",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000216.jpg"
-  },
-  {
-    "id": "000217",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000217.jpg"
-  },
-  {
-    "id": "000218",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000218.jpg"
-  },
-  {
-    "id": "000219",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000219.jpg"
-  },
-  {
-    "id": "000222",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000222.jpg"
-  },
-  {
-    "id": "000223",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000223.jpg"
-  },
-  {
-    "id": "000224",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000224.jpg"
-  },
-  {
-    "id": "000226",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000226.jpg"
-  },
-  {
-    "id": "000227",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000227.jpg"
-  },
-  {
-    "id": "000228",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000228.jpg"
-  },
-  {
-    "id": "000229",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000229.jpg"
-  },
-  {
-    "id": "000234",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000234.jpg"
-  },
-  {
-    "id": "000235",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000235.jpg"
-  },
-  {
-    "id": "000236",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000236.jpg"
-  },
-  {
-    "id": "000237",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000237.jpg"
-  },
-  {
-    "id": "000238",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000238.jpg"
-  },
-  {
-    "id": "000239",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000239.jpg"
-  },
-  {
-    "id": "000241",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000241.jpg"
-  },
-  {
-    "id": "000246",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000246.jpg"
-  },
-  {
-    "id": "000248",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000248.jpg"
-  },
-  {
-    "id": "000249",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000249.jpg"
-  },
-  {
-    "id": "000251",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000251.jpg"
-  },
-  {
-    "id": "000252",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000252.jpg"
-  },
-  {
-    "id": "000254",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000254.jpg"
-  },
-  {
-    "id": "000255",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000051"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000255.jpg"
-  },
-  {
-    "id": "000256",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000256.jpg"
-  },
-  {
-    "id": "000257",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000257.jpg"
-  },
-  {
-    "id": "000258",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000258.jpg"
-  },
-  {
-    "id": "000262",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000262.jpg"
-  },
-  {
-    "id": "000263",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000263.jpg"
-  },
-  {
-    "id": "000266",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000266.jpg"
-  },
-  {
-    "id": "000268",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000268.jpg"
-  },
-  {
-    "id": "000270",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000270.jpg"
-  },
-  {
-    "id": "000271",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000271.jpg"
-  },
-  {
-    "id": "000273",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000273.jpg"
-  },
-  {
-    "id": "000274",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000274.jpg"
-  },
-  {
-    "id": "000275",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000051"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000275.jpg"
-  },
-  {
-    "id": "000276",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000276.jpg"
-  },
-  {
-    "id": "000277",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000277.jpg"
-  },
-  {
-    "id": "000278",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052",
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000278.jpg"
-  },
-  {
-    "id": "000279",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000051"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000279.jpg"
-  },
-  {
-    "id": "000280",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000280.jpg"
-  },
-  {
-    "id": "000282",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000282.jpg"
-  },
-  {
-    "id": "000283",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000283.jpg"
-  },
-  {
-    "id": "000284",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000284.jpg"
-  },
-  {
-    "id": "000285",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052",
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000285.jpg"
-  },
-  {
-    "id": "000287",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000287.jpg"
-  },
-  {
-    "id": "000289",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000289.jpg"
-  },
-  {
-    "id": "000291",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000291.jpg"
-  },
-  {
-    "id": "000293",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000293.jpg"
-  },
-  {
-    "id": "000294",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000294.jpg"
-  },
-  {
-    "id": "000297",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000297.jpg"
-  },
-  {
-    "id": "000298",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000298.jpg"
-  },
-  {
-    "id": "000299",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000299.jpg"
-  },
-  {
-    "id": "000302",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000302.jpg"
-  },
-  {
-    "id": "000304",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000304.jpg"
-  },
-  {
-    "id": "000305",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000305.jpg"
-  },
-  {
-    "id": "000306",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000306.jpg"
-  },
-  {
-    "id": "000307",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000307.jpg"
-  },
-  {
-    "id": "000311",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000311.jpg"
-  },
-  {
-    "id": "000312",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000312.jpg"
-  },
-  {
-    "id": "000314",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000314.jpg"
-  },
-  {
-    "id": "000315",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000315.jpg"
-  },
-  {
-    "id": "000317",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000317.jpg"
-  },
-  {
-    "id": "000318",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000318.jpg"
-  },
-  {
-    "id": "000319",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000319.jpg"
-  },
-  {
-    "id": "000320",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000051"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000320.jpg"
-  },
-  {
-    "id": "000322",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000322.jpg"
-  },
-  {
-    "id": "000323",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000323.jpg"
-  },
-  {
-    "id": "000324",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000324.jpg"
-  },
-  {
-    "id": "000328",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000328.jpg"
-  },
-  {
-    "id": "000329",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000329.jpg"
-  },
-  {
-    "id": "000330",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000330.jpg"
-  },
-  {
-    "id": "000332",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000332.jpg"
-  },
-  {
-    "id": "000338",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000051"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000338.jpg"
-  },
-  {
-    "id": "000339",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000339.jpg"
-  },
-  {
-    "id": "000344",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000344.jpg"
-  },
-  {
-    "id": "000348",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000348.jpg"
-  },
-  {
-    "id": "000349",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000051"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000349.jpg"
-  },
-  {
-    "id": "000350",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000350.jpg"
-  },
-  {
-    "id": "000354",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000354.jpg"
-  },
-  {
-    "id": "000356",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000356.jpg"
-  },
-  {
-    "id": "000358",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000358.jpg"
-  },
-  {
-    "id": "000360",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000360.jpg"
-  },
-  {
-    "id": "000362",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000362.jpg"
-  },
-  {
-    "id": "000364",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000364.jpg"
-  },
-  {
-    "id": "000365",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000365.jpg"
-  },
-  {
-    "id": "000367",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000367.jpg"
-  },
-  {
-    "id": "000370",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000370.jpg"
-  },
-  {
-    "id": "000372",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000372.jpg"
-  },
-  {
-    "id": "000373",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000373.jpg"
-  },
-  {
-    "id": "000376",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000376.jpg"
-  },
-  {
-    "id": "000378",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000378.jpg"
-  },
-  {
-    "id": "000384",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000051"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000384.jpg"
-  },
-  {
-    "id": "000385",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000385.jpg"
-  },
-  {
-    "id": "000389",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000389.jpg"
-  },
-  {
-    "id": "000404",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000404.jpg"
-  },
-  {
-    "id": "000413",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000051"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000413.jpg"
-  },
-  {
-    "id": "000414",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000414.jpg"
-  },
-  {
-    "id": "000418",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000418.jpg"
-  },
-  {
-    "id": "000424",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000051"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000424.jpg"
-  },
-  {
-    "id": "000425",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000425.jpg"
-  },
-  {
-    "id": "000428",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000428.jpg"
-  },
-  {
-    "id": "000430",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000430.jpg"
-  },
-  {
-    "id": "000432",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000432.jpg"
-  },
-  {
-    "id": "000440",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000051"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000440.jpg"
-  },
-  {
-    "id": "000447",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000447.jpg"
-  },
-  {
-    "id": "000450",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000450.jpg"
-  },
-  {
-    "id": "000452",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000452.jpg"
-  },
-  {
-    "id": "000456",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000051"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000456.jpg"
-  },
-  {
-    "id": "000463",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000463.jpg"
-  },
-  {
-    "id": "000471",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000471.jpg"
-  },
-  {
-    "id": "000481",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000481.jpg"
-  },
-  {
-    "id": "000482",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000482.jpg"
-  },
-  {
-    "id": "000487",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000487.jpg"
-  },
-  {
-    "id": "000490",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000490.jpg"
-  },
-  {
-    "id": "000492",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000492.jpg"
-  },
-  {
-    "id": "000498",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000498.jpg"
-  },
-  {
-    "id": "000501",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000501.jpg"
-  },
-  {
-    "id": "000508",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000051"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000508.jpg"
-  },
-  {
-    "id": "000509",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000051"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000509.jpg"
-  },
-  {
-    "id": "000512",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000512.jpg"
-  },
-  {
-    "id": "000516",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000516.jpg"
-  },
-  {
-    "id": "000518",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000518.jpg"
-  },
-  {
-    "id": "000519",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000519.jpg"
-  },
-  {
-    "id": "000522",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000522.jpg"
-  },
-  {
-    "id": "000524",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000524.jpg"
-  },
-  {
-    "id": "000529",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000529.jpg"
-  },
-  {
-    "id": "000539",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000539.jpg"
-  },
-  {
-    "id": "000542",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000542.jpg"
-  },
-  {
-    "id": "000544",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000544.jpg"
-  },
-  {
-    "id": "000558",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000558.jpg"
-  },
-  {
-    "id": "000562",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000562.jpg"
-  },
-  {
-    "id": "000563",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000563.jpg"
-  },
-  {
-    "id": "000565",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052",
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000565.jpg"
-  },
-  {
-    "id": "000566",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000566.jpg"
-  },
-  {
-    "id": "000568",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000568.jpg"
-  },
-  {
-    "id": "000569",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000569.jpg"
-  },
-  {
-    "id": "000570",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000570.jpg"
-  },
-  {
-    "id": "000571",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000571.jpg"
-  },
-  {
-    "id": "000575",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000575.jpg"
-  },
-  {
-    "id": "000581",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000581.jpg"
-  },
-  {
-    "id": "000582",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000582.jpg"
-  },
-  {
-    "id": "000584",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000584.jpg"
-  },
-  {
-    "id": "000585",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000585.jpg"
-  },
-  {
-    "id": "000590",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000590.jpg"
-  },
-  {
-    "id": "000591",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000591.jpg"
-  },
-  {
-    "id": "000593",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000593.jpg"
-  },
-  {
-    "id": "000597",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000597.jpg"
-  },
-  {
-    "id": "000949",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000949.jpg"
-  },
-  {
-    "id": "000956",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000956.jpg"
-  },
-  {
-    "id": "000959",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000959.jpg"
-  },
-  {
-    "id": "000960",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000960.jpg"
-  },
-  {
-    "id": "000964",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000964.jpg"
-  },
-  {
-    "id": "000971",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000971.jpg"
-  },
-  {
-    "id": "000972",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000972.jpg"
-  },
-  {
-    "id": "000974",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000974.jpg"
-  },
-  {
-    "id": "000975",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000975.jpg"
-  },
-  {
-    "id": "000979",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000979.jpg"
-  },
-  {
-    "id": "000981",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000981.jpg"
-  },
-  {
-    "id": "000983",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000983.jpg"
-  },
-  {
-    "id": "000984",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000984.jpg"
-  },
-  {
-    "id": "000986",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000986.jpg"
-  },
-  {
-    "id": "000989",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000989.jpg"
-  },
-  {
-    "id": "000993",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000993.jpg"
-  },
-  {
-    "id": "000996",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000996.jpg"
-  },
-  {
-    "id": "000997",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000997.jpg"
-  },
-  {
-    "id": "000998",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/000998.jpg"
-  },
-  {
-    "id": "001000",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001000.jpg"
-  },
-  {
-    "id": "001005",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001005.jpg"
-  },
-  {
-    "id": "001010",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001010.jpg"
-  },
-  {
-    "id": "001014",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001014.jpg"
-  },
-  {
-    "id": "001017",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001017.jpg"
-  },
-  {
-    "id": "001019",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001019.jpg"
-  },
-  {
-    "id": "001020",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001020.jpg"
-  },
-  {
-    "id": "001035",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001035.jpg"
-  },
-  {
-    "id": "001037",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001037.jpg"
-  },
-  {
-    "id": "001048",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001048.jpg"
-  },
-  {
-    "id": "001052",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001052.jpg"
-  },
-  {
-    "id": "001071",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001071.jpg"
-  },
-  {
-    "id": "001075",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001075.jpg"
-  },
-  {
-    "id": "001085",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001085.jpg"
-  },
-  {
-    "id": "001091",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001091.jpg"
-  },
-  {
-    "id": "001093",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001093.jpg"
-  },
-  {
-    "id": "001095",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001095.jpg"
-  },
-  {
-    "id": "001098",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001098.jpg"
-  },
-  {
-    "id": "001100",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001100.jpg"
-  },
-  {
-    "id": "001102",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001102.jpg"
-  },
-  {
-    "id": "001109",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001109.jpg"
-  },
-  {
-    "id": "001110",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001110.jpg"
-  },
-  {
-    "id": "001115",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001115.jpg"
-  },
-  {
-    "id": "001117",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001117.jpg"
-  },
-  {
-    "id": "001131",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001131.jpg"
-  },
-  {
-    "id": "001138",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001138.jpg"
-  },
-  {
-    "id": "001142",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001142.jpg"
-  },
-  {
-    "id": "001149",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001149.jpg"
-  },
-  {
-    "id": "001157",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001157.jpg"
-  },
-  {
-    "id": "001160",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001160.jpg"
-  },
-  {
-    "id": "001179",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001179.jpg"
-  },
-  {
-    "id": "001185",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001185.jpg"
-  },
-  {
-    "id": "001188",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001188.jpg"
-  },
-  {
-    "id": "001194",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001194.jpg"
-  },
-  {
-    "id": "001199",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001199.jpg"
-  },
-  {
-    "id": "001206",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001206.jpg"
-  },
-  {
-    "id": "001208",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000051"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001208.jpg"
-  },
-  {
-    "id": "001211",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001211.jpg"
-  },
-  {
-    "id": "001214",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001214.jpg"
-  },
-  {
-    "id": "001223",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001223.jpg"
-  },
-  {
-    "id": "001229",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001229.jpg"
-  },
-  {
-    "id": "001237",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001237.jpg"
-  },
-  {
-    "id": "001243",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001243.jpg"
-  },
-  {
-    "id": "001247",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001247.jpg"
-  },
-  {
-    "id": "001259",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001259.jpg"
-  },
-  {
-    "id": "001265",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001265.jpg"
-  },
-  {
-    "id": "001274",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001274.jpg"
-  },
-  {
-    "id": "001278",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001278.jpg"
-  },
-  {
-    "id": "001287",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001287.jpg"
-  },
-  {
-    "id": "001289",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001289.jpg"
-  },
-  {
-    "id": "001293",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001293.jpg"
-  },
-  {
-    "id": "001294",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001294.jpg"
-  },
-  {
-    "id": "001296",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001296.jpg"
-  },
-  {
-    "id": "001297",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001297.jpg"
-  },
-  {
-    "id": "001298",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001298.jpg"
-  },
-  {
-    "id": "001307",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001307.jpg"
-  },
-  {
-    "id": "001321",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001321.jpg"
-  },
-  {
-    "id": "001322",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001322.jpg"
-  },
-  {
-    "id": "001328",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001328.jpg"
-  },
-  {
-    "id": "001329",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001329.jpg"
-  },
-  {
-    "id": "001341",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001341.jpg"
-  },
-  {
-    "id": "001342",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001342.jpg"
-  },
-  {
-    "id": "001349",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001349.jpg"
-  },
-  {
-    "id": "001351",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001351.jpg"
-  },
-  {
-    "id": "001355",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001355.jpg"
-  },
-  {
-    "id": "001365",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001365.jpg"
-  },
-  {
-    "id": "001366",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001366.jpg"
-  },
-  {
-    "id": "001370",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001370.jpg"
-  },
-  {
-    "id": "001371",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001371.jpg"
-  },
-  {
-    "id": "001372",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001372.jpg"
-  },
-  {
-    "id": "001373",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001373.jpg"
-  },
-  {
-    "id": "001379",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001379.jpg"
-  },
-  {
-    "id": "001398",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001398.jpg"
-  },
-  {
-    "id": "001408",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001408.jpg"
-  },
-  {
-    "id": "001410",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001410.jpg"
-  },
-  {
-    "id": "001422",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000052"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001422.jpg"
-  },
-  {
-    "id": "001423",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001423.jpg"
-  },
-  {
-    "id": "001427",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001427.jpg"
-  },
-  {
-    "id": "001430",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001430.jpg"
-  },
-  {
-    "id": "001434",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001434.jpg"
-  },
-  {
-    "id": "001435",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001435.jpg"
-  },
-  {
-    "id": "001437",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001437.jpg"
-  },
-  {
-    "id": "001442",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001442.jpg"
-  },
-  {
-    "id": "001446",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001446.jpg"
-  },
-  {
-    "id": "001455",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001455.jpg"
-  },
-  {
-    "id": "001457",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001457.jpg"
-  },
-  {
-    "id": "001458",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001458.jpg"
-  },
-  {
-    "id": "001466",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001466.jpg"
-  },
-  {
-    "id": "001469",
-    "reason": "unmapped_or_unverified_code",
-    "source_categories": [
-      "000053"
-    ],
-    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001469.jpg"
+    "image": "datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights Dataset/images/001473.jpg"
   }
 ]

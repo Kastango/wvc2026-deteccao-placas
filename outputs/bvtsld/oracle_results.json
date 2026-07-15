@@ -27,15 +27,14 @@
   "copy_paste": 0.0,
   "erasing": 0.4
  },
- "train_images": 693,
- "train_time_s": 2318.2,
+ "train_images": 889,
+ "train_time_s": 1698.7,
  "validation": {
-  "map50": 0.9483,
-  "map50_95": 0.627,
+  "map50": 0.9365,
+  "map50_95": 0.6035,
   "ap50_per_class": {
-   "regulatory": 0.9645,
-   "warning": 0.9721,
-   "information": 0.9082
+   "regulatory": 0.9502,
+   "traffic_light": 0.9228
   }
  }
 }

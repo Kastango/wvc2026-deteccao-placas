@@ -6,25 +6,6 @@ como referência de dados completos, as métricas de distância, a escolha do
 exemplar do k-means e a separação entre o OPF publicado e as heurísticas do
 projeto.
 
-## BVTSLD: dados e protocolo
-
-- [ ] **Concluir a revisão humana da taxonomia por código.**
-  - Local: [`README.md:55`](README.md#conjunto-de-dados-e-partições-fixas).
-  - Pendente: executar `scripts/review_bvtsld_taxonomy.py`, revisar os 16
-    códigos e finalizar o relatório humano.
-  - Ajuste textual: substituir “revisão humana box a box” por “revisão humana
-    por código”; as boxes são evidências visuais, não unidades de decisão.
-  - Concluído quando: `taxonomy_human_review.json` estiver em
-    `human_approved` e `taxonomy_report.json` incorporar esse estado.
-
-- [ ] **Demonstrar ou retirar a semente 42 atribuída ao split.**
-  - Local: [`README.md:73`](README.md#conjunto-de-dados-e-partições-fixas).
-  - Problema: `split.json` demonstra as partições e a ausência de interseções,
-    mas não registra a semente nem há um gerador versionado que reconstrua o
-    split.
-  - Concluído quando: o artefato e o gerador registrarem a semente 42, ou o
-    README disser apenas que as partições são fixas.
-
 ## Métodos de seleção
 
 - [ ] **Documentar o TypiClust como variante da implementação publicada.**
@@ -68,28 +49,6 @@ projeto.
   - Concluído quando: tabelas, nota de rodapé, CSV gerador e figuras não
     tratarem determinismo como uma medição de Jaccard.
 
-- [ ] **Corrigir as contagens raras atribuídas ao pool.**
-  - Local: [`README.md:250`](README.md#treino-yolo-por-seleção--map-vs-oráculo).
-  - Correção: 98 `warning` e 97 `information` pertencem ao conjunto elegível;
-    no pool são 67 e 74 boxes, respectivamente.
-  - Concluído quando: texto e eventual tabela identificarem claramente o
-    universo de cada contagem.
-
-- [ ] **Tratar a queda de AP das classes raras como risco esperado.**
-  - Local: [`README.md:251`](README.md#treino-yolo-por-seleção--map-vs-oráculo).
-  - Problema: com a grade em 0/328, ainda não foi observado que a AP “desaba e
-    domina a variância”; somente foi observada uma seleção de 5% sem `warning`.
-  - Concluído quando: a redação deixar de apresentar esse comportamento como
-    resultado experimental já medido.
-
-- [ ] **Qualificar a medição de pico de RAM.**
-  - Local: [`README.md:256`](README.md#treino-yolo-por-seleção--map-vs-oráculo).
-  - Explicitar: `ru_maxrss` é o pico acumulado durante a vida do processo e é
-    monotônico entre runs executados no mesmo processo; não mede isoladamente
-    o pico de cada run.
-  - Concluído quando: o README registrar a limitação ou a instrumentação passar
-    a medir cada run em processo isolado.
-
 ## Inferência estatística
 
 - [ ] **Resolver a incompatibilidade entre uma única seleção OPF e o teste de sinais.**
@@ -123,11 +82,6 @@ projeto.
 
 ## Semi-supervisão
 
-- [ ] **Restringir Efficient Teacher a YOLOv5.**
-  - Local: [`README.md:388`](README.md#etapa-3--trabalhos-futuros-semi-supervisão-na-dissertação).
-  - Correção: o artigo não fundamenta a claim ampla “para a família YOLO”; sua
-    implementação é especificamente baseada em YOLOv5.
-
 - [ ] **Distinguir FixMatch original da adaptação professor–aluno para detecção.**
   - Local: [`README.md:394`](README.md#etapa-3--trabalhos-futuros-semi-supervisão-na-dissertação).
   - Explicitar: FixMatch usa a mesma rede, não um professor EMA; aplicar sua
@@ -153,10 +107,9 @@ projeto.
 
 - [ ] **Executar a grade BVTSLD antes de transformar riscos em resultados.**
   - Estado atual: 0/328 runs.
-  - Depois da execução, revisar todas as claims sobre ranking, variância, classes
-    raras e ganho contra `random` usando os artefatos gerados.
+  - Depois da execução, revisar todas as claims sobre ranking, variância,
+    composição por classe e ganho contra `random` usando os artefatos gerados.
 
 - [ ] **Concluir a auditoria e o piloto TT100K antes de congelar claims de escala.**
   - Dependências: taxonomia, elegibilidade, split, tamanho real do pool e custo
     do OPF.
-

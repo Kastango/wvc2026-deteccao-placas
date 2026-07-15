@@ -11,34 +11,35 @@ import hashlib
 import json
 import os
 import resource
+import subprocess
+import sys
 import threading
 import time
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-OUTPUT = ROOT / "outputs" / "bvtsld"
-YOLO_DIR = OUTPUT / "yolo_bvtsld"
-RESULTS_CSV = OUTPUT / "triage_results.csv"
+from dataset_config import ROOT, spec
 
 ULTRALYTICS_VERSION = "8.3.0"
 MODEL_WEIGHTS = ROOT / "yolov8n.pt"
 EPOCHS, IMG_SIZE, PATIENCE, BATCH_SIZE = 40, 640, 0, 16
 TRAIN_SEEDS = (41, 42)
-TARGET_CLASSES = ["regulatory", "warning", "information"]
 AUGMENTATION = dict(
     hsv_h=0.015, hsv_s=0.7, hsv_v=0.4, degrees=0.0, translate=0.1,
     scale=0.5, shear=0.0, perspective=0.0, flipud=0.0, fliplr=0.5,
     mosaic=1.0, close_mosaic=10, mixup=0.0, copy_paste=0.0, erasing=0.4,
 )
-FIELDS = [
-    "technique", "fraction", "selection_repeat", "selection_hash", "train_seed",
-    "precision", "recall", "f1", "map50", "map75", "map50_95",
-    "ap50_regulatory", "ap50_warning", "ap50_information",
-    "train_time_s", "val_time_s", "infer_ms_per_img", "cpu_time_s",
-    "peak_rss_mb", "gpu_mem_avg_mb", "gpu_mem_peak_mb", "gpu_util_avg_pct",
-    "device", "run_name",
-]
 GPU_SAMPLE_INTERVAL_S = 2.0
+
+
+def result_fields(target_classes: list[str]) -> list[str]:
+    return [
+        "technique", "fraction", "selection_repeat", "selection_hash", "train_seed",
+        "precision", "recall", "f1", "map50", "map75", "map50_95",
+        *(f"ap50_{name}" for name in target_classes),
+        "train_time_s", "val_time_s", "infer_ms_per_img", "cpu_time_s",
+        "peak_rss_mb", "gpu_mem_avg_mb", "gpu_mem_peak_mb", "gpu_util_avg_pct",
+        "device", "run_name",
+    ]
 
 
 def selection_hash(image_ids: list[str]) -> str:
@@ -129,10 +130,10 @@ def load_done(results_csv: Path) -> set[tuple]:
         }
 
 
-def append_row(results_csv: Path, row: dict) -> None:
+def append_row(results_csv: Path, fields: list[str], row: dict) -> None:
     new_file = not results_csv.exists()
     with results_csv.open("a", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=FIELDS)
+        writer = csv.DictWriter(handle, fieldnames=fields)
         if new_file:
             writer.writeheader()
         writer.writerow(row)
@@ -140,6 +141,7 @@ def append_row(results_csv: Path, row: dict) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--dataset", default="bvtsld", choices=("bvtsld", "tt100k"))
     parser.add_argument("--technique", help="Run only this selection method")
     parser.add_argument("--fraction", type=float, choices=(0.05, 0.10, 0.20, 0.50))
     parser.add_argument("--repeat", type=int, choices=range(1, 9))
@@ -147,6 +149,14 @@ def main() -> None:
     parser.add_argument("--device", help="Ultralytics device override (for example mps, cuda, cpu)")
     parser.add_argument("--dry-run", action="store_true", help="Validate and list the selected grid")
     parser.add_argument("--smoke", action="store_true", help="Run one cell for 2 epochs in a separate CSV")
+    parser.add_argument(
+        "--isolate",
+        action="store_true",
+        help=(
+            "Run each pending cell in a dedicated child process so time, CPU "
+            "and peak RSS are measured without interference from previous runs"
+        ),
+    )
     args = parser.parse_args()
 
     import torch
@@ -162,25 +172,30 @@ def main() -> None:
         else ("mps" if torch.backends.mps.is_available() else "cpu")
     )
 
+    dataset = spec(args.dataset)
+    output, yolo_dir = dataset.output_dir, dataset.yolo_dir
+    target_classes = list(dataset.target_classes)
+    fields = result_fields(target_classes)
+
     required = [
-        OUTPUT / "records.json",
-        YOLO_DIR / "data.yaml",
-        YOLO_DIR / "images" / "train",
-        YOLO_DIR / "labels" / "train",
-        YOLO_DIR / "images" / "val",
-        YOLO_DIR / "labels" / "val",
+        output / "records.json",
+        yolo_dir / "data.yaml",
+        yolo_dir / "images" / "train",
+        yolo_dir / "labels" / "train",
+        yolo_dir / "images" / "val",
+        yolo_dir / "labels" / "val",
     ]
     missing = [str(path) for path in required if not path.exists()]
     if missing:
         raise RuntimeError(f"Missing required artifacts: {missing}")
-    records = {r["id"]: r for r in json.loads((OUTPUT / "records.json").read_text())}
+    records = {r["id"]: r for r in json.loads((output / "records.json").read_text())}
 
-    results_csv = OUTPUT / "triage_smoke.csv" if args.smoke else RESULTS_CSV
-    runs_dir = OUTPUT / "runs" / ("smoke" if args.smoke else "triage")
+    results_csv = output / ("triage_smoke.csv" if args.smoke else "triage_results.csv")
+    runs_dir = output / "runs" / ("smoke" if args.smoke else "triage")
     epochs = 2 if args.smoke else EPOCHS
     train_seeds = (args.train_seed,) if args.train_seed else TRAIN_SEEDS
 
-    selections = sorted((OUTPUT / "selections").glob("*.json"))
+    selections = sorted((output / "selections").glob("*.json"))
     artifacts = [(path, json.loads(path.read_text())) for path in selections]
     if args.technique:
         artifacts = [item for item in artifacts if item[1]["technique"] == args.technique]
@@ -199,7 +214,7 @@ def main() -> None:
         raise RuntimeError(f"Unknown technique: {args.technique}")
 
     done = load_done(results_csv)
-    lists_dir = YOLO_DIR / "triage_lists"
+    lists_dir = yolo_dir / "triage_lists"
     lists_dir.mkdir(exist_ok=True)
     runs_dir.mkdir(parents=True, exist_ok=True)
 
@@ -213,13 +228,42 @@ def main() -> None:
         f"cells={total} pending={pending} device={device} epochs={epochs}"
     )
 
+    if args.isolate:
+        if args.smoke or args.dry_run:
+            raise SystemExit("--isolate applies only to real grid training cells")
+        for path, artifact in artifacts:
+            for seed in train_seeds:
+                key = (
+                    artifact["technique"],
+                    float(artifact["fraction"]),
+                    int(artifact["repeat"]),
+                    seed,
+                )
+                if key in done:
+                    continue
+                cell = [
+                    sys.executable,
+                    str(Path(__file__).resolve()),
+                    "--dataset", args.dataset,
+                    "--technique", artifact["technique"],
+                    "--fraction", f"{artifact['fraction']}",
+                    "--repeat", str(artifact["repeat"]),
+                    "--train-seed", str(seed),
+                ]
+                if args.device:
+                    cell.extend(["--device", args.device])
+                print(f"isolated cell: {path.stem} train_seed={seed}", flush=True)
+                subprocess.run(cell, cwd=ROOT, check=True)
+        print(f"training complete: results saved to {results_csv}")
+        return
+
     for path, artifact in artifacts:
         technique, fraction, repeat = artifact["technique"], artifact["fraction"], artifact["repeat"]
         unknown_ids = sorted(set(artifact["images"]) - set(records))
         if unknown_ids:
             raise RuntimeError(f"{path.name} contains unknown image IDs: {unknown_ids[:5]}")
         image_paths = [
-            str(YOLO_DIR / "images" / "train" / f"{Path(records[i]['image']).stem}.jpg")
+            str(yolo_dir / "images" / "train" / f"{Path(records[i]['image']).stem}.jpg")
             for i in artifact["images"]
         ]
         missing_images = [item for item in image_paths if not Path(item).exists()]
@@ -230,10 +274,10 @@ def main() -> None:
         list_file.write_text("\n".join(image_paths) + "\n")
         data_yaml = lists_dir / f"{path.stem}.yaml"
         data_yaml.write_text(
-            f"path: {YOLO_DIR.resolve()}\n"
+            f"path: {yolo_dir.resolve()}\n"
             f"train: {list_file.resolve()}\n"
             "val: images/val\n"
-            "names:\n" + "".join(f"  {i}: {n}\n" for i, n in enumerate(TARGET_CLASSES))
+            "names:\n" + "".join(f"  {i}: {n}\n" for i, n in enumerate(target_classes))
         )
 
         for seed in train_seeds:
@@ -264,21 +308,19 @@ def main() -> None:
             mp, mr, _, _ = (float(v) for v in metrics.box.mean_results())
             f1 = 2 * mp * mr / (mp + mr) if mp + mr else 0.0
             # Classes absent from the run's predictions stay at 0.0.
-            ap50_by_class = {name: 0.0 for name in TARGET_CLASSES}
+            ap50_by_class = {name: 0.0 for name in target_classes}
             for class_index, ap50 in zip(metrics.box.ap_class_index, metrics.box.ap50):
-                ap50_by_class[TARGET_CLASSES[int(class_index)]] = round(float(ap50), 4)
+                ap50_by_class[target_classes[int(class_index)]] = round(float(ap50), 4)
             infer_ms = sum(float(metrics.speed.get(k, 0.0)) for k in
                            ("preprocess", "inference", "postprocess"))
-            append_row(results_csv, {
+            append_row(results_csv, fields, {
                 "technique": technique, "fraction": fraction, "selection_repeat": repeat,
                 "selection_hash": cell_hash, "train_seed": seed,
                 "precision": round(mp, 4), "recall": round(mr, 4), "f1": round(f1, 4),
                 "map50": round(float(metrics.box.map50), 4),
                 "map75": round(float(metrics.box.map75), 4),
                 "map50_95": round(float(metrics.box.map), 4),
-                "ap50_regulatory": ap50_by_class["regulatory"],
-                "ap50_warning": ap50_by_class["warning"],
-                "ap50_information": ap50_by_class["information"],
+                **{f"ap50_{name}": ap50_by_class[name] for name in target_classes},
                 "train_time_s": round(train_time_s, 1),
                 "val_time_s": round(val_time_s, 1),
                 "infer_ms_per_img": round(infer_ms, 2),

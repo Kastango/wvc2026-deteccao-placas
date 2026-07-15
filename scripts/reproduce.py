@@ -1,4 +1,4 @@
-"""Single entry point for the reproducible BVTSLD experiment workflow."""
+"""Single entry point for the reproducible experiment workflow (per dataset)."""
 from __future__ import annotations
 
 import argparse
@@ -6,11 +6,10 @@ import subprocess
 import sys
 from pathlib import Path
 
+from dataset_config import ROOT, expected_selections, spec
 
-ROOT = Path(__file__).resolve().parents[1]
+
 SCRIPTS = ROOT / "scripts"
-OUTPUT = ROOT / "outputs" / "bvtsld"
-EXPECTED_SELECTIONS = 164
 
 
 def command(script: str, *arguments: str) -> list[str]:
@@ -19,9 +18,11 @@ def command(script: str, *arguments: str) -> list[str]:
 
 class Workflow:
     def __init__(
-        self, device: str | None, force: bool, dry_run: bool,
+        self, dataset: str, device: str | None, force: bool, dry_run: bool,
         accept_dataset_licenses: bool,
     ) -> None:
+        self.dataset = dataset
+        self.output = spec(dataset).output_dir
         self.device = device
         self.force = force
         self.dry_run = dry_run
@@ -33,29 +34,40 @@ class Workflow:
         if not self.dry_run:
             subprocess.run(args, cwd=ROOT, check=True)
 
+    def dataset_command(self, script: str, *arguments: str) -> list[str]:
+        return command(script, "--dataset", self.dataset, *arguments)
+
     def download(self) -> None:
-        args = command("download_datasets.py", "--dataset", "bvtsld")
+        args = self.dataset_command("download_datasets.py")
         if self.accept_dataset_licenses:
             args.append("--accept-license")
         if self.force:
             args.append("--force")
         if self.dry_run:
             args.append("--dry-run")
-        self.run("Obter dataset BVTSLD", args)
+        self.run(f"Obter dataset {self.dataset}", args)
+
+    def split(self) -> None:
+        if (self.output / "split.json").exists() and not self.force:
+            print("\n== Split ==\nreutilizando partições congeladas")
+            return
+        args = self.dataset_command("generate_split.py")
+        if self.force:
+            args.append("--force")
+        self.run("Gerar partições fixas (semente 42)", args)
 
     def prepare(self) -> None:
-        args = command("prepare_bvtsld_yolo.py")
+        args = self.dataset_command("prepare_bvtsld_yolo.py")
         if self.force:
             args.append("--force")
         self.run("Materializar dataset YOLO", args)
 
     def embeddings(self) -> None:
-        global_path = OUTPUT / "embeddings_bvtsld_dinov2_full.npy"
-        pattern_path = OUTPUT / "patterns_bvtsld_freesel.npz"
-        args = command("generate_embeddings.py", "--dataset", "bvtsld")
+        dataset = spec(self.dataset)
+        args = self.dataset_command("generate_embeddings.py")
         if self.device:
             args.extend(["--device", self.device])
-        if global_path.exists() and pattern_path.exists() and not self.force:
+        if dataset.embeddings_path.exists() and dataset.patterns_path.exists() and not self.force:
             args.extend(["--verify", "--sample", "32"])
             title = "Verificar representações congeladas"
         else:
@@ -63,56 +75,62 @@ class Workflow:
         self.run(title, args)
 
     def selections(self) -> None:
-        paths = list((OUTPUT / "selections").glob("*.json"))
-        if len(paths) == EXPECTED_SELECTIONS and not self.force:
-            print(f"\n== Seleções ==\nreutilizando {EXPECTED_SELECTIONS} seleções versionadas")
+        paths = list((self.output / "selections").glob("*.json"))
+        if len(paths) == expected_selections() and not self.force:
+            print(f"\n== Seleções ==\nreutilizando {len(paths)} seleções versionadas")
             return
-        self.run("Gerar seleções", command("generate_bvtsld_local_selections.py"))
+        self.run(
+            "Gerar seleções", self.dataset_command("generate_bvtsld_local_selections.py")
+        )
 
     def oracle(self) -> None:
-        checkpoint = OUTPUT / "runs" / "oracle" / "weights" / "best.pt"
-        result = OUTPUT / "oracle_results.json"
+        checkpoint = self.output / "runs" / "oracle" / "weights" / "best.pt"
+        result = self.output / "oracle_results.json"
         if checkpoint.exists() and result.exists() and not self.force:
             print("\n== Oráculo ==\nreutilizando checkpoint local validado")
             return
-        args = command("train_oracle.py")
+        args = self.dataset_command("train_oracle.py")
         if self.device:
             args.extend(["--device", self.device])
         self.run("Treinar oráculo (100% do pool)", args)
 
     def smoke(self) -> None:
-        args = command("run_local_triage.py", "--smoke")
+        args = self.dataset_command("run_local_triage.py", "--smoke")
         if self.device:
             args.extend(["--device", self.device])
         self.run("Smoke test (2 épocas)", args)
 
     def audit(self) -> None:
+        if self.dataset != "bvtsld":
+            print(f"\n== Auditoria ==\nsem auditor bruto para {self.dataset} ainda")
+            return
         self.run("Auditoria", command("audit_bvtsld_local_pretrain.py"))
 
     def verify(self) -> None:
-        self.run("Validação dos artefatos", command("validate_bvtsld.py"))
+        self.run("Validação dos artefatos", self.dataset_command("validate_bvtsld.py"))
 
     def train(self) -> None:
-        args = command("run_local_triage.py")
+        args = self.dataset_command("run_local_triage.py", "--isolate")
         if self.device:
             args.extend(["--device", self.device])
-        self.run("Grade completa (328 runs, retomável)", args)
+        self.run("Grade completa (328 runs, retomável, 1 processo por run)", args)
 
     def analyze(self) -> None:
-        results = OUTPUT / "triage_results.csv"
+        results = self.output / "triage_results.csv"
         if not results.exists() and not self.dry_run:
             raise FileNotFoundError(f"complete a grade antes da análise: {results}")
         self.run(
             "Análise estatística",
             command(
                 "analyze_triage.py", str(results), "--output",
-                str(OUTPUT / "triage_analysis.csv"),
+                str(self.output / "triage_analysis.csv"),
             ),
         )
-        self.run("Resumo de métricas", command("summarize_metrics.py"))
+        self.run("Resumo de métricas", self.dataset_command("summarize_metrics.py"))
 
     def quick(self) -> None:
         self.download()
+        self.split()
         self.prepare()
         self.embeddings()
         self.selections()
@@ -129,11 +147,12 @@ class Workflow:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--dataset", default="bvtsld", choices=("bvtsld", "tt100k"))
     parser.add_argument(
         "--stage", required=True,
         choices=(
-            "download", "prepare", "embeddings", "selections", "oracle", "smoke", "audit",
-            "verify", "train", "analyze", "quick", "all",
+            "download", "split", "prepare", "embeddings", "selections", "oracle", "smoke",
+            "audit", "verify", "train", "analyze", "quick", "all",
         ),
     )
     parser.add_argument("--device", help="Ultralytics/PyTorch device: cuda, mps or cpu")
@@ -146,7 +165,7 @@ def main() -> None:
     args = parser.parse_args()
 
     workflow = Workflow(
-        args.device, args.force, args.dry_run, args.accept_dataset_licenses,
+        args.dataset, args.device, args.force, args.dry_run, args.accept_dataset_licenses,
     )
     getattr(workflow, args.stage)()
 

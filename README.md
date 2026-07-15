@@ -23,8 +23,9 @@ semente de treino.
 
 ## As etapas do estudo
 
-**Etapa 1 — BVTSLD (teste preliminar)** — pool de 693 imagens. Valida o
-*pipeline* e compara os métodos em escala pequena.
+**Etapa 1 — BVTSLD (teste preliminar)** — pool de 889 imagens, duas
+classes-alvo (`regulatory` e `traffic_light`). Valida o *pipeline* e compara
+os métodos em escala pequena.
 
 - [x] Auditoria do dataset, partições fixas e oráculo
 - [x] 164 seleções (6 métodos × 4 frações × 8 repetições; OPF: 1) e diagnósticos
@@ -53,26 +54,35 @@ rotulado inicial; o restante do pool entra com *pseudo-labels*.
 ### Conjunto de dados e partições fixas
 
 O BVTSLD (Brazilian Vertical Traffic Signs and Lights Dataset) foi auditado
-automaticamente e mapeado para três classes-alvo: `regulatory`, `warning` e
-`information`. A revisão humana box a box desse mapeamento está pendente.
-Imagens com semáforos fora dessa taxonomia ficam em quarentena.
+automaticamente e mapeado para **duas classes-alvo**: `regulatory` (os doze
+códigos de placas de regulamentação R-* observados nas imagens originais) e
+`traffic_light` (os três focos de semáforo). A taxonomia de três classes
+(regulamentação, advertência e indicação) fica reservada ao TT100K: no BVTSLD,
+a distribuição resultante seria extremamente desbalanceada, com poucas dezenas
+de boxes fora de `regulatory`, o que tornaria o mAP macro instável nas
+partições pequenas. Com duas classes, a razão entre as classes fica em 2,6:1 e
+todas as partições têm suporte suficiente. O único código excluído é o
+`000025` (A-18, advertência): as imagens que o contêm ficam em quarentena, sem
+entrar em nenhuma partição.
 
 | Resultado | Valor |
 |---|---:|
-| Imagens originais elegíveis | 990 |
-| *Bounding boxes* | 1.279 |
-| *Bounding boxes* `regulatory` | 1.084 |
-| *Bounding boxes* `warning` | 98 |
-| *Bounding boxes* `information` | 97 |
-| Imagens em quarentena (semáforos fora da taxonomia) | 373 |
-| Pool de treino | 693 imagens |
-| Partição de validação | 148 imagens |
-| Partição de teste | 149 imagens |
+| Imagens originais elegíveis | 1.271 |
+| *Bounding boxes* | 2.007 |
+| *Bounding boxes* `regulatory` | 1.442 |
+| *Bounding boxes* `traffic_light` | 565 |
+| Imagens em quarentena (código `000025`) | 92 |
+| Pool de treino | 889 imagens (1.024 / 376 boxes) |
+| Partição de validação | 191 imagens (202 / 95 boxes) |
+| Partição de teste | 191 imagens (216 / 94 boxes) |
 | Vazamento entre partições | 0 imagens |
 
-As partições são fixas (semente 42). A partição de teste permanece fechada.
-Ela será aberta uma única vez, no final, para a avaliação definitiva. Todas as
-comparações intermediárias usam apenas a validação.
+As partições são fixas e reproduzíveis: o gerador versionado
+[`generate_split.py`](scripts/generate_split.py) embaralha os
+IDs elegíveis com a semente 42 e reserva 15% para validação e 15% para teste.
+A partição de teste permanece fechada. Ela será aberta uma única vez, no
+final, para a avaliação definitiva. Todas as comparações intermediárias usam
+apenas a validação.
 
 Fontes: [`records.json`](outputs/bvtsld/records.json),
 [`split.json`](outputs/bvtsld/split.json),
@@ -84,11 +94,12 @@ Fontes: [`records.json`](outputs/bvtsld/records.json),
 O oráculo foi treinado com 100% do pool no protocolo fixo (ver
 [apêndice](#protocolo-fixo-de-treino-yolo)). Apenas a validação foi avaliada.
 
-| Partição | mAP@0.5 | mAP@0.5:0.95 | AP@0.5 `regulatory` | AP@0.5 `warning` | AP@0.5 `information` |
-|---|---:|---:|---:|---:|---:|
-| Validação | 0,9483 | 0,6270 | 0,9645 | 0,9721 | 0,9082 |
+| Partição | mAP@0.5 | mAP@0.5:0.95 | AP@0.5 `regulatory` | AP@0.5 `traffic_light` |
+|---|---:|---:|---:|---:|
+| Validação | 0,9365 | 0,6035 | 0,9502 | 0,9228 |
 
-- Tempo de treino: 2.318,2 s (~38,6 min) em Apple M2 Pro/MPS.
+- Tempo de treino: 1.698,7 s (~28,3 min) em Apple M2 Pro/MPS, em processo
+  dedicado.
 - Checkpoint local: `outputs/bvtsld/runs/oracle/weights/best.pt` (fora do Git).
 - Protocolo e métricas: [`oracle_results.json`](outputs/bvtsld/oracle_results.json).
 
@@ -99,7 +110,7 @@ O oráculo foi treinado com 100% do pool no protocolo fixo (ver
 
 ![Curva precisão-revocação do oráculo na validação](figs/oracle_validation_pr_curve.png)
 
-*Curvas de precisão–revocação na validação. O valor agregado é 0,948 mAP@0.5.*
+*Curvas de precisão–revocação na validação. O valor agregado é 0,937 mAP@0.5.*
 
 ![Matriz de confusão normalizada do oráculo](figs/oracle_validation_confusion_matrix_normalized.png)
 
@@ -136,7 +147,7 @@ Duas observações de protocolo:
 - O `opf_dinov2` roda sempre sobre o pool inteiro e é determinístico; repetições
   adicionais produziriam a mesma seleção. Por isso ele usa 1 repetição tanto no
   BVTSLD quanto no TT100K, enquanto os demais métodos usam 8.
-- Os orçamentos são de 35 (5%), 69 (10%), 139 (20%) e 346 (50%) imagens por
+- Os orçamentos são de 44 (5%), 89 (10%), 178 (20%) e 445 (50%) imagens por
   seleção.
 
 ### Diagnósticos das seleções
@@ -157,55 +168,55 @@ Como ler as colunas:
   Negativo é melhor.
 - **Jaccard**: sobreposição entre as repetições do método. Mede estabilidade.
 - **Tempo (s)**: tempo para gerar todas as repetições da fração, em um Apple
-  M2 Pro. Os valores atuais foram medidos com a máquina compartilhada com
-  outros processos e serão remedidos de forma sequencial em um servidor com
-  GPU dedicado e ocioso. A GPU acelera a extração das representações; as
-  rotinas de seleção baseadas no scikit-learn continuam majoritariamente na
-  CPU. Até essa remedição, os valores servem apenas como ordem de grandeza.
+  M2 Pro. Cada técnica × fração roda em um processo dedicado, executado
+  sequencialmente, de modo que tempo, CPU e pico de RSS de uma técnica não
+  sofrem interferência das demais; o tempo de CPU e o pico de RSS por técnica
+  ficam no CSV. As rotinas de seleção baseadas no scikit-learn rodam
+  majoritariamente na CPU.
 
-#### Fração de 5% — 35 imagens por seleção
-
-| Método | Cobertura DINOv2 | Δ cobertura | Δ pior caso | Jaccard | *Bounding boxes* | Tempo (s) |
-|---|---:|---:|---:|---:|---:|---:|
-| `kmeans_dinov2` | 0,1996 | −18,1% | −18,2% | 0,305 | 48,4 | 101,6 |
-| `typiclust_dinov2` | 0,2006 | −17,7% | −17,3% | 0,307 | 49,5 | 45,5 |
-| `probcover_dinov2` | 0,2051 | −15,8% | −18,0% | 0,490 | 48,8 | 42,4 |
-| `random` | 0,2436 | 0,0% | 0,0% | 0,028 | 44,0 | <0,1 |
-| `opf_dinov2` | 0,2486 | +2,0% | +14,4% | 1,000¹ | 50,0 | 6,6 |
-| `freesel_dino` | 0,2575 | +5,7% | −16,1% | 0,330 | 44,2 | 4,5 |
-
-#### Fração de 10% — 69 imagens por seleção
+#### Fração de 5% — 44 imagens por seleção
 
 | Método | Cobertura DINOv2 | Δ cobertura | Δ pior caso | Jaccard | *Bounding boxes* | Tempo (s) |
 |---|---:|---:|---:|---:|---:|---:|
-| `kmeans_dinov2` | 0,1655 | −19,6% | −25,5% | 0,293 | 92,4 | 181,9 |
-| `typiclust_dinov2` | 0,1666 | −19,1% | −23,9% | 0,274 | 93,2 | 81,7 |
-| `probcover_dinov2` | 0,1708 | −17,0% | −20,5% | 0,414 | 93,2 | 71,4 |
-| `freesel_dino` | 0,2048 | −0,5% | −19,5% | 0,494 | 83,2 | 8,7 |
-| `random` | 0,2058 | 0,0% | 0,0% | 0,056 | 88,4 | <0,1 |
-| `opf_dinov2` | 0,2211 | +7,4% | +15,1% | 1,000¹ | 99,0 | 3,7 |
+| `kmeans_dinov2` | 0,2019 | −16,7% | −14,3% | 0,252 | 71,8 | 198,7 |
+| `typiclust_dinov2` | 0,2021 | −16,6% | −15,1% | 0,245 | 72,8 | 87,7 |
+| `probcover_dinov2` | 0,2081 | −14,1% | −10,3% | 0,435 | 69,2 | 81,2 |
+| `random` | 0,2422 | 0,0% | 0,0% | 0,028 | 71,8 | <0,1 |
+| `opf_dinov2` | 0,2470 | +2,0% | +8,5% | 1,000¹ | 80,0 | 5,7 |
+| `freesel_dino` | 0,2552 | +5,4% | −19,6% | 0,288 | 59,5 | 9,4 |
 
-#### Fração de 20% — 139 imagens por seleção
-
-| Método | Cobertura DINOv2 | Δ cobertura | Δ pior caso | Jaccard | *Bounding boxes* | Tempo (s) |
-|---|---:|---:|---:|---:|---:|---:|
-| `kmeans_dinov2` | 0,1234 | −21,6% | −35,2% | 0,391 | 185,6 | 380,5 |
-| `typiclust_dinov2` | 0,1237 | −21,4% | −31,0% | 0,387 | 183,6 | 166,6 |
-| `probcover_dinov2` | 0,1307 | −17,0% | −15,7% | 0,344 | 181,9 | 141,3 |
-| `random` | 0,1574 | 0,0% | 0,0% | 0,113 | 179,6 | <0,1 |
-| `freesel_dino` | 0,1576 | +0,1% | −28,3% | 0,669 | 171,5 | 16,3 |
-| `opf_dinov2` | 0,1862 | +18,3% | −4,3% | 1,000¹ | 187,0 | 3,7 |
-
-#### Fração de 50% — 346 imagens por seleção
+#### Fração de 10% — 89 imagens por seleção
 
 | Método | Cobertura DINOv2 | Δ cobertura | Δ pior caso | Jaccard | *Bounding boxes* | Tempo (s) |
 |---|---:|---:|---:|---:|---:|---:|
-| `kmeans_dinov2` | 0,0550 | −30,5% | −63,2% | 0,682 | 441,5 | 917,9 |
-| `typiclust_dinov2` | 0,0550 | −30,4% | −63,1% | 0,670 | 441,9 | 567,1 |
-| `probcover_dinov2` | 0,0668 | −15,5% | −63,9% | 0,762 | 450,5 | 508,4 |
-| `freesel_dino` | 0,0716 | −9,5% | −24,7% | 0,861 | 434,4 | 51,5 |
-| `random` | 0,0791 | 0,0% | 0,0% | 0,337 | 450,1 | <0,1 |
-| `opf_dinov2` | 0,1126 | +42,3% | +7,1% | 1,000¹ | 460,0 | 4,2 |
+| `typiclust_dinov2` | 0,1661 | −17,2% | −15,8% | 0,263 | 143,8 | 149,8 |
+| `kmeans_dinov2` | 0,1662 | −17,2% | −17,0% | 0,279 | 142,2 | 347,8 |
+| `probcover_dinov2` | 0,1752 | −12,7% | −5,0% | 0,378 | 146,2 | 136,9 |
+| `random` | 0,2006 | 0,0% | 0,0% | 0,058 | 142,5 | <0,1 |
+| `freesel_dino` | 0,2107 | +5,0% | −20,9% | 0,428 | 124,9 | 14,1 |
+| `opf_dinov2` | 0,2181 | +8,7% | +6,1% | 1,000¹ | 167,0 | 5,3 |
+
+#### Fração de 20% — 178 imagens por seleção
+
+| Método | Cobertura DINOv2 | Δ cobertura | Δ pior caso | Jaccard | *Bounding boxes* | Tempo (s) |
+|---|---:|---:|---:|---:|---:|---:|
+| `kmeans_dinov2` | 0,1220 | −21,6% | −44,4% | 0,404 | 290,9 | 624,0 |
+| `typiclust_dinov2` | 0,1224 | −21,3% | −43,6% | 0,382 | 285,1 | 268,0 |
+| `probcover_dinov2` | 0,1338 | −14,0% | −17,3% | 0,380 | 289,6 | 317,9 |
+| `freesel_dino` | 0,1534 | −1,3% | −32,7% | 0,614 | 261,2 | 35,1 |
+| `random` | 0,1555 | 0,0% | 0,0% | 0,114 | 282,8 | <0,1 |
+| `opf_dinov2` | 0,1798 | +15,7% | −3,2% | 1,000¹ | 314,0 | 5,7 |
+
+#### Fração de 50% — 445 imagens por seleção
+
+| Método | Cobertura DINOv2 | Δ cobertura | Δ pior caso | Jaccard | *Bounding boxes* | Tempo (s) |
+|---|---:|---:|---:|---:|---:|---:|
+| `kmeans_dinov2` | 0,0524 | −33,3% | −65,6% | 0,697 | 710,9 | 1.753,9 |
+| `typiclust_dinov2` | 0,0524 | −33,2% | −65,1% | 0,697 | 707,1 | 823,8 |
+| `probcover_dinov2` | 0,0675 | −14,0% | −65,1% | 0,755 | 721,1 | 797,7 |
+| `freesel_dino` | 0,0700 | −10,8% | −32,1% | 0,853 | 665,2 | 78,8 |
+| `random` | 0,0785 | 0,0% | 0,0% | 0,336 | 698,9 | <0,1 |
+| `opf_dinov2` | 0,1103 | +40,6% | +17,0% | 1,000¹ | 754,0 | 6,7 |
 
 ¹ O OPF é determinístico neste pool (o pool inteiro cabe em um único ajuste do
 algoritmo). O protocolo usa uma única repetição para o método no BVTSLD.
@@ -232,13 +243,23 @@ As seleções individuais estão em
 
 *Uma seleção real de cada método, com fração de 10%. Os pontos cinza são as
 imagens do pool no espaço de representação usado pelo método; os pontos azuis
-são as 69 imagens selecionadas. No `FreeSel`, cada imagem tem cinco padrões
+são as 89 imagens selecionadas. No `FreeSel`, cada imagem tem cinco padrões
 locais, mas apenas o padrão que motivou a escolha é destacado, para manter a
-comparação em 69 pontos azuis. O `random` não usa embedding e aparece em uma
+comparação em 89 pontos azuis. O `random` não usa embedding e aparece em uma
 grade arbitrária de índices. Cada t-SNE é independente e serve apenas para
 visualização; a seleção opera no espaço original de 384 dimensões.*
 
 ### Treino YOLO por seleção — mAP vs. oráculo
+
+Não há uma regra universal que exija 8 repetições, mas esse é o mínimo que pode
+atingir significância com o teste exato e a correção de Holm deste protocolo
+($p$ mínimo corrigido: 0,039; com 7 repetições: 0,078). A quantidade de sementes
+deve idealmente ser confirmada por análise de potência
+([Colas et al., 2018](https://doi.org/10.48550/arXiv.1806.08295)). Se a análise
+for apenas descritiva, precedentes da área permitem reduzir para 5 repetições
+([Munjal et al., 2022](https://openaccess.thecvf.com/content/CVPR2022/html/Munjal_Towards_Robust_and_Reproducible_Active_Learning_Using_Neural_Networks_CVPR_2022_paper.html),
+208 runs) ou 3 ([FreeSel](https://openreview.net/forum?id=KBXcDAaZE7), 128
+runs), desde que a decisão seja tomada antes de observar os resultados.
 
 A grade contém **328 runs**: 164 seleções × 2 sementes de treino (41 e 42),
 40 épocas cada, no mesmo protocolo do oráculo. Cada run registra em
@@ -246,17 +267,19 @@ A grade contém **328 runs**: 164 seleções × 2 sementes de treino (41 e 42),
 
 - **Qualidade**: precisão, revocação, F1, mAP@0.5, mAP@0.75, mAP@0.5:0.95 e
   AP@0.5 por classe na validação. O mAP@0.5:0.95 já varre limiares de IoU de
-  0,50 a 0,95; o mAP@0.75 dá a leitura em IoU estrito. A AP por classe é
-  necessária porque `warning` e `information` são raras (98 e 97 *bounding
-  boxes* no pool): na fração de 5%, uma seleção pode conter zero exemplos de
-  uma dessas classes, a AP dela desaba e domina a variância do mAP — reportar
-  por classe separa esse efeito da qualidade geral da seleção.
+  0,50 a 0,95; o mAP@0.75 dá a leitura em IoU estrito. A AP por classe separa
+  o efeito da composição da seleção (quantas imagens com `traffic_light` cada
+  método escolheu) da qualidade geral do detector.
 - **Tempo**: tempo de treino, tempo de validação, inferência média por imagem
   (ms) e tempo de CPU (usuário + sistema) do run.
 - **Consumo computacional**: pico de RAM do processo, memória média e de pico
   da GPU durante o run. A utilização média da GPU (%) é registrada apenas em
   device CUDA; o macOS não expõe essa leitura sem privilégios de
-  administrador.
+  administrador. Na execução experimental definitiva, a opção `--isolate`
+  inicia cada run em um novo processo e aguarda sua conclusão antes de iniciar
+  o seguinte. Assim, não há treinos concorrentes, o tempo de CPU é atribuído ao
+  run correspondente e o pico de RSS começa novamente do zero a cada célula da
+  grade, sem carregar o máximo observado nos runs anteriores.
 
 A fase de seleção tem o próprio registro: o
 [`selections_summary.csv`](outputs/bvtsld/selections_summary.csv) guarda, por
@@ -269,7 +292,7 @@ direta das tabelas deste README.
 A tabela abaixo será preenchida com a média sobre repetições e sementes. Cada
 célula reporta mAP@0.5 / mAP@0.5:0.95 na validação.
 
-Referência: o oráculo, treinado com 100% do pool, atinge **0,9483 / 0,6270**.
+Referência: o oráculo, treinado com 100% do pool, atinge **0,9365 / 0,6035**.
 
 | Método | 5% | 10% | 20% | 50% |
 |---|---:|---:|---:|---:|
@@ -318,10 +341,12 @@ mil têm placas anotadas — um pool ~10× maior que o do BVTSLD, com placas
 pequenas em cenas complexas. O objetivo é verificar se o ranking dos métodos
 do teste preliminar se mantém em escala.
 
-O protocolo é o mesmo da Etapa 1: auditoria e taxonomia, partições fixas,
-oráculo, 6 métodos × 4 frações, 8 repetições para métodos estocásticos e 1 para
-o OPF, além de 2 sementes de treino, com mAP registrado para todos os métodos e
-frações. O OPF opera sobre o pool completo também nesta escala; não há amostra
+O protocolo repete a Etapa 1, mas com **três classes-alvo** — regulamentação
+(`p*`), advertência (`w*`) e indicação (`i*`), agregadas dos códigos originais
+do TT100K —, viável nessa escala porque cada classe tem centenas a milhares de
+boxes por partição: auditoria e taxonomia, partições fixas, oráculo, 6 métodos
+× 4 frações, 8 repetições para métodos estocásticos e 1 para o OPF, além de 2
+sementes de treino, com mAP registrado para todos os métodos e frações. O OPF opera sobre o pool completo também nesta escala; não há amostra
 aleatória intermediária. São 164 seleções e 328 runs.
 
 Escalar para o TT100K reduz o risco de apenas ~120 atualizações nas menores
@@ -399,8 +424,8 @@ de classificação:
 - **Limiares adaptativos por classe** (estilo FreeMatch,
   [Wang et al., 2023](https://arxiv.org/abs/2205.07246)): limiares globais e
   por classe estimados a partir da confiança do próprio modelo. Relevante
-  quando as classes têm frequências muito diferentes, como `information` no
-  BVTSLD.
+  quando as classes têm frequências muito diferentes, como nas classes raras
+  do TT100K.
 
 - **Pesos contínuos de confiança** (estilo SoftMatch,
   [Chen et al., 2023](https://arxiv.org/abs/2301.10921)): substitui o corte
@@ -435,26 +460,6 @@ de classificação:
 | Inferência estatística | Ganho médio pareado, IC 95% por *bootstrap* hierárquico, teste exato de sinais e correção de Holm |
 
 ### Reprodução
-
-#### Auditoria humana da taxonomia
-
-O revisor local apresenta os 16 códigos-fonte do BVTSLD. Para cada código, a
-interface reúne abaixo todas as *bounding boxes* correspondentes; a decisão é
-salva uma única vez para o código inteiro e a sessão pode ser retomada
-posteriormente:
-
-```bash
-.venv/bin/python scripts/review_bvtsld_taxonomy.py
-```
-
-As setas navegam entre os códigos. A interface inclui como *cheat sheet* uma
-imagem resumida dos tipos de placas de trânsito e mostra o grupo
-operacional usado pelo projeto. Essa agregação não é apresentada como uma
-categoria normativa do CONTRAN. O arquivo
-`outputs/bvtsld/taxonomy_human_review.json` é separado dos dados derivados e só
-recebe o estado `human_approved` depois que os 16 códigos forem revisados e a
-finalização for confirmada. A auditoria automática incorpora esse estado sem
-sobrescrever as decisões humanas.
 
 #### 1. Ambiente e dados
 
@@ -517,12 +522,18 @@ CUDA dedicada:
   --stage all --device cuda --accept-dataset-licenses
 ```
 
+Todos os comandos aceitam `--dataset bvtsld` (padrão) ou `--dataset tt100k`.
+As classes-alvo, caminhos e o mapa de códigos de cada dataset ficam
+centralizados em [`dataset_config.py`](scripts/dataset_config.py): o BVTSLD usa
+duas classes e o TT100K usará as três classes agregadas por prefixo.
+
 O treinador é retomável: cada run concluído entra em `triage_results.csv` e
 não é repetido. As etapas também podem ser chamadas separadamente:
 
 | Etapa | Comando | Saída principal |
 |---|---|---|
 | Download BVTSLD | `--stage download` | `datasets/bvtsld/` |
+| Partições fixas | `--stage split` | `outputs/bvtsld/split.json` |
 | Preparar YOLO | `--stage prepare` | `outputs/bvtsld/yolo_bvtsld/` |
 | Representações | `--stage embeddings` | embeddings DINOv2 e padrões FreeSel |
 | Seleções | `--stage selections` | 164 JSONs e `selections_summary.csv` |
@@ -532,6 +543,17 @@ não é repetido. As etapas também podem ser chamadas separadamente:
 | Validar artefatos | `--stage verify` | `project_status.json` |
 | Grade completa | `--stage train` | `triage_results.csv` e checkpoints |
 | Análise | `--stage analyze` | `triage_analysis.csv` e `metrics_summary.csv` |
+
+Para a coleta definitiva de tempo de CPU e pico de RAM, execute a grade com
+isolamento por processo:
+
+```bash
+.venv/bin/python scripts/run_local_triage.py --isolate --device cuda
+```
+
+O comando percorre somente as células ainda pendentes e executa uma por vez.
+Cada célula roda em um processo Python novo; se uma delas falhar, a grade para
+sem marcar esse run como concluído e pode ser retomada pelo mesmo comando.
 
 Exemplo para executar somente uma célula da grade:
 
@@ -563,10 +585,9 @@ requirements.txt                         dependências Python fixadas
 scripts/                                 auditoria, seleção, treino e análise
 notebooks/01_results_bvtsld.ipynb        exploração dos resultados gerados
 figs/                                    figuras de publicação
-outputs/bvtsld/records.json              anotações limpas
+outputs/bvtsld/records.json              anotações limpas (2 classes)
 outputs/bvtsld/split.json                partições fixas pool/validação/teste
-outputs/bvtsld/taxonomy_report.json      auditoria automática e estado da revisão
-outputs/bvtsld/taxonomy_human_review.json decisões humanas por código (quando iniciado)
+outputs/bvtsld/taxonomy_report.json      auditoria automática e mapa congelado
 outputs/bvtsld/selections/*.json         164 seleções
 outputs/bvtsld/selections_summary.csv    cobertura, estabilidade e tempos
 outputs/bvtsld/oracle_results.json       protocolo e métricas do oráculo
@@ -585,6 +606,9 @@ outputs/bvtsld/runs/                     checkpoints e execuções de treino (fo
 - Chen, H. et al. (2023). *SoftMatch: Addressing the Quantity-Quality
   Trade-off in Semi-supervised Learning*. ICLR.
   [arXiv:2301.10921](https://arxiv.org/abs/2301.10921)
+- Colas, C., Sigaud, O. & Oudeyer, P.-Y. (2018). *How Many Random Seeds?
+  Statistical Power Analysis in Deep Reinforcement Learning Experiments*.
+  [arXiv:1806.08295](https://arxiv.org/abs/1806.08295)
 - Hacohen, G., Dekel, A. & Weinshall, D. (2022). *Active Learning on a Budget:
   Opposite Strategies Suit High and Low Budgets* (TypiClust). ICML.
   [arXiv:2202.02794](https://arxiv.org/abs/2202.02794)
@@ -593,6 +617,9 @@ outputs/bvtsld/runs/                     checkpoints e execuções de treino (fo
 - Lloyd, S. (1982). *Least Squares Quantization in PCM* (k-means). IEEE
   Transactions on Information Theory.
   [DOI:10.1109/TIT.1982.1056489](https://doi.org/10.1109/TIT.1982.1056489)
+- Munjal, P., Hayat, N., Hayat, M., Sourati, J. & Khan, S. (2022). *Towards
+  Robust and Reproducible Active Learning Using Neural Networks*. CVPR.
+  [paper](https://openaccess.thecvf.com/content/CVPR2022/html/Munjal_Towards_Robust_and_Reproducible_Active_Learning_Using_Neural_Networks_CVPR_2022_paper.html)
 - Oquab, M. et al. (2024). *DINOv2: Learning Robust Visual Features without
   Supervision*. TMLR. [arXiv:2304.07193](https://arxiv.org/abs/2304.07193)
 - Rocha, L. M., Cappabianco, F. A. M. & Falcão, A. X. (2009). *Data Clustering
