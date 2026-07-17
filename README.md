@@ -31,8 +31,8 @@ os métodos em escala pequena.
 - [x] 164 seleções (6 métodos × 4 frações × 8 repetições; OPF: 1) e diagnósticos
 - [ ] Grade completa de treino YOLO (0/328 runs)
 
-**Etapa 2 — TT100K (replicação em escala)** — pool ~10× maior. Verifica se o
-ranking dos métodos se mantém.
+**Etapa 2 — TT100K (replicação em escala)** — verifica se o ranking dos
+métodos se mantém.
 
 - [ ] Auditoria do dataset e mapeamento de taxonomia
 - [ ] Partições fixas pool/validação/teste (semente 42)
@@ -170,14 +170,16 @@ classificação do artigo. Adaptações deste estudo: o raio é estimado com
 `k = orçamento` (o artigo usa `k = número de classes`) e a cobertura é
 reiniciada quando se esgota.
 
-**`freesel_dino`** ([Xie et al., 2023](https://arxiv.org/abs/2309.17342);
+**`freesel_fds_dino`** ([Xie et al., 2023](https://arxiv.org/abs/2309.17342);
 DINO: [Caron et al., 2021](https://arxiv.org/abs/2104.14294)) — único método
 que enxerga **regiões locais**: cada imagem gera cinco padrões via k-means
 sobre as *features* DINO v1 (384 dimensões), guiado pelos mapas de atenção, e
 a seleção busca o padrão não coberto mais distante (cosseno); a imagem dona
 do padrão entra. Hipótese associada, a ser testada na grade: placas pequenas
 contam mesmo quando a cena inteira já parece representada. A implementação é
-a variante determinística FDS; o método principal do artigo usa agrupamento
+a variante **Farthest-Distance Sampling (FDS)** — amostragem pela maior
+distância. Após a primeira imagem, sorteada de forma reprodutível pela semente,
+a regra FDS é determinística. O método principal do artigo usa agrupamento
 espectral guiado por atenção e amostragem proporcional à distância².
 
 ### Diagnósticos das seleções
@@ -195,7 +197,9 @@ Como ler as colunas:
   Negativo é melhor.
 - **Δ pior caso**: mesma comparação usando a maior distância encontrada.
   Negativo é melhor.
-- **Jaccard**: sobreposição entre as repetições do método. Mede estabilidade.
+- **Jaccard**: sobreposição média entre pares de repetições do método. Mede
+  estabilidade somente quando há pelo menos duas seleções; caso contrário,
+  é reportado como `N/A`.
 - **Tempo (s)**: tempo para gerar todas as repetições da fração (Apple M2
   Pro). Cada técnica × fração roda em um processo dedicado e sequencial, sem
   interferência das demais em tempo, CPU e pico de RSS; CPU e RSS por técnica
@@ -209,8 +213,8 @@ Como ler as colunas:
 | `typiclust_dinov2` | 0,2021 | −16,6% | −15,1% | 0,245 | 72,8 | 87,7 |
 | `probcover_dinov2` | 0,2081 | −14,1% | −10,3% | 0,435 | 69,2 | 81,2 |
 | `random` | 0,2422 | 0,0% | 0,0% | 0,028 | 71,8 | <0,1 |
-| `opf_dinov2` | 0,2470 | +2,0% | +8,5% | 1,000¹ | 80,0 | 5,7 |
-| `freesel_dino` | 0,2552 | +5,4% | −19,6% | 0,288 | 59,5 | 9,4 |
+| `opf_dinov2` | 0,2470 | +2,0% | +8,5% | N/A¹ | 80,0 | 5,7 |
+| `freesel_fds_dino` | 0,2552 | +5,4% | −19,6% | 0,288 | 59,5 | 9,4 |
 
 #### Fração de 10% — 89 imagens por seleção
 
@@ -220,8 +224,8 @@ Como ler as colunas:
 | `kmeans_dinov2` | 0,1662 | −17,2% | −17,0% | 0,279 | 142,2 | 347,8 |
 | `probcover_dinov2` | 0,1752 | −12,7% | −5,0% | 0,378 | 146,2 | 136,9 |
 | `random` | 0,2006 | 0,0% | 0,0% | 0,058 | 142,5 | <0,1 |
-| `freesel_dino` | 0,2107 | +5,0% | −20,9% | 0,428 | 124,9 | 14,1 |
-| `opf_dinov2` | 0,2181 | +8,7% | +6,1% | 1,000¹ | 167,0 | 5,3 |
+| `freesel_fds_dino` | 0,2107 | +5,0% | −20,9% | 0,428 | 124,9 | 14,1 |
+| `opf_dinov2` | 0,2181 | +8,7% | +6,1% | N/A¹ | 167,0 | 5,3 |
 
 #### Fração de 20% — 178 imagens por seleção
 
@@ -230,9 +234,9 @@ Como ler as colunas:
 | `kmeans_dinov2` | 0,1220 | −21,6% | −44,4% | 0,404 | 290,9 | 624,0 |
 | `typiclust_dinov2` | 0,1224 | −21,3% | −43,6% | 0,382 | 285,1 | 268,0 |
 | `probcover_dinov2` | 0,1338 | −14,0% | −17,3% | 0,380 | 289,6 | 317,9 |
-| `freesel_dino` | 0,1534 | −1,3% | −32,7% | 0,614 | 261,2 | 35,1 |
+| `freesel_fds_dino` | 0,1534 | −1,3% | −32,7% | 0,614 | 261,2 | 35,1 |
 | `random` | 0,1555 | 0,0% | 0,0% | 0,114 | 282,8 | <0,1 |
-| `opf_dinov2` | 0,1798 | +15,7% | −3,2% | 1,000¹ | 314,0 | 5,7 |
+| `opf_dinov2` | 0,1798 | +15,7% | −3,2% | N/A¹ | 314,0 | 5,7 |
 
 #### Fração de 50% — 445 imagens por seleção
 
@@ -241,12 +245,12 @@ Como ler as colunas:
 | `kmeans_dinov2` | 0,0524 | −33,3% | −65,6% | 0,697 | 710,9 | 1.753,9 |
 | `typiclust_dinov2` | 0,0524 | −33,2% | −65,1% | 0,697 | 707,1 | 823,8 |
 | `probcover_dinov2` | 0,0675 | −14,0% | −65,1% | 0,755 | 721,1 | 797,7 |
-| `freesel_dino` | 0,0700 | −10,8% | −32,1% | 0,853 | 665,2 | 78,8 |
+| `freesel_fds_dino` | 0,0700 | −10,8% | −32,1% | 0,853 | 665,2 | 78,8 |
 | `random` | 0,0785 | 0,0% | 0,0% | 0,336 | 698,9 | <0,1 |
-| `opf_dinov2` | 0,1103 | +40,6% | +17,0% | 1,000¹ | 754,0 | 6,7 |
+| `opf_dinov2` | 0,1103 | +40,6% | +17,0% | N/A¹ | 754,0 | 6,7 |
 
-¹ Repetição única: o OPF é determinístico neste pool (ver
-[métodos](#os-métodos-escolhidos-e-por-quê)).
+¹ Jaccard não se aplica ao OPF: há uma única seleção por fração e, portanto,
+nenhum par de repetições cuja sobreposição possa ser medida.
 
 Leitura preliminar: `kmeans_dinov2` e `typiclust_dinov2` têm a melhor
 cobertura média nas quatro frações; `probcover_dinov2` vem próximo. O
@@ -266,9 +270,10 @@ As seleções individuais estão em
 
 *Uma seleção real por método (fração de 10%): pontos cinza são o pool no
 espaço de representação do método; pontos azuis, as 89 imagens selecionadas.
-No `FreeSel`, destaca-se apenas o padrão local que motivou cada escolha; no
-`random`, sem embedding, a grade de índices é arbitrária. O t-SNE serve só
-para visualização — a seleção opera nas 384 dimensões originais.*
+No `freesel_fds_dino` (FreeSel FDS), destaca-se apenas o padrão local que
+motivou cada escolha; no `random`, sem embedding, a grade de índices é
+arbitrária. O t-SNE serve só para visualização — a seleção opera nas 384
+dimensões originais.*
 
 ### Treino YOLO por seleção — mAP vs. oráculo
 
@@ -315,7 +320,7 @@ Referência: o oráculo, treinado com 100% do pool, atinge **0,9365 / 0,6035**.
 | `opf_dinov2` | — / — | — / — | — / — | — / — |
 | `typiclust_dinov2` | — / — | — / — | — / — | — / — |
 | `probcover_dinov2` | — / — | — / — | — / — | — / — |
-| `freesel_dino` | — / — | — / — | — / — | — / — |
+| `freesel_fds_dino` | — / — | — / — | — / — | — / — |
 
 Estado atual da etapa de treino:
 
@@ -347,8 +352,7 @@ verdadeiro.
 
 O [TT100K (Tsinghua-Tencent 100K)](https://cg.cs.tsinghua.edu.cn/traffic-sign/)
 ([Zhu et al., 2016](https://doi.org/10.1109/CVPR.2016.232)) contém cerca de
-100 mil imagens de *street view* em alta resolução (2048 × 2048). Cerca de 10
-mil têm placas anotadas — um pool ~10× maior que o do BVTSLD, com placas
+100 mil imagens de *street view* em alta resolução (2048 × 2048), com placas
 pequenas em cenas complexas. O objetivo é verificar se o ranking dos métodos
 do teste preliminar se mantém em escala.
 
@@ -399,7 +403,7 @@ com 100% do pool: — / —.
 | `opf_dinov2` | — / — | — / — | — / — | — / — |
 | `typiclust_dinov2` | — / — | — / — | — / — | — / — |
 | `probcover_dinov2` | — / — | — / — | — / — | — / — |
-| `freesel_dino` | — / — | — / — | — / — | — / — |
+| `freesel_fds_dino` | — / — | — / — | — / — | — / — |
 
 ---
 

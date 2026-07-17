@@ -100,10 +100,10 @@ TECHNIQUES: tuple[TechniqueSpec, ...] = (
         "DINOv2 · image embedding",
     ),
     TechniqueSpec(
-        "freesel_dino",
-        "FreeSel",
-        "method_08_freesel",
-        "selects diverse local patterns instead of only whole scenes",
+        "freesel_fds_dino",
+        "FreeSel — FDS",
+        "method_08_freesel_fds",
+        "farthest-distance sampling over local patterns",
         "DINO · local patterns",
     ),
 )
@@ -378,14 +378,14 @@ def draw_selection(
         setup_axis(ax, title, note, panel.selected_images, panel.pool_items)
 
 
-def trace_freesel_patterns(
+def trace_freesel_fds_patterns(
     patterns: np.ndarray,
     pattern_ids: np.ndarray,
     n_images: int,
     fraction: float,
     seed: int,
 ) -> tuple[np.ndarray, np.ndarray]:
-    """Reproduce FreeSel and retain the pattern that triggers each image choice."""
+    """Reproduce FreeSel FDS and retain the pattern triggering each image choice."""
     budget = max(1, int(round(fraction * n_images)))
     rng = np.random.RandomState(seed)
     first_image = int(rng.randint(n_images))
@@ -457,8 +457,8 @@ def build_panels(
                 space_label=spec.space,
                 draw_pool_density=False,
             )
-        elif spec.key == "freesel_dino":
-            traced_images, selected_patterns = trace_freesel_patterns(
+        elif spec.key == "freesel_fds_dino":
+            traced_images, selected_patterns = trace_freesel_fds_patterns(
                 patterns,
                 pattern_ids,
                 len(pool_ids),
@@ -466,7 +466,7 @@ def build_panels(
                 SELECTION_SEED + repeat - 1,
             )
             if set(traced_images.tolist()) != set(selected_images.tolist()):
-                raise ValueError("Reconstructed FreeSel trace differs from saved selection")
+                raise ValueError("Reconstructed FreeSel FDS trace differs from saved selection")
             panels[spec.key] = PanelData(
                 xy=projected_patterns,
                 selected_points=selected_patterns,
@@ -561,7 +561,7 @@ def render_grid(
                markeredgewidth=0, markersize=7, alpha=0.42, label="pool item in the method's space"),
         Line2D([0], [0], marker="o", color="none", markerfacecolor=SELECTED_COLOR,
                markeredgecolor="white", markeredgewidth=1.0, markersize=9,
-               label="selected image (representative pattern for FreeSel)"),
+               label="selected image (pattern chosen by FreeSel FDS)"),
     ]
     fig.legend(
         handles=handles,

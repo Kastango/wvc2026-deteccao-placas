@@ -38,7 +38,9 @@ METHOD_FIDELITY = {
     "opf_dinov2": "OPF root + quota on the full pool",
     "typiclust_dinov2": "TypiClust",
     "probcover_dinov2": "ProbCover; unlabeled delta at purity >= 0.95",
-    "freesel_dino": "FreeSel; FDS on local DINO patterns",
+    "freesel_fds_dino": (
+        "FreeSel; farthest-distance sampling (FDS) on local DINO patterns"
+    ),
 }
 
 
@@ -221,7 +223,7 @@ def probcover_selections(emb, fraction, seed=SEED, purity_target=0.95):
     return out
 
 
-def freesel_selections(patterns, pattern_ids, n_images, fraction, seed=SEED):
+def freesel_fds_selections(patterns, pattern_ids, n_images, fraction, seed=SEED):
     x = normalize_rows(patterns)
     budget = budget_for(fraction, n_images)
     out = []
@@ -297,7 +299,7 @@ def job_table(pool, emb, patterns, pattern_ids):
         "opf_dinov2": lambda fraction: opf_selections(emb, fraction),
         "typiclust_dinov2": lambda fraction: typiclust_selections(emb, fraction),
         "probcover_dinov2": lambda fraction: probcover_selections(emb, fraction),
-        "freesel_dino": lambda fraction: freesel_selections(
+        "freesel_fds_dino": lambda fraction: freesel_fds_selections(
             patterns, pattern_ids, len(pool), fraction
         ),
     }
@@ -393,7 +395,7 @@ def main():
                         "coverage_mean": round(cov_mean, 4),
                         "coverage_max": round(cov_max, 4),
                         "stability_jaccard": (
-                            round(float(np.mean(overlaps)), 3) if overlaps else 1.0
+                            round(float(np.mean(overlaps)), 3) if overlaps else np.nan
                         ),
                         "classes": selection_classes(pool, selection),
                         "implementation": METHOD_FIDELITY[technique],
@@ -403,7 +405,7 @@ def main():
             print(f"generated {technique} fraction={fraction:.2f}")
 
     summary = pd.DataFrame(rows)
-    summary.to_csv(OUTPUT / "selections_summary.csv", index=False)
+    summary.to_csv(OUTPUT / "selections_summary.csv", index=False, na_rep="N/A")
     print(f"wrote {len(rows)} rows to {OUTPUT / 'selections_summary.csv'}")
     if archive:
         print(f"archived previous selections in {archive}")

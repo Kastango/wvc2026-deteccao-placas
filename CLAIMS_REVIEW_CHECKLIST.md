@@ -6,24 +6,6 @@ como referência de dados completos, as métricas de distância, a escolha do
 exemplar do k-means e a separação entre o OPF publicado e as heurísticas do
 projeto.
 
-## Métodos de seleção
-
-- [ ] **Decidir se `freesel_dino` será renomeado para `freesel_fds_dino`.**
-  - Local: código, seleções, tabelas e figuras que usam `freesel_dino`.
-  - Contexto: o README já descreve a implementação como a variante
-    determinística FDS; falta apenas decidir se o identificador acompanha a
-    descrição em todos os artefatos.
-
-## Diagnósticos e medições
-
-- [ ] **Trocar o Jaccard do OPF de `1,000` para `N/A`.**
-  - Locais: linhas das quatro frações na seção
-    [Diagnósticos das seleções](README.md#diagnósticos-das-seleções).
-  - Problema: uma única execução não permite medir sobreposição entre
-    repetições.
-  - Concluído quando: tabelas, nota de rodapé, CSV gerador e figuras não
-    tratarem determinismo como uma medição de Jaccard.
-
 ## Inferência estatística
 
 - [ ] **Resolver a incompatibilidade entre uma única seleção OPF e o teste de sinais.**
@@ -39,13 +21,6 @@ projeto.
 
 ## TT100K
 
-- [ ] **Adiar a claim de pool “~10× maior”.**
-  - Local: [`README.md:317`](README.md#etapa-2--replicação-no-tt100k).
-  - Problema: o artigo sustenta cerca de 10 mil imagens com sinais, mas o pool
-    elegível só será conhecido após taxonomia, filtros e split.
-  - Concluído quando: a frase for apresentada como estimativa pré-auditoria ou
-    substituída pelo tamanho medido do pool.
-
 - [ ] **Validar a viabilidade do OPF no pool completo do TT100K.**
   - Local: [`README.md:324`](README.md#etapa-2--replicação-no-tt100k).
   - Problema: a implementação atual constrói vizinhanças todos-contra-todos, e
@@ -55,35 +30,9 @@ projeto.
   - Concluído quando: o piloto validar a execução ou o protocolo documentar
     subamostragem/restrição escalável.
 
-## Semi-supervisão
 
-- [ ] **Distinguir FixMatch original da adaptação professor–aluno para detecção.**
-  - Local: [`README.md:394`](README.md#etapa-3--trabalhos-futuros-semi-supervisão-na-dissertação).
-  - Explicitar: FixMatch usa a mesma rede, não um professor EMA; aplicar sua
-    regra dentro de um detector professor–aluno é adaptação do projeto.
-  - Tratar `τ = 0,95` como ponto inicial oriundo de classificação, não como
-    limiar validado para detecção.
-
-- [ ] **Corrigir a motivação dos limiares FreeMatch.**
-  - Local: [`README.md:399`](README.md#etapa-3--trabalhos-futuros-semi-supervisão-na-dissertação).
-  - Explicitar: o limiar global é modulado por estatísticas de confiança por
-    classe; ele não é estimado diretamente da frequência das classes.
-  - Concluído quando: eventual relação com desbalanceamento estiver formulada
-    como motivação/hipótese, não como mecanismo do artigo.
-
-- [ ] **Descrever corretamente o peso do SoftMatch e marcar a adaptação por box.**
-  - Local: [`README.md:405`](README.md#etapa-3--trabalhos-futuros-semi-supervisão-na-dissertação).
-  - Explicitar: a gaussiana é truncada e dinâmica; abaixo da média o peso
-    decai, e na média ou acima dela recebe peso máximo.
-  - Registrar que aplicar o peso individualmente por box em detecção é uma
-    adaptação ainda não validada pelo artigo.
 
 ## Dependências experimentais
-
-- [ ] **Executar a grade BVTSLD antes de transformar riscos em resultados.**
-  - Estado atual: 0/328 runs.
-  - Depois da execução, revisar todas as claims sobre ranking, variância,
-    composição por classe e ganho contra `random` usando os artefatos gerados.
 
 - [ ] **Concluir a auditoria e o piloto TT100K antes de congelar claims de escala.**
   - Dependências: taxonomia, elegibilidade, split, tamanho real do pool e custo

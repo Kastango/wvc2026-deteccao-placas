@@ -23,7 +23,7 @@ TECHNIQUES = {
     "opf_dinov2",
     "typiclust_dinov2",
     "probcover_dinov2",
-    "freesel_dino",
+    "freesel_fds_dino",
 }
 FRACTIONS = {0.05, 0.10, 0.20, 0.50}
 REPEATS = set(range(1, 9))

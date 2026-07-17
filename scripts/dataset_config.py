@@ -18,7 +18,7 @@ STOCHASTIC_REPEATS = 8
 DETERMINISTIC_TECHNIQUES = frozenset({"opf_dinov2"})
 TECHNIQUES = (
     "random", "kmeans_dinov2", "opf_dinov2",
-    "typiclust_dinov2", "probcover_dinov2", "freesel_dino",
+    "typiclust_dinov2", "probcover_dinov2", "freesel_fds_dino",
 )
 
 # TT100K's own category identifiers aggregate by their initial letter.
