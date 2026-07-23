@@ -101,7 +101,7 @@ TECHNIQUES: tuple[TechniqueSpec, ...] = (
     ),
     TechniqueSpec(
         "freesel_fds_dino",
-        "FreeSel — FDS",
+        "FreeSel - FDS",
         "method_08_freesel_fds",
         "farthest-distance sampling over local patterns",
         "DINO · local patterns",
@@ -528,9 +528,9 @@ def render_grid(
 ) -> None:
     cols = 3
     rows = math.ceil(len(specs) / cols)
-    fig, axes = plt.subplots(rows, cols, figsize=(12.4, 9.3), constrained_layout=False)
+    fig, axes = plt.subplots(rows, cols, figsize=(12.4, 8.2), constrained_layout=False)
     fig.patch.set_facecolor(FIGURE_BG)
-    fig.subplots_adjust(left=0.025, right=0.985, top=0.76, bottom=0.10, hspace=0.48, wspace=0.12)
+    fig.subplots_adjust(left=0.025, right=0.985, top=0.83, bottom=0.04, hspace=0.48, wspace=0.12)
     axes_arr = np.array(axes, dtype=object).reshape(rows, cols)
 
     for ax, spec in zip(axes_arr.flat, specs):
@@ -538,23 +538,6 @@ def render_grid(
 
     for ax in axes_arr.flat[len(specs):]:
         ax.axis("off")
-
-    title = "How each method represents and samples the unlabeled pool"
-    fig.suptitle(
-        title, x=0.5, ha="center", fontsize=21, fontweight="bold",
-        color=TEXT_COLOR, y=0.98,
-    )
-    fig.text(
-        0.5,
-        0.94,
-        f"{args.dataset.upper()} · method-specific {args.projection.upper()} projections · "
-        f"{next(iter(panels.values())).selected_images} "
-        f"images selected per method · repeat {args.repeat}",
-        ha="center",
-        va="top",
-        fontsize=10.5,
-        color=MUTED_COLOR,
-    )
 
     handles = [
         Line2D([0], [0], marker="o", color="none", markerfacecolor=POOL_COLOR,
@@ -569,12 +552,7 @@ def render_grid(
         ncols=2,
         frameon=False,
         fontsize=10,
-        bbox_to_anchor=(0.5, 0.89),
-    )
-    fig.text(
-        0.5, 0.025,
-        "Each panel projects the representation actually used by that method; selection runs in the full space.",
-        ha="center", va="bottom", fontsize=9.5, color=MUTED_COLOR,
+        bbox_to_anchor=(0.5, 0.98),
     )
     save_figure(
         fig,

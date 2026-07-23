@@ -4,9 +4,11 @@ Required CSV columns:
 technique,fraction,selection_repeat,selection_hash,train_seed,map50_95
 
 Validates 6 methods x 4 fractions x 8 selections x 2 train seeds (OPF is
-deterministic and keeps a single selection repeat), then computes paired
-differences against random sampling, hierarchical bootstrap confidence
-intervals, exact sign randomization and Holm correction within each fraction.
+deterministic and keeps a single selection repeat). For stochastic selectors,
+it computes paired differences against random sampling, hierarchical bootstrap
+confidence intervals, exact sign randomization and Holm correction within each
+fraction. OPF is compared descriptively with the mean random result, paired by
+train seed, and is excluded from inferential statistics.
 """
 
 from argparse import ArgumentParser
@@ -31,6 +33,7 @@ REPEATS = set(range(1, 9))
 # all the information regardless of pool size.
 TECHNIQUE_REPEATS = {technique: REPEATS for technique in TECHNIQUES}
 TECHNIQUE_REPEATS["opf_dinov2"] = {1}
+DESCRIPTIVE_TECHNIQUES = {"opf_dinov2"}
 TRAIN_SEEDS = {41, 42}
 BOOTSTRAPS = 10_000
 
@@ -122,7 +125,27 @@ def analyze(data: pd.DataFrame) -> pd.DataFrame:
 
     for fraction in sorted(FRACTIONS):
         block = scores.loc[fraction]
+        random_by_selection = block["random"].unstack("train_seed").loc[
+            sorted(REPEATS), sorted(TRAIN_SEEDS)
+        ]
         for technique in sorted(set(block.columns) - {"random"}):
+            if technique in DESCRIPTIVE_TECHNIQUES:
+                technique_by_seed = block[technique].unstack("train_seed").loc[
+                    sorted(TECHNIQUE_REPEATS[technique]), sorted(TRAIN_SEEDS)
+                ].mean(axis=0)
+                gain_by_seed = technique_by_seed - random_by_selection.mean(axis=0)
+                rows.append({
+                    "fraction": fraction,
+                    "technique": technique,
+                    "analysis_type": "descriptive",
+                    "mean_gain": float(gain_by_seed.mean()),
+                    "median_gain_by_selection": np.nan,
+                    "ci95_low": np.nan,
+                    "ci95_high": np.nan,
+                    "p_exact": np.nan,
+                })
+                continue
+
             paired = (block[technique] - block["random"]).unstack("train_seed")
             paired = paired.loc[sorted(TECHNIQUE_REPEATS[technique]), sorted(TRAIN_SEEDS)]
             by_selection = paired.mean(axis=1).to_numpy()
@@ -130,6 +153,7 @@ def analyze(data: pd.DataFrame) -> pd.DataFrame:
             rows.append({
                 "fraction": fraction,
                 "technique": technique,
+                "analysis_type": "inferential",
                 "mean_gain": float(paired.to_numpy().mean()),
                 "median_gain_by_selection": float(np.median(by_selection)),
                 "ci95_low": low,
@@ -140,14 +164,20 @@ def analyze(data: pd.DataFrame) -> pd.DataFrame:
     result = pd.DataFrame(rows)
     result["p_holm"] = np.nan
     for fraction, positions in result.groupby("fraction").groups.items():
-        values = result.loc[positions].set_index("technique")["p_exact"]
+        inferential = result.loc[positions, "analysis_type"] == "inferential"
+        inferential_positions = result.loc[positions].index[inferential]
+        values = result.loc[inferential_positions].set_index("technique")["p_exact"]
         adjusted = holm(values)
-        result.loc[positions, "p_holm"] = result.loc[positions, "technique"].map(adjusted)
+        result.loc[inferential_positions, "p_holm"] = result.loc[
+            inferential_positions, "technique"
+        ].map(adjusted)
     result["practically_relevant"] = result["mean_gain"] >= 0.02
-    result["supported"] = (
-        (result["ci95_low"] > 0)
-        & (result["p_holm"] < 0.05)
-        & result["practically_relevant"]
+    result["supported"] = pd.Series(pd.NA, index=result.index, dtype="boolean")
+    inferential = result["analysis_type"] == "inferential"
+    result.loc[inferential, "supported"] = (
+        (result.loc[inferential, "ci95_low"] > 0)
+        & (result.loc[inferential, "p_holm"] < 0.05)
+        & result.loc[inferential, "practically_relevant"]
     )
     return result.sort_values(["fraction", "mean_gain"], ascending=[True, False])
 

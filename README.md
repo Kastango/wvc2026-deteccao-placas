@@ -53,15 +53,11 @@ rotulado inicial; o restante do pool entra com *pseudo-labels*.
 
 ### Conjunto de dados e partições fixas
 
-O BVTSLD (Brazilian Vertical Traffic Signs and Lights Dataset) foi auditado
-automaticamente e mapeado para **duas classes-alvo**: `regulatory` (doze
-códigos de placas de regulamentação R-*) e `traffic_light` (três focos de
-semáforo). Com três classes, poucas dezenas de boxes ficariam fora de
-`regulatory` e o mAP macro seria instável nas partições pequenas; com duas, a
-razão entre classes é 2,6:1 e todas as partições têm suporte suficiente. A
-taxonomia de três classes fica reservada ao TT100K. Único código excluído:
-`000025` (A-18, advertência) — as imagens que o contêm ficam em quarentena,
-fora de todas as partições.
+O BVTSLD (Brazilian Vertical Traffic Signs and Lights Dataset) foi auditado e
+mapeado para duas classes-alvo: `regulatory` (doze códigos R-*) e
+`traffic_light` (três focos de semáforo). O código `000025` (placa de
+advertência A-18), fora dessa taxonomia, foi excluído; suas 92 imagens
+permanecem em quarentena.
 
 | Resultado | Valor |
 |---|---:|
@@ -75,11 +71,8 @@ fora de todas as partições.
 | Partição de teste | 191 imagens (216 / 94 boxes) |
 | Vazamento entre partições | 0 imagens |
 
-As partições são fixas e reproduzíveis:
-[`generate_split.py`](scripts/generate_split.py) embaralha os IDs elegíveis
-com a semente 42 e reserva 15% para validação e 15% para teste. O teste será
-aberto uma única vez, na avaliação final; todas as comparações intermediárias
-usam apenas a validação.
+As partições são fixas (semente 42; 70/15/15%). O teste será usado uma única
+vez, na avaliação final; até lá, as comparações usam apenas a validação.
 
 Fontes: [`records.json`](outputs/bvtsld/records.json),
 [`split.json`](outputs/bvtsld/split.json),
@@ -88,17 +81,15 @@ Fontes: [`records.json`](outputs/bvtsld/records.json),
 
 ### Oráculo YOLOv8n — referência de dados completos
 
-O oráculo foi treinado com 100% do pool no protocolo fixo (ver
-[apêndice](#protocolo-fixo-de-treino-yolo)). Apenas a validação foi avaliada.
+O oráculo foi treinado com 100% do pool no
+[protocolo fixo](#protocolo-fixo-de-treino-yolo) e avaliado na validação.
 
 | Partição | mAP@0.5 | mAP@0.5:0.95 | AP@0.5 `regulatory` | AP@0.5 `traffic_light` |
 |---|---:|---:|---:|---:|
 | Validação | 0,9365 | 0,6035 | 0,9502 | 0,9228 |
 
-- Tempo de treino: 1.698,7 s (~28,3 min) em Apple M2 Pro/MPS, em processo
-  dedicado.
-- Checkpoint local: `outputs/bvtsld/runs/oracle/weights/best.pt` (fora do Git).
-- Protocolo e métricas: [`oracle_results.json`](outputs/bvtsld/oracle_results.json).
+O treino levou 1.698,7 s (~28,3 min) no Apple M2 Pro/MPS. Protocolo e métricas
+estão em [`oracle_results.json`](outputs/bvtsld/oracle_results.json);
 
 ![Curvas de treino do oráculo](figs/oracle_training_curves.png)
 
@@ -121,89 +112,66 @@ detector.*
 
 ### Os métodos escolhidos e por quê
 
-Os seis métodos contrastam vieses distintos de seleção — sorteio, agrupamento
-global, densidade e conectividade por OPF, densidade local, cobertura e
-padrões locais — sem pretender uma taxonomia exaustiva. Regras comuns a todos:
+Os seis métodos representam estratégias distintas: sorteio, agrupamento
+global, densidade, cobertura e padrões locais. Todos seguem as mesmas regras:
 
 - Nenhum seletor consulta os rótulos do dataset-alvo.
-- Salvo indicação em contrário, a representação é o *embedding* DINOv2 da
-  imagem inteira (384 dimensões, L2-normalizado).
+- Salvo indicação em contrário, usam o modelo pequeno do DINOv2 para
+  representar a imagem inteira (384 dimensões, L2-normalizado).
 - Orçamentos: 44 (5%), 89 (10%), 178 (20%) e 445 (50%) imagens por seleção.
-- Métodos estocásticos rodam 8 repetições por fração; o `opf_dinov2`,
-  determinístico sobre o pool inteiro, roda 1 — repetições produziriam a
-  mesma seleção.
+- Métodos estocásticos rodam 8 repetições por fração; o OPF, determinístico,
+  roda uma vez.
 
-**`random`** — sorteia uniformemente as imagens do orçamento, sem
-representação. É o *baseline* de controle: o protocolo estatístico mede o
-ganho pareado de cada método contra ele.
+**`random`** — sorteio uniforme usado como controle.
 
 **`kmeans_dinov2`** ([Lloyd, 1982](https://doi.org/10.1109/TIT.1982.1056489);
 DINOv2: [Oquab et al., 2024](https://arxiv.org/abs/2304.07193)) — *baseline*
-de **representatividade global**: forma `k = orçamento` grupos com distância
-euclidiana e retorna a imagem real mais próxima de cada centroide. Lloyd
-fundamenta a alternância entre médias e atribuição ao centro mais próximo; a
-escolha de um exemplar real é etapa adicional deste estudo.
+de **representatividade global**: forma `k = orçamento` grupos e escolhe a
+imagem mais próxima de cada centroide.
 
-**`opf_dinov2`** ([Rocha, Cappabianco & Falcão, 2009](https://doi.org/10.1002/ima.20191))
-— agrupa o pool em árvores enraizadas nos máximos de densidade de um grafo
-kNN (dissimilaridade `log_squared_euclidean`, padrão do OPFython). Não fixa o
-número de grupos igual ao orçamento: com `max_k = 20`, o número de vizinhos é
-escolhido pelo menor corte normalizado e o número de árvores resulta do
-agrupamento — hipótese complementar ao k-means. **Extensão deste estudo:**
-grupos com cota positiva fornecem primeiro a raiz, e o orçamento é completado
-com amostras próximas às raízes, em cotas proporcionais ao tamanho dos
-grupos. No BVTSLD, o pool inteiro cabe em um único ajuste do algoritmo, o que
-torna a seleção determinística.
+**`opf_dinov2`** ([Rocha, Cappabianco & Falcão, 2009](https://doi.org/10.1002/ima.20191);
+implementação: [de Rosa & Papa, 2021](https://doi.org/10.1016/j.simpa.2021.100113))
+— cria árvores a partir dos máximos de densidade de um grafo kNN. O
+OPFython 1.0.12 usa distância `log_squared_euclidean` e busca, até `k = 20`,
+o menor *normalized cut*. O orçamento é distribuído entre os grupos: cada um
+fornece sua raiz e, depois, amostras próximas. A seleção é determinística.
 
 **`typiclust_dinov2`** ([Hacohen, Dekel & Weinshall, 2022](https://arxiv.org/abs/2202.02794))
-— método de referência para **rotulagem com orçamento baixo**: amostras
-típicas superam estratégias de incerteza quando há poucos rótulos. Forma
-`k = orçamento` grupos e escolhe a imagem de maior densidade local em cada
-um. A implementação deste estudo usa distância de cosseno e omite os filtros
-de clusters pequenos do apêndice do artigo.
+— forma `k = orçamento` grupos e escolhe a imagem de maior densidade local em
+cada um. A implementação usa distância de cosseno e não aplica os filtros de
+grupos pequenos do artigo.
 
 **`probcover_dinov2`** ([Yehuda et al., 2022](https://arxiv.org/abs/2205.11320))
-— formula a seleção como **cobertura**: escolhe a imagem que cobre mais
-vizinhos ainda não cobertos, dentro de um raio estimado sem rótulos (cosseno).
-Estado da arte em *cold-start*, junto com o TypiClust, nos *benchmarks* de
-classificação do artigo. Adaptações deste estudo: o raio é estimado com
-`k = orçamento` (o artigo usa `k = número de classes`) e a cobertura é
-reiniciada quando se esgota.
+— escolhe iterativamente a imagem que cobre mais vizinhos ainda não cobertos.
+O raio é estimado sem rótulos com `k = orçamento`, em vez do número de classes
+usado no artigo, e a cobertura reinicia quando necessário.
 
 **`freesel_fds_dino`** ([Xie et al., 2023](https://arxiv.org/abs/2309.17342);
 DINO: [Caron et al., 2021](https://arxiv.org/abs/2104.14294)) — único método
-que enxerga **regiões locais**: cada imagem gera cinco padrões via k-means
-sobre as *features* DINO v1 (384 dimensões), guiado pelos mapas de atenção, e
-a seleção busca o padrão não coberto mais distante (cosseno); a imagem dona
-do padrão entra. Hipótese associada, a ser testada na grade: placas pequenas
-contam mesmo quando a cena inteira já parece representada. A implementação é
-a variante **Farthest-Distance Sampling (FDS)** — amostragem pela maior
-distância. Após a primeira imagem, sorteada de forma reprodutível pela semente,
-a regra FDS é determinística. O método principal do artigo usa agrupamento
-espectral guiado por atenção e amostragem proporcional à distância².
+comparado que usa **regiões locais**. Cada imagem gera cinco padrões a partir das
+*features* DINO guiadas por atenção; a variante FDS seleciona sucessivamente o
+padrão mais distante e inclui sua imagem. Essa escolha testa se regiões
+pequenas podem ser informativas mesmo em cenas globalmente semelhantes.
 
 ### Diagnósticos das seleções
 
-São 164 seleções: 6 métodos × 4 frações de rótulos × 8 repetições (OPF: 1).
-As tabelas abaixo são diagnósticos **anteriores ao treino YOLO** — cobertura
-do pool, estabilidade, *bounding boxes* recuperadas e tempo de seleção. Elas
-não definem o ranking.
+São 164 seleções: cinco métodos estocásticos × 4 frações × 8 repetições, mais
+o OPF × 4 frações × 1 execução. As tabelas descrevem as seleções **antes do
+treino YOLO** e não definem o ranking.
 
 Como ler as colunas:
 
-- **Cobertura DINOv2**: distância média de cada imagem do pool à imagem
-  selecionada mais parecida no espaço DINOv2 global. Menor é melhor.
-- **Δ cobertura**: diferença relativa para o `random` na mesma fração.
-  Negativo é melhor.
-- **Δ pior caso**: mesma comparação usando a maior distância encontrada.
-  Negativo é melhor.
-- **Jaccard**: sobreposição média entre pares de repetições do método. Mede
-  estabilidade somente quando há pelo menos duas seleções; caso contrário,
-  é reportado como `N/A`.
-- **Tempo (s)**: tempo para gerar todas as repetições da fração (Apple M2
-  Pro). Cada técnica × fração roda em um processo dedicado e sequencial, sem
-  interferência das demais em tempo, CPU e pico de RSS; CPU e RSS por técnica
-  ficam no CSV.
+- **Cobertura DINOv2**: distância média de cada imagem do pool à selecionada
+  mais próxima no espaço DINOv2 global. Menor é melhor.
+- **Δ cobertura**: diferença relativa para o `random` na mesma fração;
+  valores negativos são melhores.
+- **Δ pior caso**: mesma comparação para a maior distância encontrada;
+  valores negativos são melhores.
+- **Jaccard**: sobreposição média entre repetições. Sem duas seleções, é `N/A`.
+- ***Bounding boxes***: média de caixas presentes nas imagens selecionadas;
+  é apenas um diagnóstico, pois os métodos não consultam os rótulos.
+- **Tempo (s)**: tempo total das repetições daquela fração no Apple M2 Pro.
+  Cada técnica e fração roda isoladamente; CPU e pico de RSS estão no CSV.
 
 #### Fração de 5% — 44 imagens por seleção
 
@@ -252,13 +220,10 @@ Como ler as colunas:
 ¹ Jaccard não se aplica ao OPF: há uma única seleção por fração e, portanto,
 nenhum par de repetições cuja sobreposição possa ser medida.
 
-Leitura preliminar: `kmeans_dinov2` e `typiclust_dinov2` têm a melhor
-cobertura média nas quatro frações; `probcover_dinov2` vem próximo. O
-`opf_dinov2` cobre pior que o `random`, mas recupera mais *bounding boxes*.
-Isso **não sustenta um ranking**: k-means, TypiClust e ProbCover otimizam o
-mesmo espaço DINOv2 em que a cobertura é medida, então a métrica é um
-diagnóstico interno, não evidência comparativa de qualidade. O ranking virá
-exclusivamente do mAP da grade de treino.
+K-means e TypiClust apresentam a melhor cobertura média nas quatro frações,
+seguidos por ProbCover. O OPF cobre pior que o `random`, mas recupera mais
+*bounding boxes*. Como parte dos métodos otimiza o próprio espaço DINOv2 usado
+nessa medida, o ranking será definido apenas pelo mAP após o treino.
 
 Fonte completa: [`selections_summary.csv`](outputs/bvtsld/selections_summary.csv).
 As seleções individuais estão em
@@ -268,45 +233,39 @@ As seleções individuais estão em
 
 ![Comparação dos espaços de representação dos seis métodos de seleção](figs/methods_selection_spaces_bvtsld_tsne_frac10_rep1.png)
 
-*Uma seleção real por método (fração de 10%): pontos cinza são o pool no
-espaço de representação do método; pontos azuis, as 89 imagens selecionadas.
-No `freesel_fds_dino` (FreeSel FDS), destaca-se apenas o padrão local que
-motivou cada escolha; no `random`, sem embedding, a grade de índices é
-arbitrária. O t-SNE serve só para visualização — a seleção opera nas 384
-dimensões originais.*
+*Repetição 1 da fração de 10% (89 imagens). Cada painel projeta o espaço usado
+pelo método; cinza representa o pool e azul, a seleção. O t-SNE é apenas uma
+visualização: a seleção ocorre nos espaços originais.*
 
 ### Treino YOLO por seleção — mAP vs. oráculo
 
-O protocolo usa 8 repetições por método: é o mínimo que permite significância
-no teste exato com correção de Holm ($p$ mínimo corrigido 0,039; com 7 seria
-0,078). Precedentes da área usam menos — 5 em
-[Munjal et al. (2022)](https://openaccess.thecvf.com/content/CVPR2022/html/Munjal_Towards_Robust_and_Reproducible_Active_Learning_Using_Neural_Networks_CVPR_2022_paper.html)
-e 3 no [FreeSel](https://openreview.net/forum?id=KBXcDAaZE7) —, mas só para
-análise descritiva, sem teste de hipótese
-([Colas et al., 2018](https://doi.org/10.48550/arXiv.1806.08295)).
+Cada método que pode gerar seleções diferentes entre execuções é avaliado em
+8 repetições por fração. O uso de múltiplas execuções também aparece em
+avaliações anteriores: Munjal et al. usam 5 inicializações e o FreeSel, 3
+seleções independentes
+([Munjal et al., 2022](https://openaccess.thecvf.com/content/CVPR2022/html/Munjal_Towards_Robust_and_Reproducible_Active_Learning_Using_Neural_Networks_CVPR_2022_paper.html);
+[Xie et al., 2023](https://proceedings.neurips.cc/paper_files/paper/2023/hash/047682108c3b053c61ad2da5a6057b4e-Abstract-Conference.html)).
 
-A grade contém **328 runs**: 164 seleções × 2 sementes de treino (41 e 42),
-40 épocas cada, no mesmo protocolo do oráculo. Cada run registra em
-[`triage_results.csv`](outputs/bvtsld/triage_results.csv):
+K-means, TypiClust, ProbCover e FreeSel são comparados ao `random` por
+repetição. Como o OPF produz uma única seleção por fração, sua comparação é
+apenas descritiva, sem intervalo de confiança ou valor-p.
+
+A grade contém **328 runs**: 164 seleções × 2 sementes de treino, com 40
+épocas cada. O [`triage_results.csv`](outputs/bvtsld/triage_results.csv)
+registra métricas de detecção, tempo e uso de memória. O
+[`metrics_summary.csv`](outputs/bvtsld/metrics_summary.csv) reunirá as médias
+por método e fração.
+
+As métricas registradas são:
 
 - **Qualidade**: precisão, revocação, F1, mAP@0.5, mAP@0.75, mAP@0.5:0.95 e
-  AP@0.5 por classe na validação. A AP por classe separa o efeito da
-  composição da seleção (quantas imagens com `traffic_light` entraram) da
-  qualidade geral do detector.
-- **Tempo**: tempo de treino, tempo de validação, inferência média por imagem
-  (ms) e tempo de CPU (usuário + sistema) do run.
-- **Consumo computacional**: pico de RAM do processo e memória média/de pico
-  da GPU. A utilização da GPU (%) só é registrada em CUDA (o macOS não a expõe
-  sem privilégios de administrador). Na execução definitiva, `--isolate` roda
-  um run por vez, cada um em um processo novo: tempo de CPU e pico de RSS
-  pertencem só àquele run.
-
-A fase de seleção tem registro próprio: o
-[`selections_summary.csv`](outputs/bvtsld/selections_summary.csv) guarda, por
-técnica × fração, tempo de seleção, RAM e cobertura.
-[`summarize_metrics.py`](scripts/summarize_metrics.py) cruza os dois CSVs e
-gera o [`metrics_summary.csv`](outputs/bvtsld/metrics_summary.csv) — uma linha
-por técnica × fração com média e desvio, fonte das tabelas deste README.
+  AP@0.5 por classe. A AP por classe ajuda a distinguir a composição da
+  seleção do desempenho geral do detector.
+- **Tempo**: duração do treino e da validação, inferência média por imagem e
+  tempo de CPU.
+- **Consumo computacional**: pico de RAM e memória média e máxima da GPU.
+  Cada run é executado em um processo isolado para que as medidas pertençam
+  somente àquela execução.
 
 A tabela abaixo será preenchida com a média sobre repetições e sementes. Cada
 célula reporta mAP@0.5 / mAP@0.5:0.95 na validação.
@@ -331,24 +290,22 @@ Estado atual da etapa de treino:
 | Treino de verificação (*smoke*) | aprovado |
 | Grade completa de treino | **0/328 runs** |
 
-O treino de verificação tem duas épocas e confirma o pipeline de ponta a
-ponta; seu mAP não é resultado experimental. Após a grade completa,
-[`analyze_triage.py`](scripts/analyze_triage.py) calcula o ganho médio pareado
-contra o `random`, o IC 95% por *bootstrap* hierárquico, o teste exato de
-sinais e a correção de Holm. O estado auditável está em
+O treino de verificação confirma o pipeline, mas seu mAP não é resultado
+experimental. Após a grade completa,
+[`analyze_triage.py`](scripts/analyze_triage.py) calcula, para os quatro métodos
+inferenciais, o ganho médio pareado contra o `random`, o IC 95% por *bootstrap*
+hierárquico, o teste exato de sinais e a correção de Holm; para o OPF, calcula
+somente a comparação descritiva definida acima. O estado auditável está em
 [`project_status.json`](outputs/bvtsld/project_status.json).
 
-Depois de escolher a fração na validação, a abertura única do teste avaliará
-**todos os métodos nessa fração**, não só o vencedor, e a escolha não será
-refeita. Isso expõe o otimismo de seleção (*winner's curse*): entre candidatos
-ruidosos, o melhor resultado de validação tende a superestimar o desempenho
-verdadeiro.
+Após escolher a fração na validação, todos os métodos serão avaliados uma única
+vez no teste, sem refazer a escolha.
 
 ---
 
 ## Etapa 2 — Replicação no TT100K
 
-*Etapa não iniciada. As tabelas serão preenchidas quando a etapa começar.*
+*Etapa ainda não iniciada.*
 
 O [TT100K (Tsinghua-Tencent 100K)](https://cg.cs.tsinghua.edu.cn/traffic-sign/)
 ([Zhu et al., 2016](https://doi.org/10.1109/CVPR.2016.232)) contém cerca de
@@ -356,23 +313,13 @@ O [TT100K (Tsinghua-Tencent 100K)](https://cg.cs.tsinghua.edu.cn/traffic-sign/)
 pequenas em cenas complexas. O objetivo é verificar se o ranking dos métodos
 do teste preliminar se mantém em escala.
 
-O protocolo repete a Etapa 1 com **três classes-alvo** — regulamentação
-(`p*`), advertência (`w*`) e indicação (`i*`), agregadas dos códigos originais
-—, viáveis nessa escala porque cada classe tem centenas a milhares de boxes
-por partição. São as mesmas 164 seleções e 328 runs; o OPF continua operando
-sobre o pool completo, sem amostra intermediária.
+O protocolo seguirá a Etapa 1, agora com três classes agregadas:
+regulamentação (`p*`), advertência (`w*`) e indicação (`i*`). A política de
+treino será definida antes da primeira execução, e a grade será rodada em uma
+GPU CUDA dedicada.
 
-Com 40 épocas fixas, o número de atualizações cresce com a fração — nas
-menores seleções do BVTSLD são só ~120 atualizações. O TT100K atenua o
-confundidor (5% do pool já são centenas de imagens), mas não o elimina. Antes
-do primeiro treino da Etapa 2 será congelada uma de duas políticas: manter 40
-épocas (curva sob orçamento computacional crescente) ou fixar o número de
-atualizações por run (isola melhor o efeito da seleção).
-
-A grade exige GPU CUDA dedicada, espaço para checkpoints e execução
-retomável — não o M2 Pro. Um piloto no hardware definitivo (oráculo + um run
-de 5% e um de 50%) extrapolará o custo dos 328 runs, sem eliminar método,
-fração ou repetição da grade congelada.
+As tabelas abaixo registram o que será preenchido quando a etapa começar.
+Os traços indicam que ainda não há resultados.
 
 ### Conjunto de dados e partições fixas — TT100K
 
@@ -393,8 +340,7 @@ fração ou repetição da grade congelada.
 
 ### Treino YOLO por seleção — mAP vs. oráculo — TT100K
 
-Cada célula reporta mAP@0.5 / mAP@0.5:0.95 na validação. Referência: oráculo
-com 100% do pool: — / —.
+Cada célula reportará mAP@0.5 / mAP@0.5:0.95 na validação.
 
 | Método | 5% | 10% | 20% | 50% |
 |---|---:|---:|---:|---:|
@@ -409,34 +355,17 @@ com 100% do pool: — / —.
 
 ## Etapa 3 — Trabalhos futuros: semi-supervisão na dissertação
 
-Com os resultados das Etapas 1 e 2, a seleção vencedora define o conjunto
-rotulado inicial. O restante do pool entra sem rótulos, por meio de
-*pseudo-labels*.
-
-FixMatch, FreeMatch e SoftMatch foram propostos para **classificação**. Em
-detecção, o *pseudo-label* é um conjunto de *bounding boxes* filtradas por
-confiança e NMS, e a linha própria da área — Unbiased Teacher
+A melhor estratégia das Etapas 1 e 2 definirá o conjunto rotulado inicial de
+um modelo professor–aluno. O restante do pool será aproveitado por
+*pseudo-labels*, seguindo trabalhos de detecção como Unbiased Teacher
 ([Liu et al., 2021](https://arxiv.org/abs/2102.09480)), Soft Teacher
-([Xu et al., 2021](https://arxiv.org/abs/2106.09018)) e, para YOLO, Efficient
-Teacher ([Xu et al., 2023](https://arxiv.org/abs/2302.07577)) — usa um par
-professor–aluno com EMA. O plano é adotar essa estrutura e comparar, dentro
-dela, três estratégias de filtragem de *pseudo-labels*:
+([Xu et al., 2021](https://arxiv.org/abs/2106.09018)) e Efficient Teacher
+([Xu et al., 2023](https://arxiv.org/abs/2302.07577)).
 
-- **Limiar fixo** (estilo FixMatch, [Sohn et al., 2020](https://arxiv.org/abs/2001.07685)):
-  a predição do professor na visão com *weak augmentation* vira *pseudo-label*
-  quando a confiança supera um limiar fixo (`τ = 0,95`) e supervisiona o aluno
-  na visão com *strong augmentation*.
-
-- **Limiares adaptativos por classe** (estilo FreeMatch,
-  [Wang et al., 2023](https://arxiv.org/abs/2205.07246)): limiares globais e
-  por classe estimados a partir da confiança do próprio modelo. Relevante
-  quando as classes têm frequências muito diferentes, como nas classes raras
-  do TT100K.
-
-- **Pesos contínuos de confiança** (estilo SoftMatch,
-  [Chen et al., 2023](https://arxiv.org/abs/2301.10921)): substitui o corte
-  binário por um peso gaussiano centrado na confiança média, para equilibrar
-  quantidade e qualidade dos *pseudo-labels*.
+Serão comparadas três estratégias de confiança: limiar fixo
+([FixMatch](https://arxiv.org/abs/2001.07685)), limiares adaptativos por classe
+([FreeMatch](https://arxiv.org/abs/2205.07246)) e pesos contínuos
+([SoftMatch](https://arxiv.org/abs/2301.10921)).
 
 ---
 
@@ -446,15 +375,15 @@ dela, três estratégias de filtragem de *pseudo-labels*:
 
 | Termo | O que é |
 |---|---|
-| **pool** | as imagens de treino disponíveis; fingimos que nenhuma tem rótulo |
+| **pool** | imagens de treino tratadas como não rotuladas durante a seleção |
 | **fração de rótulos** | quanto do pool ganha rótulo manual: 5, 10, 20 ou 50% |
 | **seleção** | o subconjunto de imagens escolhido para receber rótulo manual |
-| **embedding** | um vetor de números que resume o conteúdo de uma imagem, gerado por uma rede pronta (não precisa de rótulo para calcular) |
+| **embedding** | vetor que resume o conteúdo de uma imagem, calculado sem usar seus rótulos |
 | **agrupamento (clustering)** | juntar imagens de embedding parecido em grupos ("cenas de rodovia", "ruas à noite"...) |
-| **cobertura DINOv2** | distância média de cada imagem do pool à imagem selecionada mais parecida no DINOv2 global — diagnóstico interno desse espaço, não critério de ranking entre métodos |
+| **cobertura DINOv2** | distância média do pool à seleção nesse espaço; é um diagnóstico, não o critério de ranking |
 | **oráculo** | YOLO treinado com 100% dos rótulos, usado como referência de dados completos |
-| **instância de seleção** | uma execução independente da técnica, identificada por uma semente de seleção; é a unidade de comparação com o sorteio |
-| **semente de treino** | inicialização e aleatoriedade do YOLO; cada instância de seleção é treinada com as mesmas 2 sementes em todas as técnicas |
+| **instância de seleção** | execução independente de uma técnica, usada como unidade de comparação |
+| **semente de treino** | controla a inicialização e a aleatoriedade do YOLO |
 
 ### Protocolo fixo de treino YOLO
 
@@ -476,9 +405,8 @@ python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 ```
 
-Os datasets não são versionados. O script abaixo baixa das fontes oficiais,
-retoma downloads interrompidos, confere o tamanho congelado e extrai os ZIPs
-com segurança. Revise as licenças antes de confirmar:
+Os datasets não são versionados. O script baixa os arquivos das fontes
+oficiais, verifica o tamanho e extrai os ZIPs.
 
 ```bash
 # BVTSLD v2 (~3,86 GiB; CC BY 4.0)
@@ -494,15 +422,12 @@ Os destinos são `datasets/bvtsld/Brazilian Vertical Traffic Signs and Lights
 Dataset/` e `datasets/tt100k/data/`. Para apenas verificar as URLs e os tamanhos
 sem baixar, use `--dataset all --check`.
 
-Na primeira execução, é necessário acesso à internet para baixar os pesos
-DINO/DINOv2 e YOLOv8n. Imagens brutas, embeddings, dataset YOLO, checkpoints e
-runs permanecem locais; os resultados compactos e as 164 seleções estão no Git.
+Na primeira execução também são baixados os pesos DINO/DINOv2 e YOLOv8n.
 
 #### 2. Reprodução rápida
 
-O fluxo rápido materializa o dataset YOLO, verifica as representações,
-reutiliza as seleções versionadas, roda um treino de duas épocas e audita os
-artefatos — verificação de ponta a ponta, sem resultado experimental:
+O fluxo rápido verifica dados, representações, seleções e treino de ponta a
+ponta. Seu resultado não faz parte do experimento:
 
 ```bash
 .venv/bin/python scripts/reproduce.py \
@@ -517,9 +442,7 @@ Para apenas conferir os comandos, sem executar nada:
 
 #### 3. Reprodução completa
 
-O comando abaixo inclui o fluxo rápido, o retreino do oráculo, os 328 treinos
-comparativos e a análise estatística. É uma execução longa, indicada para GPU
-CUDA dedicada:
+O fluxo completo inclui o oráculo, os 328 treinos e a análise estatística.
 
 ```bash
 .venv/bin/python scripts/reproduce.py \
@@ -531,8 +454,8 @@ As classes-alvo, caminhos e o mapa de códigos de cada dataset ficam
 centralizados em [`dataset_config.py`](scripts/dataset_config.py): o BVTSLD usa
 duas classes e o TT100K usará as três classes agregadas por prefixo.
 
-O treinador é retomável: cada run concluído entra em `triage_results.csv` e
-não é repetido. As etapas também podem ser chamadas separadamente:
+O treinador é retomável e não repete execuções concluídas. As etapas também
+podem ser chamadas separadamente:
 
 | Etapa | Comando | Saída principal |
 |---|---|---|
@@ -555,9 +478,8 @@ isolamento por processo:
 .venv/bin/python scripts/run_local_triage.py --isolate --device cuda
 ```
 
-O comando percorre somente as células ainda pendentes e executa uma por vez.
-Cada célula roda em um processo Python novo; se uma delas falhar, a grade para
-sem marcar esse run como concluído e pode ser retomada pelo mesmo comando.
+O comando executa uma configuração por processo e pode ser retomado após uma
+falha.
 
 Exemplo para executar somente uma célula da grade:
 
@@ -609,9 +531,6 @@ outputs/bvtsld/runs/                     checkpoints e execuções de treino (fo
 - Chen, H. et al. (2023). *SoftMatch: Addressing the Quantity-Quality
   Trade-off in Semi-supervised Learning*. ICLR.
   [arXiv:2301.10921](https://arxiv.org/abs/2301.10921)
-- Colas, C., Sigaud, O. & Oudeyer, P.-Y. (2018). *How Many Random Seeds?
-  Statistical Power Analysis in Deep Reinforcement Learning Experiments*.
-  [arXiv:1806.08295](https://arxiv.org/abs/1806.08295)
 - Hacohen, G., Dekel, A. & Weinshall, D. (2022). *Active Learning on a Budget:
   Opposite Strategies Suit High and Low Budgets* (TypiClust). ICML.
   [arXiv:2202.02794](https://arxiv.org/abs/2202.02794)
@@ -625,6 +544,12 @@ outputs/bvtsld/runs/                     checkpoints e execuções de treino (fo
   [paper](https://openaccess.thecvf.com/content/CVPR2022/html/Munjal_Towards_Robust_and_Reproducible_Active_Learning_Using_Neural_Networks_CVPR_2022_paper.html)
 - Oquab, M. et al. (2024). *DINOv2: Learning Robust Visual Features without
   Supervision*. TMLR. [arXiv:2304.07193](https://arxiv.org/abs/2304.07193)
+- Pierre, M. M. (2023). *Brazilian Vertical Traffic Signs and Lights
+  Dataset*. Mendeley Data, version 2.
+  [DOI:10.17632/jbpsr4fvg9.2](https://doi.org/10.17632/jbpsr4fvg9.2)
+- Rosa, G. H. de & Papa, J. P. (2021). *OPFython: A Python Implementation
+  for Optimum-Path Forest*. Software Impacts.
+  [DOI:10.1016/j.simpa.2021.100113](https://doi.org/10.1016/j.simpa.2021.100113)
 - Rocha, L. M., Cappabianco, F. A. M. & Falcão, A. X. (2009). *Data Clustering
   as an Optimum-Path Forest Problem with Applications in Image Analysis*.
   International Journal of Imaging Systems and Technology.

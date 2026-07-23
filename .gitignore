@@ -31,6 +31,9 @@ htmlcov/
 # Raw datasets are obtained separately
 datasets/
 
+# Article draft (edited outside this repo)
+Sample Selection/
+
 # Model checkpoints and exported models
 *.pt
 *.pth
